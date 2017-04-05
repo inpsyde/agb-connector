@@ -37,7 +37,7 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 You can find technical support for this plugin in the wordpress.org forum: https://wordpress.org/support/plugin/agb-connector
 
-Please read the FAQ (frequently asked questions) (https://wordpress.org/support/plugin/agb-connector/faq/) first and make sure you have installed the newest version of the plugin before contacting us.
+Please read the FAQ (frequently asked questions) first and make sure you have installed the newest version of the plugin before contacting us.
 
 If you have questions concerning the legal texts, please contact “IT-Recht Kanzlei München” directly via +49 89 13014330 or info@it-recht-kanzlei.de.
 
@@ -89,7 +89,7 @@ In the WordPress Backend, go to *Plugins => Add New*. Search for the **Terms & C
 
 = Setting the automatic transfer of legal texts =
 
-To set the transfer of the legal texts, go to *Settings => IT-Recht Kanzlei*. 
+To set the transfer of the legal texts, go to *Settings => AGB Connector*. 
 1. Generate the API-Token by clicking “Regenerate”.
 2. Assign a page of your WordPress-installation to each legal text. Eventually, you need to create these pages first.
 3. Save your settings.
@@ -98,7 +98,7 @@ To set the transfer of the legal texts, go to *Settings => IT-Recht Kanzlei*.
 
 = Appending the legal texts to WooCommerce-Emails =
 
-As far as you run a WordPress shop based on WooCommerce, you have the possibility to append selected legal texts as PDF to the Email “New Order”. Therefore, you simply need to go to *Settings => IT-Recht Kanzlei* and then place a hook at your selected legal texts at “Send PDF with WooCommerce order on hold email.”
+As far as you run a WordPress shop based on WooCommerce, you have the possibility to append selected legal texts as PDF to the Email “New Order”. Therefore, you simply need to go to *Settings => AGB Connector* and then place a hook at your selected legal texts at “Send PDF with WooCommerce order on hold email.”
 
 
 == Changelog ==
