@@ -1,0 +1,113 @@
+# Copyright (C) 2017 Terms & Conditions Connector of IT-Recht Kanzlei
+# This file is distributed under the same license as the Terms & Conditions Connector of IT-Recht Kanzlei package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Terms & Conditions Connector of IT-Recht Kanzlei 1.0.0-rc1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/agb-connector\n"
+"POT-Creation-Date: 2017-03-21 13:34:43+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: inc/AGB_Connector_Settings.php:60 inc/AGB_Connector_Settings.php:147
+msgid "Settings"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:87
+msgid "New APT-Token generated."
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:129
+msgid "Settings updated."
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:164
+msgid "Your shop URL"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:168
+msgid "API-Token"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:173
+msgid "Regenerate"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:175
+msgid "If you change the token, this must also be adjusted in the client portal."
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:180
+msgid "Terms and Conditions"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:184 inc/AGB_Connector_Settings.php:216
+#: inc/AGB_Connector_Settings.php:248 inc/AGB_Connector_Settings.php:280
+msgid "Page:"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:194 inc/AGB_Connector_Settings.php:226
+#: inc/AGB_Connector_Settings.php:258 inc/AGB_Connector_Settings.php:290
+msgid "&mdash; Select &mdash;"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:205 inc/AGB_Connector_Settings.php:237
+#: inc/AGB_Connector_Settings.php:269
+msgid "Send PDF with WooCommerce order on hold email."
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:213
+msgid "Privacy"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:245
+msgid "Revocation"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:277
+msgid "Imprint"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:301
+msgid "Save changes"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:314
+msgid "https://inpsyde.com/en/?utm_source=AGBConnector&utm_medium=Banner&utm_campaign=Inpsyde"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:315
+msgid "An Inpsyde GmbH Product"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:321
+msgid "If you have questions please contact “IT-Recht Kanzlei München” directly"
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:322
+msgid "via +49 89 13014330 or "
+msgstr ""
+
+#: inc/AGB_Connector_Settings.php:43 inc/AGB_Connector_Settings.php:148
+#. Plugin Name of the plugin/theme
+msgid "Terms & Conditions Connector of IT-Recht Kanzlei"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/inpsyde/agb-connector"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Inpsyde GmbH"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://inpsyde.com"
+msgstr ""

@@ -1,0 +1,38 @@
+#agb-connector-settings .box-container {
+	float: right;
+	padding-top: 50px;
+}
+#agb-connector-settings .settings-container {
+	float: left;
+	margin-right: 50px;
+}
+
+#agb-connector-settings .box-container .inside {
+	text-align: center;
+}
+
+#agb-connector-settings .box-container .inpsyde-logo {
+	background-image: url( '../images/inpsyde.png' );
+	width: 80px;
+	height: 25px;
+	text-indent: -9999em;
+	display: inline-block;
+}
+
+#agb-connector-settings .box-container .it-kanzlei-logo {
+	background-image: url( '../images/it-recht-kanzlei.png' );
+	width: 150px;
+	height: 92px;
+	text-indent: -9999em;
+	display: inline-block;
+}
+
+@media only screen and (max-width: 960px) {
+	#agb-connector-settings .settings-container {
+		width: 100%;
+	}
+	#agb-connector-settings .box-container {
+		float: left;
+		padding-left: 100px;
+	}
+}
