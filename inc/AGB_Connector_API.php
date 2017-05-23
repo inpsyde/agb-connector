@@ -214,7 +214,7 @@ class AGB_Connector_API {
 				return 7;
 			}
 
-			$pdf = @file_get_contents( (string) $xml->rechtstext_pdf_url, false );
+			$pdf = $this->get_file( (string) $xml->rechtstext_pdf_url );
 			if ( empty( $pdf ) || substr( $pdf, 0, 4 ) !== '%PDF' ) {
 				return 7;
 			}
@@ -284,7 +284,7 @@ class AGB_Connector_API {
 			unlink( $file );
 		}
 
-		$pdf = @file_get_contents( (string) $xml->rechtstext_pdf_url, FALSE );
+		$pdf = $this->get_file( (string) $xml->rechtstext_pdf_url );
 		if ( ! $pdf ) {
 			return 7;
 		}
@@ -340,6 +340,26 @@ class AGB_Connector_API {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Download a file and return its content.
+	 *
+	 * @param string $url The URL to the file.
+	 *
+	 * @return false|string
+	 */
+	private function get_file( $url ) {
+
+		$response = wp_remote_get( $url );
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+		$content = wp_remote_retrieve_body( $response );
+		if ( empty( $content ) ) {
+			return false;
+		}
+		return $content;
 	}
 
 }
