@@ -355,6 +355,11 @@ class AGB_Connector_API {
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}
+
+		if ( '200' !== (string) wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
 		$content = wp_remote_retrieve_body( $response );
 		if ( empty( $content ) ) {
 			return false;

@@ -57,6 +57,11 @@ class Api_XML_Error_Test extends TestCase {
 				return $response['body'];
 			}
 		);
+		Functions::when( 'wp_remote_retrieve_response_code' )->alias(
+			function( $response ) {
+				return $response['response']['code'];
+			}
+		);
 
 		$this->plugin = new \AGB_Connector();
 	}
