@@ -21,8 +21,8 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 * Automatic transfer of legal texts from “IT-Recht Kanzlei München” to your WordPress-installation
 * Automatic update of legal texts in WordPress in case of amendments in the clients’ portal
-* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Suitable for both WordPress websites/blogs and WordPress shops, irrespective of your shop system
+* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Simple connection to the clients’ portal of “IT-Recht Kanzlei München” via API-Token and URL
 
 = Benefits =
@@ -61,25 +61,25 @@ No. The plugin does not require special demands for your WordPress shop. Merely,
 
 == Screenshots ==
 
-Terms & Conditions Connector of IT-Recht Kanzlei - Settings Page
+1. Terms & Conditions Connector of IT-Recht Kanzlei - Settings Page
 
-Protection package of IT-Recht Kanzlei München – Registration to the clients’ portal.
+2. Protection package of IT-Recht Kanzlei München – Registration to the clients’ portal.
 
-Protection package of IT-Recht Kanzlei München – Overview of legal texts
+3. Protection package of IT-Recht Kanzlei München – Overview of legal texts
 
-Protection package of IT-Recht Kanzlei München – Configuration of legal texts
+4. Protection package of IT-Recht Kanzlei München – Configuration of legal texts
 
-Protection package of IT-Recht Kanzlei München – Choose shop system
+5. Protection package of IT-Recht Kanzlei München – Choose shop system
 
-Protection package of IT-Recht Kanzlei München – API-Token and Shop URL
+6. Protection package of IT-Recht Kanzlei München – API-Token and Shop URL
 
 == Upgrade Notice ==
 
 == Installation ==
 
 = Minimum requirements =
-* WordPress version > 4.0
-* PHP Version > 5.2.4
+* WordPress version >= 4.0
+* PHP Version >= 5.2.4
 * Access to a protection package of “IT-Recht Kanzlei München”
 
 = Installation via WordPress Backend = 
@@ -93,7 +93,7 @@ To set the transfer of the legal texts, go to *Settings => AGB Connector*.
 1. Generate the API-Token by clicking “Regenerate”.
 2. Assign a page of your WordPress-installation to each legal text. Eventually, you need to create these pages first.
 3. Save your settings.
-4. First, the legal texts need to be configured in the clients’ portal of “IT-Recht Kanzlei München”. Then, you set up the data interface by indicating the URL and the API-Token. Once after the installation, you need to transfer the texts manually. After that, amendments of the legal texts are transferred automatically. (see screenshots.)
+4. First, the legal texts need to be configured in the clients’ portal of “IT-Recht Kanzlei München”. Then, you set up the data interface by indicating the Shop-URL and the API-Token. Once after the installation, you need to transfer the texts manually. After that, amendments of the legal texts are transferred automatically. (see screenshots.)
 
 
 = Appending the legal texts to WooCommerce-Emails =
@@ -102,8 +102,15 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 
 == Changelog ==
-= Version 1.0 =
-Stable tag: 1.0
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
+= Version 1.0.2 =
+
+plugindirectory fixes
+
+= Version 1.0.1 =
+
+plugindirectory fixes
+
+= Version 1.0 =
+
+Init Release
