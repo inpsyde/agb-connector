@@ -2,7 +2,7 @@
 Contributors: inpsyde, danielhuesken
 Tags: Law, API, XML
 Requires at least: 4.0
-Tested up to: 4.7.2
+Tested up to: 4.8
 Stable tag: 1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -102,6 +102,10 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 
 == Changelog ==
+
+= Version 1.0.3 =
+
+hide DOC ID
 
 = Version 1.0.2 =
 
