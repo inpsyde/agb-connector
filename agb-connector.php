@@ -172,6 +172,8 @@ class AGB_Connector {
 		}
 
 		header( 'Content-type: application/xml; charset=utf-8', TRUE, 200 );
+
+		remove_filter( 'content_save_pre', 'wp_filter_post_kses' );
 		$api = $this->get_api();
 		echo $api->handle_request( $xml );
 		die();
