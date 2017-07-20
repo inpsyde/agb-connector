@@ -105,7 +105,8 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 = Version 1.0.3 =
 
-hide DOC ID
+Hide DOC ID
+Bugfix where you couldn't regenerate your API-Token
 
 = Version 1.0.2 =
 
