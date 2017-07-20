@@ -83,7 +83,7 @@ class AGB_Connector_Settings {
 		if ( isset( $_GET['regen'] ) ) { // Input var okay.
 			check_admin_referer( 'agb-connector-settings-page-regen' );
 			$user_auth_token = md5( wp_generate_password( 32, TRUE, TRUE ) );
-			update_option( 'agb_connector_auth_token', $user_auth_token );
+			update_option( 'agb_connector_user_auth_token', $user_auth_token );
 			$this->message .= '<p>' . __( 'New APT-Token generated.', 'agb-connector' ) . '</p>';
 
 			return;
