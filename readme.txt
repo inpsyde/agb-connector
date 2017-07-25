@@ -105,6 +105,7 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 = Version 1.0.3 =
 
+Use WordPress internal file get functions
 Hide DOC ID
 Bugfix where you couldn't regenerate your API-Token
 
