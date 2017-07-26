@@ -1,9 +1,9 @@
 === Terms & Conditions Connector of IT-Recht Kanzlei ===
 Contributors: inpsyde, danielhuesken
 Tags: Law, API, XML
-Requires at least: 4.0
+Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.0
+Stable tag: 1.0.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -78,8 +78,8 @@ No. The plugin does not require special demands for your WordPress shop. Merely,
 == Installation ==
 
 = Minimum requirements =
-* WordPress version >= 4.0
-* PHP Version >= 5.2.4
+* WordPress version >= 4.4
+* PHP Version >= 5.6
 * Access to a protection package of “IT-Recht Kanzlei München”
 
 = Installation via WordPress Backend = 
@@ -90,7 +90,7 @@ In the WordPress Backend, go to *Plugins => Add New*. Search for the **Terms & C
 = Setting the automatic transfer of legal texts =
 
 To set the transfer of the legal texts, go to *Settings => AGB Connector*. 
-1. Generate the API-Token by clicking “Regenerate”.
+1. Generate the API-Token by clicking *Regenerate*.
 2. Assign a page of your WordPress-installation to each legal text. Eventually, you need to create these pages first.
 3. Save your settings.
 4. First, the legal texts need to be configured in the clients’ portal of “IT-Recht Kanzlei München”. Then, you set up the data interface by indicating the Shop-URL and the API-Token. Once after the installation, you need to transfer the texts manually. After that, amendments of the legal texts are transferred automatically. (see screenshots.)
