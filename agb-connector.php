@@ -24,7 +24,7 @@ class AGB_Connector {
 	 *
 	 * @var string
 	 */
-	private $version = '1.0.0';
+	private $version = '1.0.3';
 
 	/**
 	 * The API object
