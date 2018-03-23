@@ -35,7 +35,7 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 = Support = 
 
-You can find technical support for this plugin in the wordpress.org forum: https://wordpress.org/support/plugin/agb-connector
+You can find technical support for this plugin in the [wordpress.org forum](https://wordpress.org/support/plugin/agb-connector).
 
 Please read the FAQ (frequently asked questions) first and make sure you have installed the newest version of the plugin before contacting us.
 
