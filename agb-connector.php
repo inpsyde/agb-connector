@@ -41,6 +41,13 @@ class AGB_Connector {
 	private $settings = NULL;
 
 	/**
+	 * The shortcodes object
+	 *
+	 * @var AGB_Connector_Shortcodes
+	 */
+	private $shortcodes = NULL;
+
+	/**
 	 * Instance holder
 	 *
 	 * @var null
@@ -83,6 +90,10 @@ class AGB_Connector {
 		add_action( 'wp_loaded', array( $this, 'api_request' ), PHP_INT_MAX );
 
 		add_filter( 'woocommerce_email_attachments', array( $this, 'attach_pdf_to_email' ), 99, 3 );
+
+		$shortcodes = $this->get_shortcodes();
+		add_action( 'init', array( $shortcodes, 'setup' ) );
+		add_action( 'vc_before_init', array( $shortcodes, 'vc_maps' ) );
 
 		if ( ! is_admin() ) {
 			return;
@@ -216,6 +227,19 @@ class AGB_Connector {
 		}
 
 		return $this->settings;
+	}
+
+	/**
+	 * @return AGB_Connector_Shortcodes
+	 */
+	public function get_shortcodes() {
+
+		if ( NULL === $this->shortcodes ) {
+			require dirname( __FILE__ ) . '/inc/AGB_Connector_Shortcodes.php';
+			$this->shortcodes = new AGB_Connector_Shortcodes( $this->get_plugin_version() );
+		}
+
+		return $this->shortcodes;
 	}
 
 }
