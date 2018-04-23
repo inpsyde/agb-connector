@@ -103,6 +103,10 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 == Changelog ==
 
+= Version 1.0.4 =
+
+ - Add shortcode for legal text
+
 = Version 1.0.3 =
 
 Use WordPress internal file get functions
