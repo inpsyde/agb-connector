@@ -32,6 +32,20 @@ class AGBConnectorAPI
     const PASSWORD = 'oIN9pBGPp98g';
 
     /**
+     * Supported actions
+     *
+     * @var array
+     */
+    private static $supportedActions = ['push'];
+
+    /**
+     * The text types
+     *
+     * @var array with txt types
+     */
+    private static $textTypes = ['agb', 'datenschutz', 'widerruf', 'impressum'];
+
+    /**
      * User auth token that must match
      *
      * @var string
@@ -39,27 +53,16 @@ class AGBConnectorAPI
     private $userAuthToken;
 
     /**
-     * Supported actions
-     *
-     * @var array
-     */
-    private $supportedActions = [
-        'push',
-    ];
-
-    /**
-     * The text types
-     *
-     * @var array with txt types
-     */
-    private $textTypes = ['agb', 'datenschutz', 'widerruf', 'impressum'];
-
-    /**
      * Txt types and post ids
      *
      * @var array
      */
-    private $textTypesAllocation;
+    private $textTypesAllocation = [
+        'agb' => 0,
+        'datenschutz' => 0,
+        'widerruf' => 0,
+        'impressum' => 0,
+    ];
 
     /**
      * Supported Language
@@ -85,17 +88,14 @@ class AGBConnectorAPI
     public function __construct(
         $pluginVersion,
         $userAuthToken,
-        array $textTypesAllocation = [
-            'agb' => 0,
-            'datenschutz' => 0,
-            'widerruf' => 0,
-            'impressum' => 0,
-        ]
+        array $textTypesAllocation = null
     ) {
 
         $this->pluginVersion = $pluginVersion;
         $this->userAuthToken = $userAuthToken;
-        $this->textTypesAllocation = $textTypesAllocation;
+        if ($textTypesAllocation) {
+            $this->textTypesAllocation = $textTypesAllocation;
+        }
     }
 
     /**
@@ -107,7 +107,7 @@ class AGBConnectorAPI
      */
     public function setSupportedLanguage($lang)
     {
-        if (! $lang || is_numeric($lang) || 2 !== strlen($lang)) {
+        if ( ! $lang || is_numeric($lang) || 2 !== strlen($lang)) {
             return false;
         }
 
@@ -125,6 +125,10 @@ class AGBConnectorAPI
      */
     public function handleRequest($xml)
     {
+        if ( ! $this->checkConfiguration()) {
+            return $this->returnXml(80);
+        }
+
         $xml = trim(stripslashes($xml));
         if ($xml) {
             $xml = @simplexml_load_string($xml);
@@ -140,21 +144,22 @@ class AGBConnectorAPI
         }
 
         if ('push' === (string)$xml->action) {
-            if (! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
+            if ( ! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
                 return $this->returnXml(0);
             }
 
             $post = get_post($this->textTypesAllocation[(string)$xml->rechtstext_type]);
-            if (! $post instanceof WP_Post) {
-                return $this->returnXml(99);
+            if ( ! $post instanceof WP_Post) {
+                return $this->returnXml(81);
+            }
+            if (null !== $xml->rechtstext_title) {
+                $post->post_title = (string)$xml->rechtstext_title;
             }
             $post->post_content = (string)$xml->rechtstext_html;
 
-            if ('impressum' !== (string)$xml->rechtstext_type) {
-                $error = $this->pushPdfFile($xml);
-                if ($error) {
-                    return $this->returnXml($error);
-                }
+            $error = $this->pushPdfFile($xml);
+            if ($error) {
+                return $this->returnXml($error);
             }
 
             $error = $this->savePost($post);
@@ -163,6 +168,28 @@ class AGBConnectorAPI
         }
 
         return $this->returnXml(99);
+    }
+
+    /**
+     * Check XML for errors.
+     *
+     * @since 1.1.0
+     *
+     * @return bool
+     */
+    public function checkConfiguration()
+    {
+        if ( ! $this->userAuthToken) {
+            return false;
+        }
+
+        foreach (self::$textTypes as $textType) {
+            if (empty($this->textTypesAllocation[$textType])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -177,7 +204,7 @@ class AGBConnectorAPI
      */
     public function checkXmlForError($xml, $checkPdf)
     {
-        if (! $xml || ! $xml instanceof SimpleXMLElement) {
+        if ( ! $xml || ! $xml instanceof SimpleXMLElement) {
             return 12;
         }
 
@@ -189,16 +216,20 @@ class AGBConnectorAPI
             return 2;
         }
 
-        if (empty($xml->user_auth_token) || (string)$xml->user_auth_token !== $this->userAuthToken) {
+        if (null === $xml->user_auth_token || (string)$xml->user_auth_token !== $this->userAuthToken) {
             return 3;
         }
 
-        if (empty($xml->rechtstext_type) || ! in_array((string)$xml->rechtstext_type, $this->textTypes, true)) {
+        if (null === $xml->rechtstext_type || ! in_array((string)$xml->rechtstext_type, self::$textTypes, true)) {
             return 4;
         }
 
-        if (empty($xml->rechtstext_country) || 'DE' !== strtoupper((string)$xml->rechtstext_country)) {
+        if (null === $xml->rechtstext_country || 'DE' !== strtoupper((string)$xml->rechtstext_country)) {
             return 17;
+        }
+
+        if (null === $xml->rechtstext_title || strlen((string)$xml->rechtstext_title) < 3) {
+            return 18;
         }
 
         if (strlen((string)$xml->rechtstext_text) < 50) {
@@ -210,7 +241,7 @@ class AGBConnectorAPI
         }
 
         if ($checkPdf) {
-            if (empty($xml->rechtstext_pdf_url)) {
+            if (null === $xml->rechtstext_pdf_url) {
                 return 7;
             }
 
@@ -219,16 +250,16 @@ class AGBConnectorAPI
                 return 7;
             }
 
-            if (empty($xml->rechtstext_pdf_md5hash) || strtolower((string)$xml->rechtstext_pdf_md5hash) !== md5($pdf)) {
+            if (null === $xml->rechtstext_pdf_md5hash || strtolower((string)$xml->rechtstext_pdf_md5hash) !== md5($pdf)) {
                 return 8;
             }
         }
 
-        if (empty($xml->rechtstext_language) || (string)$xml->rechtstext_language !== $this->supportedLanguage) {
+        if (null === $xml->rechtstext_language || (string)$xml->rechtstext_language !== $this->supportedLanguage) {
             return 9;
         }
 
-        if (empty($xml->action) || ! in_array((string)$xml->action, $this->supportedActions, true)) {
+        if (null === $xml->action || ! in_array((string)$xml->action, self::$supportedActions, true)) {
             return 10;
         }
 
@@ -242,22 +273,22 @@ class AGBConnectorAPI
      *
      * @return string with xml response
      */
-    private function returnXml($code = 0)
+    private function returnXml($code)
     {
         global $wp_version;
 
         $response = '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
         $response .= '<response>' . PHP_EOL;
-        if (!$code) {
+        if ( ! $code) {
             $response .= '	<status>success</status>' . PHP_EOL;
         } else {
             $response .= '	<status>error</status>' . PHP_EOL;
             $response .= '	<error>' . $code . '</error>' . PHP_EOL;
         }
-        if (! empty($wp_version)) {
+        if ( ! empty($wp_version)) {
             $response .= '	<meta_shopversion>' . $wp_version . '</meta_shopversion>' . PHP_EOL;
         }
-        if (! empty($this->pluginVersion)) {
+        if ( ! empty($this->pluginVersion)) {
             $response .= '	<meta_modulversion>' . $this->pluginVersion . '</meta_modulversion>' . PHP_EOL;
         }
         $response .= '</response>';
@@ -277,6 +308,10 @@ class AGBConnectorAPI
     {
         global $wpdb;
 
+        if ('impressum' !== (string)$xml->rechtstext_type) {
+            return 0;
+        }
+
         $uploads = wp_upload_dir();
         $file = trailingslashit($uploads['basedir']) . (string)$xml->rechtstext_type . '.pdf';
 
@@ -285,21 +320,21 @@ class AGBConnectorAPI
         }
 
         $pdf = $this->getFile((string)$xml->rechtstext_pdf_url);
-        if (! $pdf) {
+        if ( ! $pdf) {
             return 7;
         }
         $result = file_put_contents($file, $pdf);
         chmod($file, 0644);
-        if (! $result) {
+        if ( ! $result) {
             return 7;
         }
 
         require_once(ABSPATH . 'wp-admin/includes/image.php');
 
-        $guid = trailingslashit($uploads['baseurl']) . (string)$xml->rechtstext_type . '.pdf';
+        $guid = trailingslashit($uploads['baseurl']) . $xml->rechtstext_type . '.pdf';
         $attachmentId = $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE guid = %s LIMIT 1", $guid));
         $postParent = 0;
-        if (! empty($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
+        if ( ! empty($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
             $postParent = $this->textTypesAllocation[(string)$xml->rechtstext_type];
         }
         $attachment = [
