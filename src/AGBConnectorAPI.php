@@ -274,7 +274,7 @@ class AGBConnectorAPI
         }
 
         $uploads = wp_upload_dir();
-        $file = trailingslashit($uploads['basedir']) . (string)$xml->rechtstext_type . '.pdf';
+        $file = trailingslashit($uploads['basedir']) . $xml->rechtstext_type . '_' . $xml->rechtstext_language . '-' . $xml->rechtstext_country . '.pdf';
 
         if (file_exists($file)) {
             unlink($file);
@@ -292,7 +292,7 @@ class AGBConnectorAPI
 
         require_once(ABSPATH . 'wp-admin/includes/image.php');
 
-        $guid = trailingslashit($uploads['baseurl']) . $xml->rechtstext_type . '.pdf';
+        $guid = trailingslashit($uploads['baseurl']) . basename($file);
         $attachmentId = $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE guid = %s LIMIT 1", $guid));
         $postParent = 0;
         if (! empty($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
@@ -304,7 +304,7 @@ class AGBConnectorAPI
             'post_parent' => $postParent,
             'post_type' => 'attachment',
             'file' => $file,
-            'post_title' => (string)$xml->rechtstext_type,
+            'post_title' => basename($file),
         ];
         if ($attachmentId) {
             $attachment['ID'] = $attachmentId;
