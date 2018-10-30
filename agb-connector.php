@@ -15,8 +15,6 @@
 
 /**
  * Class AGBConnector
- *
- * @since 1.0.0
  */
 class AGBConnector
 {
@@ -51,8 +49,6 @@ class AGBConnector
 
     /**
      * Init all actions and filters
-     *
-     * @since 1.0.0
      */
     public function init()
     {
@@ -77,8 +73,6 @@ class AGBConnector
 
     /**
      * Append Attachments to WooCommerce processing order email
-     *
-     * @since 1.0.0
      *
      * @param array $attachments The attachments.
      * @param string $status The status.
@@ -127,8 +121,6 @@ class AGBConnector
 
     /**
      * Handle request from API
-     *
-     * @since 1.0.0
      */
     public function apiRequest()
     {
@@ -160,7 +152,6 @@ class AGBConnector
     /**
      * Get Api instance
      *
-     * @since 1.0.0
      * @return AGBConnectorAPI
      */
     public function getApi()
@@ -169,8 +160,6 @@ class AGBConnector
             $apiKey = get_option('agb_connector_user_auth_token', '');
             $textTypesAllocation = get_option('agb_connector_text_types_allocation', []);
             $this->api = new AGBConnectorAPI(self::VERSION, $apiKey, $textTypesAllocation);
-            $language = apply_filters('agb_connector_api_supported_language', substr(get_locale(), 0, 2));
-            $this->api->setSupportedLanguage($language);
         }
 
         return $this->api;
@@ -179,7 +168,6 @@ class AGBConnector
     /**
      * Get Plugin Settings page
      *
-     * @since 1.0.0
      * @return AGBConnectorSettings
      */
     public function getSettings()
@@ -207,7 +195,6 @@ class AGBConnector
 /**
  * Function for getting plugin class
  *
- * @since 1.0.0
  * @return AGBConnector
  */
 function agb_connector()

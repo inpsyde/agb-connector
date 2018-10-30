@@ -100,40 +100,36 @@ class AGBConnectorAPI
             $xml = @simplexml_load_string($xml);
         }
 
-        $checkPdf = true;
-        if (isset($xml->rechtstext_type) && 'impressum' === strtolower((string)$xml->rechtstext_type)) {
-            $checkPdf = false;
-        }
-        $error = $this->checkXmlForError($xml, $checkPdf);
+        $error = $this->checkXmlForError($xml);
         if ($error) {
             return $this->returnXml($error);
         }
 
-        if ('push' === (string)$xml->action) {
-            if (! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
-                return $this->returnXml(0);
-            }
+        if ('push' !== (string)$xml->action) {
+           return $this->returnXml(10);
+        }
 
-            $post = get_post($this->textTypesAllocation[(string)$xml->rechtstext_type]);
-            if (! $post instanceof WP_Post) {
-                return $this->returnXml(81);
-            }
-            if (null !== $xml->rechtstext_title) {
-                $post->post_title = (string)$xml->rechtstext_title;
-            }
-            $post->post_content = (string)$xml->rechtstext_html;
+        if (! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
+            return $this->returnXml(80);
+        }
 
-            $error = $this->pushPdfFile($xml);
-            if ($error) {
-                return $this->returnXml($error);
-            }
+        $post = get_post($this->textTypesAllocation[(string)$xml->rechtstext_type]);
+        if (! $post instanceof WP_Post) {
+            return $this->returnXml(81);
+        }
+        if (null !== $xml->rechtstext_title) {
+            $post->post_title = (string)$xml->rechtstext_title;
+        }
+        $post->post_content = (string)$xml->rechtstext_html;
 
-            $error = $this->savePost($post);
-
+        $error = $this->pushPdfFile($xml);
+        if ($error) {
             return $this->returnXml($error);
         }
 
-        return $this->returnXml(99);
+        $error = $this->savePost($post);
+
+        return $this->returnXml($error);
     }
 
     /**
@@ -164,11 +160,10 @@ class AGBConnectorAPI
      * @since 1.0.0
      *
      * @param SimpleXMLElement $xml The XML object.
-     * @param boolean $checkPdf Whether to check the PDF or not..
      *
      * @return int Error code
      */
-    public function checkXmlForError($xml, $checkPdf)
+    public function checkXmlForError($xml)
     {
         if (! $xml || ! $xml instanceof SimpleXMLElement) {
             return 12;
@@ -206,7 +201,7 @@ class AGBConnectorAPI
             return 6;
         }
 
-        if ($checkPdf) {
+        if ('impressum' !== strtolower((string)$xml->rechtstext_type)) {
             if (null === $xml->rechtstext_pdf_url) {
                 return 7;
             }
