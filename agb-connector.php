@@ -1,278 +1,244 @@
-<?php # -*- coding: utf-8 -*-
+<?php // phpcs:ignore
 /**
  * Plugin Name: Terms & Conditions Connector of IT-Recht Kanzlei
  * Plugin URI: https://github.com/inpsyde/agb-connector
  * Description: Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation.
  * Author: Inpsyde GmbH
  * Author URI: http://inpsyde.com
- * Version: 1.0.4
+ * Version: 1.1.0
  * Text Domain: agb-connector
  * Domain Path: /languages/
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl-3.0
+ * Requires PHP: 5.4
  */
 
 /**
- * Class AGB_Connector
+ * Class AGBConnector
  *
  * @since 1.0.0
  */
-class AGB_Connector {
+class AGBConnector
+{
 
-	/**
-	 * Plugin Version
-	 *
-	 * @var string
-	 */
-	private $version = '1.0.3';
+    /**
+     * Plugin Version
+     *
+     * @var string
+     */
+    const VERSION = '1.1.0';
 
-	/**
-	 * The API object
-	 *
-	 * @var AGB_Connector_API
-	 */
-	private $api = NULL;
+    /**
+     * The API object
+     *
+     * @var AGBConnectorAPI
+     */
+    private $api;
 
-	/**
-	 * The settings object
-	 *
-	 * @var AGB_Connector_Settings
-	 */
-	private $settings = NULL;
+    /**
+     * The settings object
+     *
+     * @var AGBConnectorSettings
+     */
+    private $settings;
 
-	/**
-	 * The shortcodes object
-	 *
-	 * @var AGB_Connector_Shortcodes
-	 */
-	private $shortcodes = NULL;
+    /**
+     * The shortcodes object
+     *
+     * @var AGBConnectorShortCodes
+     */
+    private $shortCodes;
 
-	/**
-	 * Instance holder
-	 *
-	 * @var null
-	 */
-	private static $instance = NULL;
+    /**
+     * Init all actions and filters
+     *
+     * @since 1.0.0
+     */
+    public function init()
+    {
+        add_action('wp_loaded', [$this, 'apiRequest'], PHP_INT_MAX);
 
-	/**
-	 * Get main Plugin class instance
-	 *
-	 * @since 1.0.0
-	 * @return AGB_Connector
-	 */
-	public static function get_instance() {
+        add_filter('woocommerce_email_attachments', [$this, 'attachPdfToEmail'], 99, 3);
 
-		if ( self::$instance === NULL ) {
-			self::$instance = new self;
-		}
+        $shortCodes = $this->getShortCodes();
+        add_action('init', [$shortCodes, 'setup']);
+        add_action('vc_before_init', [$shortCodes, 'vc_maps']);
 
-		return self::$instance;
-	}
+        if (! is_admin()) {
+            return;
+        }
 
-	/**
-	 * Get plugin version
-	 *
-	 * @since 1.0.0
-	 * @return string
-	 */
-	public function get_plugin_version() {
+        load_plugin_textdomain('agb-connector', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
-		return $this->version;
-	}
+        $settings = $this->getSettings();
+        add_action('admin_menu', [$settings, 'add_menu']);
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$settings, 'add_action_links']);
+    }
 
-	/**
-	 * Init all actions and filters
-	 *
-	 * @since 1.0.0
-	 */
-	public function init() {
+    /**
+     * Append Attachments to WooCommerce processing order email
+     *
+     * @since 1.0.0
+     *
+     * @param array $attachments The attachments.
+     * @param string $status The status.
+     * @param mixed $order The order. We only process in case its an WC_Order object.
+     *
+     * @return array
+     */
+    public function attachPdfToEmail(array $attachments, $status, $order)
+    {
+        $validStatuse = [
+            'customer_completed_order',
+            'customer_processing_order',
+            'customer_invoice',
+        ];
+        if (! in_array($status, $validStatuse, true)) {
+            return $attachments;
+        }
+        if (! $order instanceof \WC_Order) {
+            return $attachments;
+        }
 
-		add_action( 'wp_loaded', array( $this, 'api_request' ), PHP_INT_MAX );
+        $append_email = get_option('agb_connector_wc_append_email', []);
+        $uploads = wp_upload_dir();
 
-		add_filter( 'woocommerce_email_attachments', array( $this, 'attach_pdf_to_email' ), 99, 3 );
+        if (! empty($append_email['agb'])) {
+            $file = trailingslashit($uploads['basedir']) . 'agb.pdf';
+            if (file_exists($file)) {
+                $attachments[] = $file;
+            }
+        }
+        if (! empty($append_email['widerruf'])) {
+            $file = trailingslashit($uploads['basedir']) . 'widerruf.pdf';
+            if (file_exists($file)) {
+                $attachments[] = $file;
+            }
+        }
+        if (! empty($append_email['datenschutz'])) {
+            $file = trailingslashit($uploads['basedir']) . 'datenschutz.pdf';
+            if (file_exists($file)) {
+                $attachments[] = $file;
+            }
+        }
 
-		$shortcodes = $this->get_shortcodes();
-		add_action( 'init', array( $shortcodes, 'setup' ) );
-		add_action( 'vc_before_init', array( $shortcodes, 'vc_maps' ) );
+        return $attachments;
+    }
 
-		if ( ! is_admin() ) {
-			return;
-		}
+    /**
+     * Handle request from API
+     *
+     * @since 1.0.0
+     */
+    public function apiRequest()
+    {
+        if (is_admin()) {
+            return;
+        }
 
-		load_plugin_textdomain( 'agb-connector', FALSE, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+        if ((defined('DOING_AJAX') && DOING_AJAX) || (defined('DOING_CRON') && DOING_CRON)) {
+            return;
+        }
 
-		$settings = $this->get_settings();
-		add_action( 'admin_menu', array( $settings, 'add_menu' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $settings, 'add_action_links' ) );
-	}
+        if (false === strstr($_SERVER['REQUEST_URI'], '/it-recht-kanzlei')) {
+            return;
+        }
 
+        $xml = '';
+        if (! empty($_POST['xml'])) {
+            $xml = wp_unslash($_POST['xml']);
+        }
 
-	/**
-	 * Append Attachments to WooCommerce processing order email
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array    $attachments The attachments.
-	 * @param string   $status The status.
-	 * @param mixed    $order The order. We only process in case its an WC_Order object.
-	 *
-	 * @return array
-	 */
-	public function attach_pdf_to_email( array $attachments, $status, $order ) {
+        header('Content-type: application/xml; charset=utf-8', true, 200);
 
-		$valid_statuse = array(
-			'customer_completed_order',
-			'customer_processing_order',
-			'customer_invoice',
-		);
-		if ( ! in_array( $status, $valid_statuse, TRUE ) ) {
-			return $attachments;
-		}
-		if ( ! $order instanceof \WC_Order ) {
-			return $attachments;
-		}
+        remove_filter('content_save_pre', 'wp_filter_post_kses');
+        $api = $this->getApi();
+        echo $api->handleRequest($xml);
+        die();
+    }
 
-		$append_email = get_option( 'agb_connector_wc_append_email', array() );
-		$uploads      = wp_upload_dir();
+    /**
+     * Get Api instance
+     *
+     * @since 1.0.0
+     * @return AGBConnectorAPI
+     */
+    public function getApi()
+    {
+        if (null === $this->api) {
+            $apiKey = get_option('agb_connector_user_auth_token', '');
+            $textTypesAllocation = get_option('agb_connector_text_types_allocation', []);
+            $this->api = new AGBConnectorAPI(self::VERSION, $apiKey, $textTypesAllocation);
+            $language = apply_filters('agb_connector_api_supported_language', substr(get_locale(), 0, 2));
+            $this->api->setSupportedLanguage($language);
+        }
 
-		if ( ! empty( $append_email['agb'] ) ) {
-			$file = trailingslashit( $uploads['basedir'] ) . 'agb.pdf';
-			if ( file_exists( $file ) ) {
-				$attachments[] = $file;
-			}
-		}
-		if ( ! empty( $append_email['widerruf'] ) ) {
-			$file = trailingslashit( $uploads['basedir'] ) . 'widerruf.pdf';
-			if ( file_exists( $file ) ) {
-				$attachments[] = $file;
-			}
-		}
-		if ( ! empty( $append_email['datenschutz'] ) ) {
-			$file = trailingslashit( $uploads['basedir'] ) . 'datenschutz.pdf';
-			if ( file_exists( $file ) ) {
-				$attachments[] = $file;
-			}
-		}
+        return $this->api;
+    }
 
-		return $attachments;
-	}
+    /**
+     * Get Plugin Settings page
+     *
+     * @since 1.0.0
+     * @return AGBConnectorSettings
+     */
+    public function getSettings()
+    {
+        if (null === $this->settings) {
+            $this->settings = new AGBConnectorSettings(self::VERSION);
+        }
 
+        return $this->settings;
+    }
 
-	/**
-	 * Handle request from API
-	 *
-	 * @since 1.0.0
-	 */
-	public function api_request() {
+    /**
+     * @return AGBConnectorShortCodes
+     */
+    public function getShortCodes()
+    {
+        if (null === $this->shortCodes) {
+            $this->shortCodes = new AGBConnectorShortCodes();
+        }
 
-		if ( is_admin() ) {
-			return;
-		}
-
-		if ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
-			return;
-		}
-
-		if ( false === strstr( $_SERVER['REQUEST_URI'], '/it-recht-kanzlei' ) ) {
-			return;
-		}
-
-		$xml = '';
-		if ( ! empty( $_POST['xml'] ) ) {
-			$xml = wp_unslash( $_POST['xml'] );
-		}
-
-		header( 'Content-type: application/xml; charset=utf-8', TRUE, 200 );
-
-		remove_filter( 'content_save_pre', 'wp_filter_post_kses' );
-		$api = $this->get_api();
-		echo $api->handle_request( $xml );
-		die();
-	}
-
-	/**
-	 * Get Api instance
-	 *
-	 * @since 1.0.0
-	 * @return AGB_Connector_API
-	 */
-	public function get_api() {
-
-		if ( NULL === $this->api ) {
-			require dirname( __FILE__ ) . '/inc/AGB_Connector_API.php';
-			$api_key               = get_option( 'agb_connector_user_auth_token', '' );
-			$text_types_allocation = get_option( 'agb_connector_text_types_allocation', array() );
-			$this->api             = new AGB_Connector_API( $this->get_plugin_version(), $api_key, $text_types_allocation );
-			$language              = apply_filters( 'agb_connector_api_supported_language', substr( get_locale(), 0, 2 ) );
-			$this->api->set_supported_language( $language );
-		}
-
-		return $this->api;
-	}
-
-
-	/**
-	 * Get Plugin Settings page
-	 *
-	 * @since 1.0.0
-	 * @return AGB_Connector_Settings
-	 */
-	public function get_settings() {
-
-		if ( NULL === $this->settings ) {
-			require dirname( __FILE__ ) . '/inc/AGB_Connector_Settings.php';
-			$user_auth_token       = get_option( 'agb_connector_user_auth_token', '' );
-			$text_types_allocation = get_option( 'agb_connector_text_types_allocation', array() );
-			$this->settings        = new AGB_Connector_Settings( $this->get_plugin_version(), $user_auth_token, $text_types_allocation );
-		}
-
-		return $this->settings;
-	}
-
-	/**
-	 * @return AGB_Connector_Shortcodes
-	 */
-	public function get_shortcodes() {
-
-		if ( NULL === $this->shortcodes ) {
-			require dirname( __FILE__ ) . '/inc/AGB_Connector_Shortcodes.php';
-			$this->shortcodes = new AGB_Connector_Shortcodes( $this->get_plugin_version() );
-		}
-
-		return $this->shortcodes;
-	}
-
+        return $this->shortCodes;
+    }
 }
 
 /**
  * Function for getting plugin class
  *
  * @since 1.0.0
- * @return AGB_Connector
+ * @return AGBConnector
  */
-function agb_connector() {
+function agb_connector()
+{
+    static $plugin;
 
-	$plugin = AGB_Connector::get_instance();
+    if (! class_exists('AGBConnectorAPI', false) && file_exists(__DIR__ . '/vendor/autoload.php')) {
+        require __DIR__ . '/vendor/autoload.php';
+    }
 
-	if ( current_action() === 'plugins_loaded' ) {
-		$plugin->init();
-	}
+    if (null === $plugin) {
+        $plugin = new AGBConnector();
+    }
 
-	return $plugin;
+    if ('plugins_loaded' === current_action()) {
+        $plugin->init();
+    }
+
+    return $plugin;
 }
 
 /**
  * Run
  */
-if ( function_exists( 'add_action' ) ) {
-	add_action( 'plugins_loaded', 'agb_connector' );
+if (function_exists('add_action')) {
+    add_action('plugins_loaded', 'agb_connector');
 }
 
 /**
  * Activation
  */
-if ( function_exists( 'register_activation_hook' ) ) {
-	require dirname( __FILE__ ) . '/inc/AGB_Connector_Install.php';
-	register_activation_hook( __FILE__, array( 'AGB_Connector_Install', 'activate' ) );
+if (function_exists('register_activation_hook')) {
+    register_activation_hook(__FILE__, ['AGBConnectorInstall', 'activate']);
 }
-

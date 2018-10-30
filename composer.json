@@ -2,7 +2,7 @@
   "name": "inpsyde/agb-connector",
   "description": "Terms & Conditions Connector of IT-Recht Kanzlei",
   "type": "wordpress-plugin",
-  "license": "GPL-3.0+",
+  "license": "GPL-3.0-or-later",
   "authors": [
     {
       "name": "Inpsyde GmbH",
@@ -18,11 +18,18 @@
     "source": "https://github.com/inpsyde/agb-connector"
   },
   "require": {
-    "php": ">=5.2.4"
+    "php": ">=5.4",
+    "ext-simplexml": "*"
   },
   "require-dev": {
-    "php": ">=5.6",
-    "brain/monkey":    "~1.4",
-    "phpunit/phpunit": "~5.5"
+    "phpunit/phpunit": "~5.7",
+    "inpsyde/php-coding-standards": "^0.13",
+    "consolidation/robo": "^1"
+  },
+  "autoload": {
+    "classmap": [
+      "src/",
+      "agb-connector.php"
+    ]
   }
 }
