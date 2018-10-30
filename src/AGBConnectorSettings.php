@@ -187,30 +187,30 @@ class AGBConnectorSettings
                             <th scope="row"><label for="regen"><?php esc_html_e(
                                 'Your shop URL',
                                 'agb-connector'
-                            ); ?></label></th>
+                                                               ); ?></label></th>
                             <td><p><code><?php echo esc_attr(home_url()); ?></code></p></td>
                         </tr>
                         <tr valign="top">
                             <th scope="row"><label for="regen"><?php esc_html_e(
                                 'API-Token',
                                 'agb-connector'
-                            ); ?></label></th>
+                                                               ); ?></label></th>
                             <td><p><code><?php echo esc_attr(get_option('agb_connector_user_auth_token')); ?></code>
                                     <a class="button" href="<?php echo esc_url(wp_nonce_url(
                                         add_query_arg([
                                         'regen' => '',
                                         'page' => 'agb_connector_settings',
                                         ], admin_url('options-general.php')),
-                                                               'agb-connector-settings-page-regen'
+                                        'agb-connector-settings-page-regen'
                                     )); ?>"><?php esc_html_e(
                                         'Regenerate',
                                         'agb-connector'
-                                            ); ?></a>
+                                    ); ?></a>
                                 </p>
                                 <p class="description"><?php esc_html_e(
                                     'If you change the token, this must also be adjusted in the client portal.',
                                     'agb-connector'
-                                                       ); ?></p>
+                                ); ?></p>
                             </td>
                         </tr>
 
@@ -218,7 +218,7 @@ class AGBConnectorSettings
                             <th scope="row"><label for="page_agb"><?php esc_html_e(
                                 'Terms and Conditions',
                                 'agb-connector'
-                                                                  ); ?>
+                            ); ?>
                             </th>
                             <td>
                                 <p>
@@ -246,7 +246,7 @@ class AGBConnectorSettings
                                                    name="pdf_append_email_agb" <?php checked(
                                                        ! empty($appendEmail['agb']),
                                                        true
-                                                                               ) ?> >
+                                                   ) ?> >
                                             <?php esc_html_e(
                                                 'Send PDF with WooCommerce order on hold email.',
                                                 'agb-connector'
@@ -261,7 +261,7 @@ class AGBConnectorSettings
                             <th scope="row"><label for="page_datenschutz"><?php esc_html_e(
                                 'Privacy',
                                 'agb-connector'
-                                                                          ); ?></th>
+                            ); ?></th>
                             <td>
                                 <p>
                                     <label for="page_datenschutz"><?php esc_html_e('Page:', 'agb-connector'); ?></label>
@@ -288,7 +288,7 @@ class AGBConnectorSettings
                                                    name="pdf_append_email_datenschutz" <?php checked(
                                                        ! empty($appendEmail['datenschutz']),
                                                        true
-                                                                                       ); ?> >
+                                                   ); ?> >
                                             <?php esc_html_e(
                                                 'Send PDF with WooCommerce order on hold email.',
                                                 'agb-connector'
@@ -303,7 +303,7 @@ class AGBConnectorSettings
                             <th scope="row"><label for="page_widerruf"><?php esc_html_e(
                                 'Revocation',
                                 'agb-connector'
-                                                                       ); ?></th>
+                            ); ?></th>
                             <td>
                                 <p>
                                     <label for="page_datenschutz"><?php esc_html_e('Page:', 'agb-connector'); ?></label>
@@ -330,7 +330,7 @@ class AGBConnectorSettings
                                                    name="pdf_append_email_widerruf" <?php checked(
                                                        ! empty($appendEmail['widerruf']),
                                                        true
-                                                                                    ); ?> >
+                                                   ); ?> >
                                             <?php esc_html_e(
                                                 'Send PDF with WooCommerce order on hold email.',
                                                 'agb-connector'
@@ -383,7 +383,7 @@ class AGBConnectorSettings
                         <a href="<?php esc_html_e(
                             'https://inpsyde.com/en/?utm_source=AGBConnector&utm_medium=Banner&utm_campaign=Inpsyde',
                             'agb-connector'
-                                 ); ?>" class="inpsyde-logo"
+                        ); ?>" class="inpsyde-logo"
                            title="<?php esc_html_e('An Inpsyde GmbH Product', 'agb-connector'); ?>">Inpsyde GmbH</a><br>
                     </div>
                 </div>
@@ -393,7 +393,7 @@ class AGBConnectorSettings
                         <p> <?php esc_html_e(
                             'If you have questions please contact “IT-Recht Kanzlei München” directly',
                             'agb-connector'
-                            ); ?><br/>
+                        ); ?><br/>
                             <?php esc_html_e('via +49 89 13014330 or ', 'agb-connector'); ?><a
                                     href="mailto:info@it-recht-kanzlei.de">info@it-recht-kanzlei.de</a></p>
                     </div>

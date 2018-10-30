@@ -1,7 +1,5 @@
 <?php # -*- coding: utf-8 -*-
 
-// phpcs:disable NeutronStandard.StrictTypes.RequireStrictTypes
-
 /**
  * Class AGBConnectorAPI
  *
@@ -32,13 +30,6 @@ class AGBConnectorAPI
     const PASSWORD = 'oIN9pBGPp98g';
 
     /**
-     * Supported actions
-     *
-     * @var array
-     */
-    private static $supportedActions = ['push'];
-
-    /**
      * The text types
      *
      * @var array with txt types
@@ -63,13 +54,6 @@ class AGBConnectorAPI
         'widerruf' => 0,
         'impressum' => 0,
     ];
-
-    /**
-     * Supported Language
-     *
-     * @var string
-     */
-    private $supportedLanguage = 'de';
 
     /**
      * Plugin Version
@@ -99,24 +83,6 @@ class AGBConnectorAPI
     }
 
     /**
-     * Language in with the Text will be stored ISO 639-1.
-     *
-     * @param string $lang The language code.
-     *
-     * @return bool
-     */
-    public function setSupportedLanguage($lang)
-    {
-        if ( ! $lang || is_numeric($lang) || 2 !== strlen($lang)) {
-            return false;
-        }
-
-        $this->supportedLanguage = $lang;
-
-        return true;
-    }
-
-    /**
      * Get the request and answers it.
      *
      * @param string $xml XML from push.
@@ -125,7 +91,7 @@ class AGBConnectorAPI
      */
     public function handleRequest($xml)
     {
-        if ( ! $this->checkConfiguration()) {
+        if (! $this->checkConfiguration()) {
             return $this->returnXml(80);
         }
 
@@ -144,12 +110,12 @@ class AGBConnectorAPI
         }
 
         if ('push' === (string)$xml->action) {
-            if ( ! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
+            if (! isset($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
                 return $this->returnXml(0);
             }
 
             $post = get_post($this->textTypesAllocation[(string)$xml->rechtstext_type]);
-            if ( ! $post instanceof WP_Post) {
+            if (! $post instanceof WP_Post) {
                 return $this->returnXml(81);
             }
             if (null !== $xml->rechtstext_title) {
@@ -179,7 +145,7 @@ class AGBConnectorAPI
      */
     public function checkConfiguration()
     {
-        if ( ! $this->userAuthToken) {
+        if (! $this->userAuthToken) {
             return false;
         }
 
@@ -204,7 +170,7 @@ class AGBConnectorAPI
      */
     public function checkXmlForError($xml, $checkPdf)
     {
-        if ( ! $xml || ! $xml instanceof SimpleXMLElement) {
+        if (! $xml || ! $xml instanceof SimpleXMLElement) {
             return 12;
         }
 
@@ -224,7 +190,7 @@ class AGBConnectorAPI
             return 4;
         }
 
-        if (null === $xml->rechtstext_country || 'DE' !== strtoupper((string)$xml->rechtstext_country)) {
+        if (null === $xml->rechtstext_country || ! array_key_exists((string)$xml->rechtstext_country, self::getSupportedCountries())) {
             return 17;
         }
 
@@ -255,11 +221,11 @@ class AGBConnectorAPI
             }
         }
 
-        if (null === $xml->rechtstext_language || (string)$xml->rechtstext_language !== $this->supportedLanguage) {
+        if (null === $xml->rechtstext_language || ! array_key_exists((string)$xml->rechtstext_language, self::getSupportedLanguages())) {
             return 9;
         }
 
-        if (null === $xml->action || ! in_array((string)$xml->action, self::$supportedActions, true)) {
+        if (null === $xml->action || 'push' !== (string)$xml->action) {
             return 10;
         }
 
@@ -279,16 +245,16 @@ class AGBConnectorAPI
 
         $response = '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
         $response .= '<response>' . PHP_EOL;
-        if ( ! $code) {
+        if (! $code) {
             $response .= '	<status>success</status>' . PHP_EOL;
         } else {
             $response .= '	<status>error</status>' . PHP_EOL;
             $response .= '	<error>' . $code . '</error>' . PHP_EOL;
         }
-        if ( ! empty($wp_version)) {
+        if (! empty($wp_version)) {
             $response .= '	<meta_shopversion>' . $wp_version . '</meta_shopversion>' . PHP_EOL;
         }
-        if ( ! empty($this->pluginVersion)) {
+        if (! empty($this->pluginVersion)) {
             $response .= '	<meta_modulversion>' . $this->pluginVersion . '</meta_modulversion>' . PHP_EOL;
         }
         $response .= '</response>';
@@ -320,12 +286,12 @@ class AGBConnectorAPI
         }
 
         $pdf = $this->getFile((string)$xml->rechtstext_pdf_url);
-        if ( ! $pdf) {
+        if (! $pdf) {
             return 7;
         }
         $result = file_put_contents($file, $pdf);
         chmod($file, 0644);
-        if ( ! $result) {
+        if (! $result) {
             return 7;
         }
 
@@ -334,7 +300,7 @@ class AGBConnectorAPI
         $guid = trailingslashit($uploads['baseurl']) . $xml->rechtstext_type . '.pdf';
         $attachmentId = $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE guid = %s LIMIT 1", $guid));
         $postParent = 0;
-        if ( ! empty($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
+        if (! empty($this->textTypesAllocation[(string)$xml->rechtstext_type])) {
             $postParent = $this->textTypesAllocation[(string)$xml->rechtstext_type];
         }
         $attachment = [
@@ -401,5 +367,57 @@ class AGBConnectorAPI
         }
 
         return $content;
+    }
+
+    /**
+     * Get Supported languages
+     *
+     * @return array
+     */
+    public static function getSupportedLanguages()
+    {
+        return [
+            'de' => __('German', 'agb-connector'),
+            'fr' => __('French', 'agb-connector'),
+            'en' => __('English', 'agb-connector'),
+            'es' => __('Spanish', 'agb-connector'),
+            'it' => __('Italian', 'agb-connector'),
+            'nl' => __('Dutch', 'agb-connector'),
+            'pl' => __('Polish', 'agb-connector'),
+            'sv' => __('Swedish', 'agb-connector'),
+            'da' => __('Danish', 'agb-connector'),
+            'cs' => __('Czech', 'agb-connector'),
+            'sl' => __('Slovenian', 'agb-connector'),
+        ];
+    }
+
+    /**
+     * Get Supported countries
+     *
+     * @return array
+     */
+    public static function getSupportedCountries()
+    {
+        return [
+            'DE' => __('Germany', 'agb-connector'),
+            'AT' => __('Austria', 'agb-connector'),
+            'CH' => __('Switzerland', 'agb-connector'),
+            'SE' => __('Sweden', 'agb-connector'),
+            'ES' => __('Spain', 'agb-connector'),
+            'IT' => __('Italy', 'agb-connector'),
+            'PL' => __('Poland', 'agb-connector'),
+            'UK' => __('England', 'agb-connector'),
+            'FR' => __('France', 'agb-connector'),
+            'BE' => __('Belgium', 'agb-connector'),
+            'NL' => __('Netherlands', 'agb-connector'),
+            'US' => __('USA', 'agb-connector'),
+            'CA' => __('Canada', 'agb-connector'),
+            'IE' => __('Ireland', 'agb-connector'),
+            'CZ' => __('Czech Republic', 'agb-connector'),
+            'DK' => __('Denmark', 'agb-connector'),
+            'LU' => __('Luxembourg', 'agb-connector'),
+            'SI' => __('Slovenia', 'agb-connector'),
+            'AU' => __('Australia', 'agb-connector'),
+        ];
     }
 }

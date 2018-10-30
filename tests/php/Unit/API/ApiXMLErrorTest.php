@@ -286,7 +286,6 @@ class ApiXMLErrorTest extends TestCase
     {
 
         $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
-        $api->setSupportedLanguage('en');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
@@ -300,7 +299,7 @@ class ApiXMLErrorTest extends TestCase
 			<rechtstext_html>123456789012345678901234567890123456789012345678901</rechtstext_html>
 			<rechtstext_pdf_url>' . $this->pdf_file . '</rechtstext_pdf_url>
 			<rechtstext_pdf_md5hash>' . $this->pdf_file_md5 . '</rechtstext_pdf_md5hash>
-			<rechtstext_language>de</rechtstext_language>
+			<rechtstext_language>zz</rechtstext_language>
 			<rechtstext_country>DE</rechtstext_country>
 			<rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
 			<action>push</action>
@@ -410,7 +409,7 @@ class ApiXMLErrorTest extends TestCase
 			<rechtstext_text>1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv</rechtstext_text>
 			<rechtstext_html>1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrstuv</rechtstext_html>
 			<rechtstext_language>de</rechtstext_language>
-			<rechtstext_country>FR</rechtstext_country>
+			<rechtstext_country>ZZ</rechtstext_country>
 			<rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
 			<action>push</action>
 		</api>';
