@@ -9,7 +9,7 @@
 if (! defined('WP_UNINSTALL_PLUGIN')) {
     die();
 }
+require_once __DIR__ . '/src/AGBConnectorKeysInterface.php';
 
-delete_option('agb_connector_user_auth_token');
-delete_option('agb_connector_text_types_allocation');
-delete_option('agb_connector_wc_append_email');
+delete_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN);
+delete_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS);

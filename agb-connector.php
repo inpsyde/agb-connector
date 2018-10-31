@@ -52,6 +52,8 @@ class AGBConnector
      */
     public function init()
     {
+        AGBConnectorInstall::install();
+
         add_action('wp_loaded', [$this, 'apiRequest'], PHP_INT_MAX);
 
         add_filter('woocommerce_email_attachments', [$this, 'attachPdfToEmail'], 99, 3);
@@ -94,25 +96,17 @@ class AGBConnector
             return $attachments;
         }
 
-        $append_email = get_option('agb_connector_wc_append_email', []);
-        $uploads = wp_upload_dir();
-
-        if (! empty($append_email['agb'])) {
-            $file = trailingslashit($uploads['basedir']) . 'agb.pdf';
-            if (file_exists($file)) {
-                $attachments[] = $file;
-            }
-        }
-        if (! empty($append_email['widerruf'])) {
-            $file = trailingslashit($uploads['basedir']) . 'widerruf.pdf';
-            if (file_exists($file)) {
-                $attachments[] = $file;
-            }
-        }
-        if (! empty($append_email['datenschutz'])) {
-            $file = trailingslashit($uploads['basedir']) . 'datenschutz.pdf';
-            if (file_exists($file)) {
-                $attachments[] = $file;
+        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        foreach ($textAllocations as $type => $allocations) {
+            foreach ($allocations as $allocation) {
+                if (empty($allocation['wcOrderConfirmationEmailAttachment'])) {
+                    continue;
+                }
+                $attachmentId = AGBConnectorAPI::getAttachmentIdByPostParent($allocation['pageId']);
+                $pdfAttachment = get_attached_file($attachmentId);
+                if ($pdfAttachment) {
+                    $attachments[] = $pdfAttachment;
+                }
             }
         }
 
@@ -124,15 +118,11 @@ class AGBConnector
      */
     public function apiRequest()
     {
-        if (is_admin()) {
+        if ((defined('DOING_AJAX') && DOING_AJAX) || (defined('DOING_CRON') && DOING_CRON) || is_admin()) {
             return;
         }
 
-        if ((defined('DOING_AJAX') && DOING_AJAX) || (defined('DOING_CRON') && DOING_CRON)) {
-            return;
-        }
-
-        if (false === strstr($_SERVER['REQUEST_URI'], '/it-recht-kanzlei')) {
+        if (false === strpos($_SERVER['REQUEST_URI'], '/it-recht-kanzlei')) {
             return;
         }
 
@@ -157,9 +147,9 @@ class AGBConnector
     public function getApi()
     {
         if (null === $this->api) {
-            $apiKey = get_option('agb_connector_user_auth_token', '');
-            $textTypesAllocation = get_option('agb_connector_text_types_allocation', []);
-            $this->api = new AGBConnectorAPI(self::VERSION, $apiKey, $textTypesAllocation);
+            $apiKey = get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, '');
+            $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+            $this->api = new AGBConnectorAPI(self::VERSION, $apiKey, $textAllocations);
         }
 
         return $this->api;
@@ -201,8 +191,12 @@ function agb_connector()
 {
     static $plugin;
 
-    if (! class_exists('AGBConnectorAPI', false) && file_exists(__DIR__ . '/vendor/autoload.php')) {
-        require __DIR__ . '/vendor/autoload.php';
+    if (! class_exists('AGBConnectorKeysInterface', false)) {
+        require_once __DIR__ . '/src/AGBConnectorKeysInterface.php';
+        require_once __DIR__ . '/src/AGBConnectorInstall.php';
+        require_once __DIR__ . '/src/AGBConnectorSettings.php';
+        require_once __DIR__ . '/src/AGBConnectorAPI.php';
+        require_once __DIR__ . '/src/AGBConnectorShortCodes.php';
     }
 
     if (null === $plugin) {
@@ -221,11 +215,4 @@ function agb_connector()
  */
 if (function_exists('add_action')) {
     add_action('plugins_loaded', 'agb_connector');
-}
-
-/**
- * Activation
- */
-if (function_exists('register_activation_hook')) {
-    register_activation_hook(__FILE__, ['AGBConnectorInstall', 'activate']);
 }

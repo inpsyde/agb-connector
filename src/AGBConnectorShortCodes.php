@@ -43,13 +43,13 @@ class AGBConnectorShortCodes
      *
      * @param $shortcode
      *
-     * @return bool|array
+     * @return array
      */
     public function get_setting($shortcode)
     {
         $settings = $this->settings();
 
-        return isset($settings[$shortcode]) ? $settings[$shortcode] : false;
+        return isset($settings[$shortcode]) ? $settings[$shortcode] : [];
     }
 
     /**
@@ -81,15 +81,15 @@ class AGBConnectorShortCodes
      */
     public function setup()
     {
-        foreach ($this->settings() as $shortcode => $setting) {
+        foreach ($this->settings() as $shortCode => $setting) {
             if (! $setting) {
                 return;
             }
 
-            $this->registeredShortCodes[$shortcode] = $shortcode;
+            $this->registeredShortCodes[$shortCode] = $shortCode;
 
-            remove_shortcode($shortcode);
-            add_shortcode($shortcode, [$this, 'do_shortcode_callback']);
+            remove_shortcode($shortCode);
+            add_shortcode($shortCode, [$this, 'doShortCodeCallback']);
         }
     }
 
@@ -100,21 +100,24 @@ class AGBConnectorShortCodes
      */
     public function vc_maps()
     {
-        foreach ($this->settings() as $shortcode => $setting) {
+        $locale = get_bloginfo('language');
+        list($language, $country) = explode('-', $locale, 2);
+
+        foreach ($this->settings() as $shortCode => $setting) {
             if (! $setting) {
                 return;
             }
 
             vc_map([
                     'name' => $setting['name'],
-                    'base' => $shortcode,
-                    'class' => "$shortcode-container",
+                    'base' => $shortCode,
+                    'class' => "$shortCode-container",
                     'category' => esc_html__('Content', 'agb-connector'),
                     'params' => [
                         [
                             'type' => 'textfield',
                             'holder' => 'div',
-                            'class' => "$shortcode-id",
+                            'class' => "$shortCode-id",
                             'heading' => esc_html__('Element ID', 'agb-connector'),
                             'param_name' => 'id',
                             'value' => '',
@@ -133,7 +136,7 @@ class AGBConnectorShortCodes
                         [
                             'type' => 'textfield',
                             'holder' => 'div',
-                            'class' => "$shortcode-class",
+                            'class' => "$shortCode-class",
                             'heading' => esc_html__('Extra class name', 'agb-connector'),
                             'param_name' => 'class',
                             'value' => '',
@@ -142,9 +145,35 @@ class AGBConnectorShortCodes
                                 'agb-connector'
                             ),
                         ],
+                        [
+                            'type' => 'dropdown',
+                            'holder' => 'div',
+                            'class' => "$shortCode-language",
+                            'heading' => esc_html__('Select language', 'agb-connector'),
+                            'param_name' => 'language',
+                            'std' => $language,
+                            'value' => AGBConnectorAPI::getSupportedLanguages(),
+                            'description' => esc_html__(
+                                'Language of text that should be displayed',
+                                'agb-connector'
+                            ),
+                        ],
+                        [
+                            'type' => 'dropdown',
+                            'holder' => 'div',
+                            'class' => "$shortCode-country",
+                            'heading' => esc_html__('Select country', 'agb-connector'),
+                            'param_name' => 'country',
+                            'std' => $country,
+                            'value' => AGBConnectorAPI::getSupportedCountries(),
+                            'description' => esc_html__(
+                                'Country of text that should be displayed',
+                                'agb-connector'
+                            ),
+                        ],
                     ],
                 ]);
-        } // Endforeach().
+        }
     }
 
     /**
@@ -156,49 +185,57 @@ class AGBConnectorShortCodes
      *
      * @return string
      */
-    public function do_shortcode_callback($attr, $content = '', $shortcode)
+    public function doShortCodeCallback($attr, $content = '', $shortCode)
     {
-        $setting = $this->get_setting($shortcode);
-
-        if (! $setting || empty($this->registeredShortCodes[$shortcode])) {
+        $setting = $this->get_setting($shortCode);
+        if (! $setting || empty($this->registeredShortCodes[$shortCode])) {
             return '';
         }
 
-        // Get Page ID from settings.
-        $pageId = 0;
-        $pageSettings = get_option('agb_connector_text_types_allocation', []);
+        $attr = (object)shortcode_atts([
+            'id' => '',
+            'class' => '',
+            'country' => '',
+            'language' => '',
+        ], $attr, $shortCode);
 
-        if (! empty($pageSettings[$setting['setting_key']])) {
-            $pageId = (int)$pageSettings[$setting['setting_key']];
+        if (!$attr->country || !$attr->language) {
+            $locale = get_bloginfo('language');
+            list($attr->language, $attr->country) = explode('-', $locale, 2);
         }
 
-        if (! $pageId) {
+        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        $foundAllocation = [];
+        if (isset($textAllocations[$setting['setting_key']])) {
+            foreach ($textAllocations[$setting['setting_key']] as $allocation) {
+                if (strtolower($attr->country) === $allocation['country'] && strtoupper($attr->language) === $allocation['language']) {
+                    $foundAllocation = $allocation;
+                    break;
+                }
+            }
+        }
+
+        if (! $foundAllocation) {
             /* translators: %s is the AGB shortcode name. */
             return sprintf(esc_html__('No valid page found for %s.'), $setting['name']);
         }
 
         // Get the Page Content.
-        $pageObject = get_post($pageId);
+        $pageObject = get_post($foundAllocation['pageId']);
+        $pageContent = '';
 
         if (! is_wp_error($pageObject)) {
             $pageContent = $this->callback_content($pageObject->post_content);
         }
 
-        if (empty($pageContent)) {
+        if (!$pageContent) {
             /* translators: %s is the AGB shortcode name. */
             $pageContent = sprintf(esc_html__('No content found for %s.'), $setting['name']);
         }
 
-        // Prepare the output.
-        $attr = (object)shortcode_atts([
-            'id' => '',
-            'class' => '',
-        ], $attr, $shortcode);
-
         $attr->class = preg_split('#\s+#', $attr->class);
-
-        $id = ($attr->id !== '') ? 'id="' . $attr->id . '"' : '';
-        $classes = ['agb_content', $shortcode];
+        $id = ('' !== $attr->id) ? 'id="' . $attr->id . '"' : '';
+        $classes = ['agb_content', $shortCode];
         $classes = array_merge($classes, $attr->class);
         $classes = implode(' ', array_map('sanitize_html_class', array_unique($classes)));
 

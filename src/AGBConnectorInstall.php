@@ -10,67 +10,107 @@ class AGBConnectorInstall
 
     /**
      * Initiate some things on activation
-     *
-     * @since 1.0.0
      */
-    public static function activate()
+    public static function install()
     {
-        self::convertAgbConnectorPluginOptions();
-
-        $userAuthToken = get_option('agb_connector_user_auth_token', '');
+        $userAuthToken = get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, '');
         if (! $userAuthToken) {
             $userAuthToken = md5(wp_generate_password(32, true, true));
-            update_option('agb_connector_user_auth_token', $userAuthToken);
+            update_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, $userAuthToken);
         }
 
-        $textTypes = [
-            'agb' => 0,
-            'datenschutz' => 0,
-            'widerruf' => 0,
-            'impressum' => 0,
-        ];
+        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS);
+        if (false !== $textAllocations) {
+            return;
+        }
 
+        add_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+
+        self::convertOldAgbConnectorPluginOptions();
+        self::update100_110();
+    }
+
+    /**
+     * Update options from 1.0.0 to 1.1.0 version
+     */
+    public static function update100_110()
+    {
         $textTypesAllocation = get_option('agb_connector_text_types_allocation', []);
-        $textTypesAllocation = array_merge($textTypes, $textTypesAllocation);
-        update_option('agb_connector_text_types_allocation', $textTypesAllocation);
+        if (! $textTypesAllocation) {
+            return;
+        }
+
+        $append_email = get_option('agb_connector_wc_append_email', []);
+        $textAllocations = [];
+
+        foreach ($textTypesAllocation as $type => $allocation) {
+            if (is_array($allocation) || ! $allocation) {
+                continue;
+            }
+
+            $textAllocations[$type][0] = [
+                'country' => 'DE',
+                'language' => 'de',
+                'pageId' => (int)$allocation,
+                'wcOrderConfirmationEmailAttachment' => ! empty($append_email[$type]),
+            ];
+        }
+
+        delete_option('agb_connector_wc_append_email');
+        delete_option('agb_connector_text_types_allocation');
+        update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
     }
 
     /**
      * Convert old Plugin data to new
-     *
-     * @since 1.0.0
      */
-    public static function convertAgbConnectorPluginOptions()
+    public static function convertOldAgbConnectorPluginOptions()
     {
         $agbConnectorOptions = get_option('agb_connectors_settings', []);
-
         if (! $agbConnectorOptions) {
             return;
         }
 
-        $textTypesAllocation = [];
-        $wcEmailAppendPdf = [];
-
-        $textTypesAllocation['agb'] = isset($agbConnectorOptions['agb_connector_agb_page']) ? absint($agbConnectorOptions['agb_connector_agb_page']) : 0;
-        $textTypesAllocation['impressum'] = isset($agbConnectorOptions['agb_connector_impressum_page']) ? absint($agbConnectorOptions['agb_connector_impressum_page']) : 0;
-        $textTypesAllocation['datenschutz'] = isset($agbConnectorOptions['agb_connector_datenschutz_page']) ? absint($agbConnectorOptions['agb_connector_datenschutz_page']) : 0;
-        $textTypesAllocation['widerruf'] = isset($agbConnectorOptions['agb_connector_widerruf_page']) ? absint($agbConnectorOptions['agb_connector_widerruf_page']) : 0;
-
         if (! empty($agbConnectorOptions['agb_connector_api'])) {
-            update_option('agb_connector_user_auth_token', $agbConnectorOptions['agb_connector_api']);
+            update_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, $agbConnectorOptions['agb_connector_api']);
         }
 
-        if (! empty($agbConnectorOptions['agb_connector_agb_pdf'])) {
-            $wcEmailAppendPdf['datenschutz'] = true;
-        };
+        $textAllocations = [];
+        if (isset($agbConnectorOptions['agb_connector_agb_page'])) {
+            $textAllocations['agb'][0] = [
+                'country' => 'DE',
+                'language' => 'de',
+                'pageId' => absint($agbConnectorOptions['agb_connector_agb_page']),
+                'wcOrderConfirmationEmailAttachment' => ! empty($agbConnectorOptions['agb_connector_agb_pdf']),
+            ];
+        }
+        if (isset($agbConnectorOptions['agb_connector_impressum_page'])) {
+            $textAllocations['impressum'][0] = [
+                'country' => 'DE',
+                'language' => 'de',
+                'pageId' => absint($agbConnectorOptions['agb_connector_impressum_page']),
+                'wcOrderConfirmationEmailAttachment' => false,
+            ];
+        }
+        if (isset($agbConnectorOptions['agb_connector_agb_page'])) {
+            $textAllocations['datenschutz'][0] = [
+                'country' => 'DE',
+                'language' => 'de',
+                'pageId' => absint($agbConnectorOptions['agb_connector_datenschutz_page']),
+                'wcOrderConfirmationEmailAttachment' => ! empty($agbConnectorOptions['agb_connector_datenschutz_pdf']),
+            ];
+        }
+        if (isset($agbConnectorOptions['agb_connector_agb_page'])) {
+            $textAllocations['widerruf'][0] = [
+                'country' => 'DE',
+                'language' => 'de',
+                'pageId' => absint($agbConnectorOptions['agb_connector_widerruf_page']),
+                'wcOrderConfirmationEmailAttachment' => ! empty($agbConnectorOptions['agb_connector_widerruf_pdf']),
+            ];
+        }
 
-        if (! empty($agbConnectorOptions['agb_connector_widerruf_pdf'])) {
-            $wcEmailAppendPdf['widerruf'] = true;
-        };
-
-        $updatedWc = update_option('agb_connector_wc_append_email', $wcEmailAppendPdf);
-        $updated = update_option('agb_connector_text_types_allocation', $textTypesAllocation);
-        if ($updated && $updatedWc) {
+        $updated = update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
+        if ($updated) {
             delete_option('agb_connectors_settings');
         }
     }
