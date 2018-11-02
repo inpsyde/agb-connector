@@ -147,7 +147,6 @@ class AGBConnectorSettings
     public function page()
     {
         $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
-
         ?>
         <div class="wrap" id="agb-connector-settings">
             <div class="settings-container">
@@ -304,6 +303,13 @@ class AGBConnectorSettings
     }
 
 
+    /**
+     * Generate HTML for page allocations
+     *
+     * @param array $allocations
+     * @param $type
+     * @param bool $wcEmail
+     */
     private function getAllocationHtml(array $allocations, $type, $wcEmail = true)
     {
         $locale = get_bloginfo('language');
@@ -329,14 +335,14 @@ class AGBConnectorSettings
         foreach (AGBConnectorAPI::getSupportedCountries() as $countryCode => $countryText) {
             $emptyCountryOptions .= '<option value="' . $countryCode . '"' . selected($country, $countryCode,
                     false) . '>' . $countryText . '</option>';
-        };
+        }
         $emptyCountryOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyCountryOptions);
 
         $emptyLanguageOptions = '';
         foreach (AGBConnectorAPI::getSupportedLanguages() as $languageCode => $languageText) {
             $emptyLanguageOptions .= '<option value="' . $languageCode . '"' . selected($language, $languageCode,
                     false) . '>' . $languageText . '</option>';
-        };
+        }
         $emptyLanguageOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyLanguageOptions);
         ?>
         <div class="<?php esc_attr_e($type); ?>_input_table_wrapper">
