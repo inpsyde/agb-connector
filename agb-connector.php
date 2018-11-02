@@ -1,5 +1,7 @@
 <?php // phpcs:ignore
 /**
+ * phpcs:disable Inpsyde.CodeQuality.LineLength.TooLong
+ *
  * Plugin Name: Terms & Conditions Connector of IT-Recht Kanzlei
  * Plugin URI: https://github.com/inpsyde/agb-connector
  * Description: Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation.
@@ -13,6 +15,8 @@
  * Requires PHP: 5.4
  */
 
+//phpcs:disable Inpsyde.CodeQuality.Psr4.WrongFilename
+
 /**
  * Class AGBConnector
  */
@@ -25,13 +29,6 @@ class AGBConnector
      * @var string
      */
     const VERSION = '1.1.0';
-
-    /**
-     * The API object
-     *
-     * @var AGBConnectorAPI
-     */
-    private $api;
 
     /**
      * The settings object
@@ -58,9 +55,9 @@ class AGBConnector
 
         add_filter('woocommerce_email_attachments', [$this, 'attachPdfToEmail'], 99, 3);
 
-        $shortCodes = $this->getShortCodes();
+        $shortCodes = $this->shortCodes();
         add_action('init', [$shortCodes, 'setup']);
-        add_action('vc_before_init', [$shortCodes, 'vc_maps']);
+        add_action('vc_before_init', [$shortCodes, 'vcMaps']);
 
         if (! is_admin()) {
             return;
@@ -68,13 +65,15 @@ class AGBConnector
 
         load_plugin_textdomain('agb-connector', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
-        $settings = $this->getSettings();
-        add_action('admin_menu', [$settings, 'add_menu']);
-        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$settings, 'add_action_links']);
+        $settings = $this->settings();
+        add_action('admin_menu', [$settings, 'addMenu']);
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$settings, 'addActionLinks']);
     }
 
     /**
      * Append Attachments to WooCommerce processing order email
+     *
+     * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
      *
      * @param array $attachments The attachments.
      * @param string $status The status.
@@ -102,7 +101,7 @@ class AGBConnector
                 if (empty($allocation['wcOrderConfirmationEmailAttachment'])) {
                     continue;
                 }
-                $attachmentId = AGBConnectorAPI::getAttachmentIdByPostParent($allocation['pageId']);
+                $attachmentId = AGBConnectorAPI::attachmentIdByPostParent($allocation['pageId']);
                 $pdfAttachment = get_attached_file($attachmentId);
                 if ($pdfAttachment) {
                     $attachments[] = $pdfAttachment;
@@ -122,45 +121,28 @@ class AGBConnector
             return;
         }
 
-        if (false === strpos($_SERVER['REQUEST_URI'], '/it-recht-kanzlei')) {
+        $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
+        if (false === strpos($requestUri, '/it-recht-kanzlei')) {
             return;
         }
 
-        $xml = '';
-        if (! empty($_POST['xml'])) {
-            $xml = wp_unslash($_POST['xml']);
-        }
+        $xml = filter_input(INPUT_POST, 'xml');
+        $xml = wp_unslash($xml);
+
+        $apiKey = get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, '');
+        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        $api = new AGBConnectorAPI(self::VERSION, $apiKey, $textAllocations);
 
         header('Content-type: application/xml; charset=utf-8', true, 200);
-
-        remove_filter('content_save_pre', 'wp_filter_post_kses');
-        $api = $this->getApi();
-        echo $api->handleRequest($xml);
-        die();
+        die($api->handleRequest($xml)); //phpcs:ignore
     }
 
     /**
-     * Get Api instance
-     *
-     * @return AGBConnectorAPI
-     */
-    public function getApi()
-    {
-        if (null === $this->api) {
-            $apiKey = get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, '');
-            $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
-            $this->api = new AGBConnectorAPI(self::VERSION, $apiKey, $textAllocations);
-        }
-
-        return $this->api;
-    }
-
-    /**
-     * Get Plugin Settings page
+     * Get Plugin settings page
      *
      * @return AGBConnectorSettings
      */
-    public function getSettings()
+    public function settings()
     {
         if (null === $this->settings) {
             $this->settings = new AGBConnectorSettings(self::VERSION);
@@ -172,7 +154,7 @@ class AGBConnector
     /**
      * @return AGBConnectorShortCodes
      */
-    public function getShortCodes()
+    public function shortCodes()
     {
         if (null === $this->shortCodes) {
             $this->shortCodes = new AGBConnectorShortCodes();
@@ -184,6 +166,8 @@ class AGBConnector
 
 /**
  * Function for getting plugin class
+ *
+ * phpcs:disable NeutronStandard.Globals.DisallowGlobalFunctions.GlobalFunctions
  *
  * @return AGBConnector
  */

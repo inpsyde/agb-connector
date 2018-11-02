@@ -218,7 +218,6 @@ class ApiXMLErrorTest extends TestCase
         $error = $api->checkXmlForError(simplexml_load_string($xml), true);
 
         $this->assertEquals($error, 6);
-
     }
 
 
@@ -237,7 +236,7 @@ class ApiXMLErrorTest extends TestCase
 			<rechtstext_title>Title</rechtstext_title>
 			<rechtstext_text>123456789012345678901234567890123456789012345678901</rechtstext_text>
 			<rechtstext_html>123456789012345678901234567890123456789012345678901</rechtstext_html>
-			<rechtstext_pdf_url>' . $this->pdf_file . '7</rechtstext_pdf_url>
+			<rechtstext_pdf_url></rechtstext_pdf_url>
 			<rechtstext_pdf_md5hash>' . $this->pdf_file_md5 . '</rechtstext_pdf_md5hash>
 			<rechtstext_language>de</rechtstext_language>
 			<rechtstext_country>DE</rechtstext_country>
@@ -248,37 +247,6 @@ class ApiXMLErrorTest extends TestCase
         $error = $api->checkXmlForError(simplexml_load_string($xml), true);
 
         $this->assertEquals($error, 7);
-
-    }
-
-
-    public function testAPIError8()
-    {
-
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
-
-        $xml = '<?xml version="1.0" encoding="UTF-8" ?>
-		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
-			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
-			<rechtstext_type>agb</rechtstext_type>
-			<rechtstext_title>Title</rechtstext_title>
-			<rechtstext_text>123456789012345678901234567890123456789012345678901</rechtstext_text>
-			<rechtstext_html>123456789012345678901234567890123456789012345678901</rechtstext_html>
-			<rechtstext_pdf_url>' . $this->pdf_file . '</rechtstext_pdf_url>
-			<rechtstext_pdf_md5hash>098f6bcd4621d373cade4e832627b4f6</rechtstext_pdf_md5hash>
-			<rechtstext_language>de</rechtstext_language>
-			<rechtstext_country>DE</rechtstext_country>
-			<rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
-			<action>push</action>
-		</api>';
-
-        $error = $api->checkXmlForError(simplexml_load_string($xml), true);
-
-        $this->assertEquals($error, 8);
-
     }
 
 

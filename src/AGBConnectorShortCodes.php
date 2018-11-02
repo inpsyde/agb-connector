@@ -12,7 +12,7 @@ class AGBConnectorShortCodes
     private $registeredShortCodes = [];
 
     /**
-     * Settings for All AGB shortcodes.
+     * settings for All AGB shortcodes.
      *
      * @return array
      */
@@ -39,20 +39,6 @@ class AGBConnectorShortCodes
     }
 
     /**
-     * Returns settings for a AGB Shortcode.
-     *
-     * @param $shortcode
-     *
-     * @return array
-     */
-    public function get_setting($shortcode)
-    {
-        $settings = $this->settings();
-
-        return isset($settings[$shortcode]) ? $settings[$shortcode] : [];
-    }
-
-    /**
      * Helper function to cleanup and do_shortcode on content.
      *
      * @see do_shortcode()
@@ -61,7 +47,7 @@ class AGBConnectorShortCodes
      *
      * @return string
      */
-    public function callback_content($content)
+    public function callbackContent($content)
     {
         $array = [
             '<p>[' => '[',
@@ -96,9 +82,11 @@ class AGBConnectorShortCodes
     /**
      * Map AGB shorcodes for Visual Composer.
      *
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
+     *
      * @see https://wpbakery.atlassian.net/wiki/spaces/VC/pages/524332/vc+map
      */
-    public function vc_maps()
+    public function vcMaps()
     {
         $locale = get_bloginfo('language');
         list($language, $country) = explode('-', $locale, 2);
@@ -121,8 +109,8 @@ class AGBConnectorShortCodes
                             'heading' => esc_html__('Element ID', 'agb-connector'),
                             'param_name' => 'id',
                             'value' => '',
-                            /* translators: %s is the w3c specification link. */
                             'description' => sprintf(
+                                /* translators: %s is the w3c specification link. */
                                 esc_html__(
                                     'Enter element ID (Note: make sure it is unique and valid according to %s).',
                                     'agb-connector'
@@ -152,7 +140,7 @@ class AGBConnectorShortCodes
                             'heading' => esc_html__('Select language', 'agb-connector'),
                             'param_name' => 'language',
                             'std' => $language,
-                            'value' => AGBConnectorAPI::getSupportedLanguages(),
+                            'value' => AGBConnectorAPI::supportedLanguages(),
                             'description' => esc_html__(
                                 'Language of text that should be displayed',
                                 'agb-connector'
@@ -165,7 +153,7 @@ class AGBConnectorShortCodes
                             'heading' => esc_html__('Select country', 'agb-connector'),
                             'param_name' => 'country',
                             'std' => $country,
-                            'value' => AGBConnectorAPI::getSupportedCountries(),
+                            'value' => AGBConnectorAPI::supportedCountries(),
                             'description' => esc_html__(
                                 'Country of text that should be displayed',
                                 'agb-connector'
@@ -179,15 +167,18 @@ class AGBConnectorShortCodes
     /**
      * Do the shortcode callback.
      *
+     * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
+     *
      * @param $attr
      * @param string $content
      * @param string $shortcode
      *
      * @return string
      */
-    public function doShortCodeCallback($attr, $content = '', $shortCode)
+    public function doShortCodeCallback($attr, $content, $shortCode)
     {
-        $setting = $this->get_setting($shortCode);
+        $settings = $this->settings();
+        $setting = isset($settings[$shortCode]) ? $settings[$shortCode] : [];
         if (! $setting || empty($this->registeredShortCodes[$shortCode])) {
             return '';
         }
@@ -208,7 +199,9 @@ class AGBConnectorShortCodes
         $foundAllocation = [];
         if (isset($textAllocations[$setting['setting_key']])) {
             foreach ($textAllocations[$setting['setting_key']] as $allocation) {
-                if (strtolower($attr->country) === $allocation['country'] && strtoupper($attr->language) === $allocation['language']) {
+                if (strtolower($attr->country) === $allocation['country'] &&
+                    strtoupper($attr->language) === $allocation['language']
+                ) {
                     $foundAllocation = $allocation;
                     break;
                 }
@@ -217,7 +210,7 @@ class AGBConnectorShortCodes
 
         if (! $foundAllocation) {
             /* translators: %s is the AGB shortcode name. */
-            return sprintf(esc_html__('No valid page found for %s.'), $setting['name']);
+            return sprintf(esc_html__('No valid page found for %s.', 'agb-connector'), $setting['name']);
         }
 
         // Get the Page Content.
@@ -225,12 +218,12 @@ class AGBConnectorShortCodes
         $pageContent = '';
 
         if (! is_wp_error($pageObject)) {
-            $pageContent = $this->callback_content($pageObject->post_content);
+            $pageContent = $this->callbackContent($pageObject->post_content);
         }
 
         if (!$pageContent) {
             /* translators: %s is the AGB shortcode name. */
-            $pageContent = sprintf(esc_html__('No content found for %s.'), $setting['name']);
+            $pageContent = sprintf(esc_html__('No content found for %s.', 'agb-connector'), $setting['name']);
         }
 
         $attr->class = preg_split('#\s+#', $attr->class);

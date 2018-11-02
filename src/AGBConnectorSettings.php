@@ -37,7 +37,7 @@ class AGBConnectorSettings
     /**
      * Add the menu entry
      */
-    public function add_menu()
+    public function addMenu()
     {
         $hook = add_options_page(
             __('Terms & Conditions Connector of IT-Recht Kanzlei', 'agb-connector'),
@@ -53,17 +53,17 @@ class AGBConnectorSettings
     }
 
     /**
-     * Add Settings link to plugin actions.
+     * Add settings link to plugin actions.
      *
      * @param array $links The links.
      *
      * @return array
      */
-    public function add_action_links($links)
+    public function addActionLinks($links)
     {
         $addLinks = [
             '<a href="' . admin_url('options-general.php?page=agb_connector_settings') . '">' . __(
-                'Settings',
+                'settings',
                 'agb-connector'
             ) . '</a>',
         ];
@@ -73,59 +73,56 @@ class AGBConnectorSettings
 
     /**
      * All things must done in load
+     *
+     * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      */
     public function load()
     {
-        // Load css.
-        if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
-            wp_enqueue_style(
-                'agb-connector',
-                plugins_url('/assets/css/style.css', __DIR__),
-                [],
-                time(),
-                'all'
-            );
-        } else {
-            wp_enqueue_style(
-                'agb-connector',
-                plugins_url('/assets/css/style.min.css', __DIR__),
-                [],
-                $this->pluginVersion,
-                'all'
-            );
-        }
+        $debug = (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG);
 
-        if (empty($_POST['text_allocation']) && ! isset($_GET['regen'])) {
-            return;
-        }
+        wp_enqueue_style(
+            'agb-connector',
+            plugins_url('/assets/css/style.' . (! $debug ? 'min.' : '') . 'css', __DIR__),
+            [],
+            $debug ? time() : $this->pluginVersion,
+            'all'
+        );
 
-        if (isset($_GET['regen'])) {
+        $getRegen = filter_input(INPUT_GET, 'regen', FILTER_SANITIZE_NUMBER_INT);
+        if (null !== $getRegen) {
             check_admin_referer('agb-connector-settings-page-regen');
             $userAuthToken = md5(wp_generate_password(32, true, true));
             update_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, $userAuthToken);
-            $this->message .= '<p>' . __('New APT-Token generated.', 'agb-connector') . '</p>';
+            $this->message = __('New APT-Token generated.', 'agb-connector');
 
             return;
         }
 
-        if ( ! is_array($_POST['text_allocation'])) {
+        $postTextAllocation = filter_input(
+            INPUT_POST,
+            'text_allocation',
+            FILTER_DEFAULT,
+            FILTER_REQUIRE_ARRAY
+        );
+        if (!$postTextAllocation && ! is_array($postTextAllocation)) {
             return;
         }
 
         check_admin_referer('agb-connector-settings-page');
         $textAllocations = [];
-        foreach ($_POST['text_allocation'] as $type => $allocations) {
-            if ( ! in_array($type, AGBConnectorAPI::$textTypes, true)) {
+        foreach ($postTextAllocation as $type => $allocations) {
+            if (! in_array($type, AGBConnectorAPI::supportedTextTypes(), true)) {
                 continue;
             }
             foreach ($allocations as $allocation) {
-                if ( ! array_key_exists($allocation['country'], AGBConnectorAPI::getSupportedCountries())) {
+                if (! array_key_exists($allocation['country'], AGBConnectorAPI::supportedCountries())) {
                     continue;
                 }
-                if ( ! array_key_exists($allocation['language'], AGBConnectorAPI::getSupportedLanguages())) {
+                if (! array_key_exists($allocation['language'], AGBConnectorAPI::supportedLanguages())) {
                     continue;
                 }
-                if ( ! get_post(absint($allocation['page_id']))) {
+                if (! get_post(absint($allocation['page_id']))) {
                     continue;
                 }
                 $textAllocations[$type][] = [
@@ -138,11 +135,13 @@ class AGBConnectorSettings
         }
 
         update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
-        $this->message .= '<p>' . __('Settings updated.', 'agb-connector') . '</p>';
+        $this->message = __('settings updated.', 'agb-connector');
     }
 
     /**
      * The settings page content
+     *
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      */
     public function page()
     {
@@ -154,15 +153,15 @@ class AGBConnectorSettings
                     <?php
                     printf(
                         '%s &raquo %s',
-                        esc_html__('Settings', 'agb-connector'),
+                        esc_html__('settings', 'agb-connector'),
                         esc_html__('Terms & Conditions Connector of IT-Recht Kanzlei', 'agb-connector')
                     );
                     ?>
                 </h2>
 
                 <?php
-                if ( ! empty($this->message)) {
-                    echo '<div id="message" class="updated">' . $this->message . '</div>';
+                if ($this->message) {
+                    echo '<div id="message" class="updated"><p>' . esc_html($this->message) . '</p></div>';
                 }
                 ?>
 
@@ -174,17 +173,19 @@ class AGBConnectorSettings
                     <?php wp_nonce_field('agb-connector-settings-page'); ?>
                     <table class="form-table">
                         <tr valign="top">
-                            <th scope="row"><label for="regen"><?php esc_html_e(
-                                        'Your shop URL',
-                                        'agb-connector'
-                                    ); ?></label></th>
+                            <th scope="row">
+                                <label for="regen">
+                                    <?php esc_html_e('Your shop URL', 'agb-connector'); ?>
+                                </label>
+                            </th>
                             <td><p><code><?php echo esc_attr(home_url()); ?></code></p></td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row"><label for="regen"><?php esc_html_e(
-                                        'API-Token',
-                                        'agb-connector'
-                                    ); ?></label></th>
+                            <th scope="row">
+                                <label for="regen">
+                                    <?php esc_html_e('API-Token', 'agb-connector'); ?>
+                                </label>
+                            </th>
                             <td><p>
                                     <code><?php echo esc_attr(get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN)); ?></code>
                                     <a class="button" href="<?php echo esc_url(wp_nonce_url(
@@ -193,23 +194,24 @@ class AGBConnectorSettings
                                             'page' => 'agb_connector_settings',
                                         ], admin_url('options-general.php')),
                                         'agb-connector-settings-page-regen'
-                                    )); ?>"><?php esc_html_e(
-                                            'Regenerate',
-                                            'agb-connector'
-                                        ); ?></a>
+                                    )); ?>">
+                                        <?php esc_html_e('Regenerate', 'agb-connector'); ?>
+                                    </a>
                                 </p>
-                                <p class="description"><?php esc_html_e(
+                                <p class="description">
+                                    <?php esc_html_e(
                                         'If you change the token, this must also be adjusted in the client portal.',
                                         'agb-connector'
-                                    ); ?></p>
+                                    ); ?>
+                                </p>
                             </td>
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="page_agb"><?php esc_html_e(
-                                        'Terms and Conditions',
-                                        'agb-connector'
-                                    ); ?>
+                            <th scope="row">
+                                <label for="page_agb">
+                                    <?php esc_html_e('Terms and Conditions', 'agb-connector'); ?>
+                                </label>
                             </th>
                             <td>
                                 <?php
@@ -222,10 +224,11 @@ class AGBConnectorSettings
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="page_datenschutz"><?php esc_html_e(
-                                    'Privacy',
-                                    'agb-connector'
-                                ); ?></th>
+                            <th scope="row">
+                                <label for="page_datenschutz">
+                                    <?php esc_html_e('Privacy', 'agb-connector'); ?>
+                                </label>
+                            </th>
                             <td>
                                 <?php
                                 if (empty($textAllocations['datenschutz'])) {
@@ -237,10 +240,11 @@ class AGBConnectorSettings
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="page_widerruf"><?php esc_html_e(
-                                    'Revocation',
-                                    'agb-connector'
-                                ); ?></th>
+                            <th scope="row">
+                                <label for="page_widerruf">
+                                    <?php esc_html_e('Revocation', 'agb-connector'); ?>
+                                </label>
+                            </th>
                             <td>
                                 <?php
                                 if (empty($textAllocations['widerruf'])) {
@@ -252,7 +256,10 @@ class AGBConnectorSettings
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="page_impressum"><?php esc_html_e('Imprint', 'agb-connector'); ?>
+                            <th scope="row">
+                                <label for="page_impressum">
+                                    <?php esc_html_e('Imprint', 'agb-connector'); ?>
+                                </label>
                             </th>
                             <td>
                                 <?php
@@ -279,22 +286,29 @@ class AGBConnectorSettings
                 </div>
                 <div id="inpsyde" class="metabox-holder postbox">
                     <div class="inside">
-                        <a href="<?php esc_html_e(
+                        <a href="
+                        <?php esc_html_e(
                             'https://inpsyde.com/en/?utm_source=AGBConnector&utm_medium=Banner&utm_campaign=Inpsyde',
                             'agb-connector'
-                        ); ?>" class="inpsyde-logo"
-                           title="<?php esc_html_e('An Inpsyde GmbH Product', 'agb-connector'); ?>">Inpsyde GmbH</a><br>
+                        ); ?>
+                        " class="inpsyde-logo" title="
+                        <?php esc_html_e('An Inpsyde GmbH Product', 'agb-connector'); ?>
+                        ">Inpsyde GmbH</a>
+                        <br>
                     </div>
                 </div>
                 <div id="inpsyde" class="metabox-holder postbox">
                     <div class="inside">
                         <h3>Support</h3>
-                        <p> <?php esc_html_e(
+                        <p>
+                            <?php esc_html_e(
                                 'If you have questions please contact “IT-Recht Kanzlei München” directly',
                                 'agb-connector'
-                            ); ?><br/>
-                            <?php esc_html_e('via +49 89 13014330 or ', 'agb-connector'); ?><a
-                                    href="mailto:info@it-recht-kanzlei.de">info@it-recht-kanzlei.de</a></p>
+                            ); ?>
+                            <br/>
+                            <?php esc_html_e('via +49 89 13014330 or ', 'agb-connector'); ?>
+                            <a href="mailto:info@it-recht-kanzlei.de">info@it-recht-kanzlei.de</a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -302,9 +316,10 @@ class AGBConnectorSettings
         <?php
     }
 
-
     /**
      * Generate HTML for page allocations
+     *
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      *
      * @param array $allocations
      * @param $type
@@ -314,7 +329,7 @@ class AGBConnectorSettings
     {
         $locale = get_bloginfo('language');
         list($language, $country) = explode('-', $locale, 2);
-        if ( ! $allocations) {
+        if (! $allocations) {
             $allocations[] = [
                 'country' => $country,
                 'language' => $language,
@@ -322,31 +337,37 @@ class AGBConnectorSettings
                 'wcOrderConfirmationEmailAttachment' => false,
             ];
         }
-        $emptyPages = wp_dropdown_pages([
+        $emptyPages = wp_dropdown_pages([ //phpcs:ignore
             'name' => 'text_allocation[' . esc_attr($type) . '][\' + size + \'][page_id]',
             'echo' => 0,
-            'show_option_none' => esc_html__('&mdash; Select &mdash;'),
+            'show_option_none' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
             'option_none_value' => 0,
             'selected' => 0,
-        ]);
+        ]);  //phpcs:ignore
         $emptyPages = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyPages);
 
         $emptyCountryOptions = '';
-        foreach (AGBConnectorAPI::getSupportedCountries() as $countryCode => $countryText) {
-            $emptyCountryOptions .= '<option value="' . $countryCode . '"' . selected($country, $countryCode,
-                    false) . '>' . $countryText . '</option>';
+        foreach (AGBConnectorAPI::supportedCountries() as $countryCode => $countryText) {
+            $emptyCountryOptions .= '<option value="' . $countryCode . '"' .
+                                    selected($country, $countryCode, false) .
+                                    '>' . $countryText . '</option>';
         }
         $emptyCountryOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyCountryOptions);
 
         $emptyLanguageOptions = '';
-        foreach (AGBConnectorAPI::getSupportedLanguages() as $languageCode => $languageText) {
-            $emptyLanguageOptions .= '<option value="' . $languageCode . '"' . selected($language, $languageCode,
-                    false) . '>' . $languageText . '</option>';
+        foreach (AGBConnectorAPI::supportedLanguages() as $languageCode => $languageText) {
+            $emptyLanguageOptions .= '<option value="' . $languageCode . '"' .
+                                     selected($language, $languageCode, false) .
+                                     '>' . $languageText . '</option>';
         }
-        $emptyLanguageOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyLanguageOptions);
+        $emptyLanguageOptions = str_replace(
+            ["\n", '\'', '&#039;'],
+            ['', '"', '\''],
+            $emptyLanguageOptions
+        );
         ?>
-        <div class="<?php esc_attr_e($type); ?>_input_table_wrapper">
-            <table class="widefat <?php esc_attr_e($type); ?>_input_table" cellspacing="0">
+        <div class="<?php echo esc_attr($type); ?>_input_table_wrapper">
+            <table class="widefat <?php echo esc_attr($type); ?>_input_table" cellspacing="0">
                 <thead>
                 <tr>
                     <th><?php esc_html_e('Country', 'agb-connector'); ?></th>
@@ -357,7 +378,7 @@ class AGBConnectorSettings
                     <?php } ?>
                 </tr>
                 </thead>
-                <tbody class="<?php esc_attr_e($type); ?>_pages">
+                <tbody class="<?php echo esc_attr($type); ?>_pages">
                 <?php
                 $i = -1;
                 if ($allocations) {
@@ -365,28 +386,34 @@ class AGBConnectorSettings
                         $i++;
 
                         echo '<tr class="' . esc_attr($type) . '_page">';
-                        echo '<td><select name="text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
-                        foreach (AGBConnectorAPI::getSupportedCountries() as $countryCode => $countryText) {
-                            echo '<option value="' . $countryCode . '"' . selected($allocation['country'],
-                                    $countryCode, false) . '>' . $countryText . '</option>';
+                        echo '<td><select name="text_allocation[' .
+                             esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
+                        foreach (AGBConnectorAPI::supportedCountries() as $countryCode => $countryText) {
+                            echo '<option value="' . esc_attr($countryCode) . '"' .
+                                 selected($allocation['country'], $countryCode, false) .
+                                 '>' . esc_attr($countryText) . '</option>';
                         }
                         echo '</select></td>';
-                        echo '<td><select name="text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][language]" size="1">';
-                        foreach (AGBConnectorAPI::getSupportedLanguages() as $countryCode => $countryText) {
-                            echo '<option value="' . $countryCode . '"' . selected($allocation['language'],
-                                    $countryCode, false) . '>' . $countryText . '</option>';
+                        echo '<td><select name="text_allocation[' .
+                             esc_attr($type) . '][' . esc_attr($i) . '][language]" size="1">';
+                        foreach (AGBConnectorAPI::supportedLanguages() as $languageCode => $languageText) {
+                            echo '<option value="' . esc_attr($languageCode) . '"' .
+                                 selected($allocation['language'], $languageCode, false) .
+                                 '>' . esc_attr($languageText) . '</option>';
                         }
                         echo '</select></td>';
-                        echo '<td>' . wp_dropdown_pages([
+                        echo '<td>' . wp_dropdown_pages([ //phpcs:ignore
                                 'name' => 'text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][page_id]',
                                 'echo' => 0,
-                                'show_option_none' => esc_html__('&mdash; Select &mdash;'),
+                                'show_option_none' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
                                 'option_none_value' => 0,
                                 'selected' => (int)$allocation['pageId'],
                             ]) . '</td>';
                         if ($wcEmail) {
-                            echo '<td><input type="checkbox" value="1" name="text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' . checked($allocation['wcOrderConfirmationEmailAttachment'],
-                                    true, false) . ' /></td>';
+                            echo '<td><input type="checkbox" value="1" name="text_allocation[' .
+                                 esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
+                                 checked($allocation['wcOrderConfirmationEmailAttachment'], true, false) .
+                                 ' /></td>';
                         }
                         echo '</tr>';
                     }
@@ -396,9 +423,12 @@ class AGBConnectorSettings
                 <tfoot>
                 <tr>
                     <th colspan="4">
-                        <a href="#" class="add button"><?php esc_html_e('+ Add page', 'agb-connector'); ?></a>&nbsp;
-                        <a href="#" class="remove_rows button"><?php esc_html_e('Remove selected pages(s)',
-                                'agb-connector'); ?></a>
+                        <a href="#" class="add button">
+                            <?php esc_html_e('+ Add page', 'agb-connector'); ?>
+                        </a>&nbsp;
+                        <a href="#" class="remove_rows button">
+                            <?php esc_html_e('Remove selected pages(s)', 'agb-connector'); ?>
+                        </a>
                     </th>
                 </tr>
                 </tfoot>
@@ -406,14 +436,27 @@ class AGBConnectorSettings
         </div>
         <script type="text/javascript">
             jQuery(function () {
-                jQuery('.<?php esc_attr_e($type); ?>_input_table_wrapper').on('click', 'a.add', function () {
-                    var size = jQuery('.<?php esc_attr_e($type); ?>_input_table_wrapper').find('tbody .<?php esc_attr_e($type); ?>_page').length;
-                    jQuery('<tr class="<?php esc_attr_e($type); ?>_page">\
-									<td><select name="text_allocation[<?php esc_attr_e($type); ?>][' + size + '][country]" size="1"><?php  echo $emptyCountryOptions;?></td>\
-									<td><select name="text_allocation[<?php esc_attr_e($type); ?>][' + size + '][language]" size="1"><?php  echo $emptyLanguageOptions;?></td>\
-									<td><?php echo $emptyPages; ?></td>\
-									<td><input type="checkbox" value="1" name="text_allocation[<?php esc_attr_e($type); ?>][' + size + '][wc_email]" /></td>\
-								</tr>').appendTo('.<?php esc_attr_e($type); ?>_input_table_wrapper table tbody');
+                jQuery('.<?php echo esc_attr($type); ?>_input_table_wrapper').on('click', 'a.add', function () {
+                    var size = jQuery('.<?php echo esc_attr($type); ?>_input_table_wrapper')
+                        .find('tbody .<?php echo esc_attr($type); ?>_page').length;
+                    jQuery('<tr class="<?php echo esc_attr($type); ?>_page">\
+                                <td>\
+                                    <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][country]" size="1">\
+                                    <?php echo $emptyCountryOptions; //phpcs:ignore?>\
+                                </td>\
+                                <td>\
+                                    <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][language]" size="1">\
+                                    <?php echo $emptyLanguageOptions; //phpcs:ignore ?>\
+                                    </td>\
+                                <td>\
+                                    <?php echo $emptyPages; //phpcs:ignore ?>\
+                                </td>\
+                                <td>\
+                                    <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
+                                    size + '][wc_email]" />\
+                                </td>\
+                            </tr>')
+                        .appendTo('.<?php echo esc_attr($type); ?>_input_table_wrapper table tbody');
                     return false;
                 });
             });

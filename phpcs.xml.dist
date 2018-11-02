@@ -11,4 +11,11 @@
 
     <rule ref="Inpsyde"/>
 
+    <rule ref="Inpsyde">
+        <exclude name="Inpsyde.CodeQuality.ReturnTypeDeclaration.NoReturnType" />
+        <exclude name="Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType" />
+        <exclude name="NeutronStandard.StrictTypes.RequireStrictTypes.StrictTypes" />
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+    </rule>
+
 </ruleset>

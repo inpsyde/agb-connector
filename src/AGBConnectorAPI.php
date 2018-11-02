@@ -30,13 +30,6 @@ class AGBConnectorAPI
     const PASSWORD = 'oIN9pBGPp98g';
 
     /**
-     * The text types
-     *
-     * @var array with txt types
-     */
-    public static $textTypes = ['agb', 'datenschutz', 'widerruf', 'impressum'];
-
-    /**
      * User auth token that must match
      *
      * @var string
@@ -103,6 +96,7 @@ class AGBConnectorAPI
             return $this->returnXml(81);
         }
 
+        remove_filter('content_save_pre', 'wp_filter_post_kses');
         $post = get_post($foundAllocation['pageId']);
         if (! $post instanceof WP_Post) {
             return $this->returnXml(81);
@@ -135,7 +129,7 @@ class AGBConnectorAPI
             return false;
         }
 
-        foreach (self::$textTypes as $textType) {
+        foreach (self::supportedTextTypes() as $textType) {
             if (empty($this->textAllocations[$textType])) {
                 return false;
             }
@@ -146,6 +140,9 @@ class AGBConnectorAPI
 
     /**
      * Check XML for errors.
+     *
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      *
      * @since 1.0.0
      *
@@ -163,7 +160,9 @@ class AGBConnectorAPI
             return 1;
         }
 
-        if (self::USERNAME !== (string)$xml->api_username && self::PASSWORD !== (string)$xml->api_password) {
+        if (self::USERNAME !== (string)$xml->api_username &&
+            self::PASSWORD !== (string)$xml->api_password
+        ) {
             return 2;
         }
 
@@ -171,14 +170,15 @@ class AGBConnectorAPI
             return 3;
         }
 
-        if (null === $xml->rechtstext_type || ! in_array((string)$xml->rechtstext_type, self::$textTypes, true)) {
+        if (null === $xml->rechtstext_type ||
+            ! in_array((string)$xml->rechtstext_type, self::supportedTextTypes(), true)
+        ) {
             return 4;
         }
 
-        if (null === $xml->rechtstext_country || ! array_key_exists(
-            (string)$xml->rechtstext_country,
-            self::getSupportedCountries()
-        )) {
+        if (null === $xml->rechtstext_country ||
+            ! array_key_exists((string)$xml->rechtstext_country, self::supportedCountries())
+        ) {
             return 17;
         }
 
@@ -186,32 +186,23 @@ class AGBConnectorAPI
             return 18;
         }
 
-        if (strlen((string)$xml->rechtstext_text) < 50) {
+        if (null === $xml->rechtstext_text || strlen((string)$xml->rechtstext_text) < 50) {
             return 5;
         }
 
-        if (strlen((string)$xml->rechtstext_html) < 50) {
+        if (null === $xml->rechtstext_html || strlen((string)$xml->rechtstext_html) < 50) {
             return 6;
         }
 
-        if ('impressum' !== strtolower((string)$xml->rechtstext_type)) {
-            if (null === $xml->rechtstext_pdf_url) {
-                return 7;
-            }
-
-            $pdf = $this->getFile((string)$xml->rechtstext_pdf_url);
-            if (empty($pdf) || 0 !== strpos($pdf, '%PDF')) {
-                return 7;
-            }
-
-            if (null === $xml->rechtstext_pdf_md5hash || strtolower((string)$xml->rechtstext_pdf_md5hash) !== md5($pdf)) {
-                return 8;
-            }
+        if ('impressum' !== (string)$xml->rechtstext_type &&
+            (null === $xml->rechtstext_pdf_url || '' === (string)$xml->rechtstext_pdf_url)
+            ) {
+            return 7;
         }
 
         if (null === $xml->rechtstext_language || ! array_key_exists(
             (string)$xml->rechtstext_language,
-            self::getSupportedLanguages()
+            self::supportedLanguages()
         )) {
             return 9;
         }
@@ -234,27 +225,21 @@ class AGBConnectorAPI
     {
         global $wp_version;
 
-        $response = '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
-        $response .= '<response>' . PHP_EOL;
-        if (! $code) {
-            $response .= '	<status>success</status>' . PHP_EOL;
-        } else {
-            $response .= '	<status>error</status>' . PHP_EOL;
-            $response .= '	<error>' . $code . '</error>' . PHP_EOL;
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
+        $xml->addChild('status', $code ? 'error' : 'success');
+        if ($code) {
+            $xml->addChild('error', $code);
         }
-        if (! empty($wp_version)) {
-            $response .= '	<meta_shopversion>' . $wp_version . '</meta_shopversion>' . PHP_EOL;
-        }
-        if (! empty($this->pluginVersion)) {
-            $response .= '	<meta_modulversion>' . $this->pluginVersion . '</meta_modulversion>' . PHP_EOL;
-        }
-        $response .= '</response>';
+        $xml->addChild('meta_shopversion', $wp_version);
+        $xml->addChild('meta_modulversion', $this->pluginVersion);
 
-        return $response;
+        return $xml->asXML();
     }
 
     /**
      * Transfers the PDF file to uploads
+     *
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      *
      * @param SimpleXMLElement $xml The XML Object.
      *
@@ -273,23 +258,27 @@ class AGBConnectorAPI
         }
 
         $uploads = wp_upload_dir();
-        $file = trailingslashit($uploads['basedir']) . $xml->rechtstext_type . '_' . $xml->rechtstext_language . '-' . $xml->rechtstext_country . '.pdf';
+        $file = trailingslashit($uploads['basedir']) .
+                $xml->rechtstext_type . '_' .
+                $xml->rechtstext_language . '-' .
+                $xml->rechtstext_country . '.pdf';
 
-        if (file_exists($file)) {
-            unlink($file);
-        }
-
-        $pdf = $this->getFile((string)$xml->rechtstext_pdf_url);
-        if (! $pdf) {
+        $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
+        if (! $pdf || 0 !== strpos($pdf, '%PDF')) {
             return 7;
         }
-        $result = file_put_contents($file, $pdf);
-        chmod($file, 0644);
+        if (null === $xml->rechtstext_pdf_md5hash ||
+            (string)$xml->rechtstext_pdf_md5hash !== md5($pdf)
+        ) {
+            return 8;
+        }
+
+        $result = $this->writeContentToFile($file, $pdf);
         if (! $result) {
             return 7;
         }
 
-        $attachmentId = self::getAttachmentIdByPostParent($foundAllocation['postId']);
+        $attachmentId = self::attachmentIdByPostParent($foundAllocation['postId']);
         if ($attachmentId && get_attached_file($attachmentId)) {
             $result = update_attached_file($attachmentId, $file);
             if (! $result) {
@@ -318,6 +307,31 @@ class AGBConnectorAPI
     }
 
     /**
+     * Write content to a file
+     *
+     * @param string $file
+     * @param string $content
+     *
+     * @return bool
+     */
+    private function writeContentToFile($file, $content)
+    {
+        global $wp_filesystem;
+
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        if (!$wp_filesystem) {
+            WP_Filesystem();
+        }
+
+        assert($wp_filesystem instanceof WP_Filesystem_Base);
+
+        return $wp_filesystem->put_contents($file, $content, FS_CHMOD_FILE);
+    }
+
+    /**
      * Save post and pdf after checks
      *
      * @param WP_Post $post The post object.
@@ -340,25 +354,18 @@ class AGBConnectorAPI
      *
      * @param string $url The URL to the file.
      *
-     * @return false|string
+     * @return string
      */
-    private function getFile($url)
+    private function receiveFileContent($url)
     {
         $response = wp_remote_get($url);
-        if (is_wp_error($response)) {
-            return false;
+        if (is_wp_error($response) ||
+            '200' !== (string)wp_remote_retrieve_response_code($response)
+        ) {
+            return '';
         }
 
-        if ('200' !== (string)wp_remote_retrieve_response_code($response)) {
-            return false;
-        }
-
-        $content = wp_remote_retrieve_body($response);
-        if (empty($content)) {
-            return false;
-        }
-
-        return $content;
+        return wp_remote_retrieve_body($response);
     }
 
     /**
@@ -370,27 +377,34 @@ class AGBConnectorAPI
      */
     private function findAllocation(\SimpleXMLElement $xml)
     {
-        if (isset($this->textAllocations[(string)$xml->rechtstext_type])) {
-            foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-                if ((string)$xml->rechtstext_country === $allocation['country'] && (string)$xml->rechtstext_language === $allocation['language']) {
-                    return $allocation;
-                }
+        $foundAllocation = [];
+
+        if (! isset($this->textAllocations[(string)$xml->rechtstext_type])) {
+            return $foundAllocation;
+        }
+
+        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
+            if ((string)$xml->rechtstext_country === $allocation['country'] &&
+                (string)$xml->rechtstext_language === $allocation['language']
+            ) {
+                $foundAllocation = $allocation;
+                break;
             }
         }
 
-        return [];
+        return $foundAllocation;
     }
 
     /**
      * Get attachment id by post id for pdfs
-     * @param $postID
+     * @param $postId
      *
      * @return int
      */
-    public static function getAttachmentIdByPostParent($postID)
+    public static function attachmentIdByPostParent($postId)
     {
         $attachments = get_posts([
-            'post_parent' => (int)$postID,
+            'post_parent' => (int)$postId,
             'post_type' => 'attachment',
             'post_mime_type' => 'application/pdf',
             'numberposts' => 1,
@@ -410,7 +424,7 @@ class AGBConnectorAPI
      *
      * @return array
      */
-    public static function getSupportedLanguages()
+    public static function supportedLanguages()
     {
         return [
             'de' => __('German', 'agb-connector'),
@@ -432,7 +446,7 @@ class AGBConnectorAPI
      *
      * @return array
      */
-    public static function getSupportedCountries()
+    public static function supportedCountries()
     {
         return [
             'DE' => __('Germany', 'agb-connector'),
@@ -454,6 +468,20 @@ class AGBConnectorAPI
             'LU' => __('Luxembourg', 'agb-connector'),
             'SI' => __('Slovenia', 'agb-connector'),
             'AU' => __('Australia', 'agb-connector'),
+        ];
+    }
+
+    /**
+     * Get supported text types
+     * @return array
+     */
+    public static function supportedTextTypes()
+    {
+        return [
+            'agb',
+            'datenschutz',
+            'widerruf',
+            'impressum',
         ];
     }
 }
