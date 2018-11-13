@@ -121,7 +121,7 @@ class AGBConnector
             return;
         }
 
-        $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
+        $requestUri = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL); //phpcs:ignore
         if (false === strpos($requestUri, '/it-recht-kanzlei')) {
             return;
         }
