@@ -1,30 +1,30 @@
 <?php # -*- coding: utf-8 -*-
 
+namespace Inpsyde\AGBConnector;
+
 /**
- * Class AGBConnectorInstall
- *
- * @since 1.0.0
+ * Class Install
  */
-class AGBConnectorInstall
+class Install
 {
 
     /**
      * Initiate some things on activation
      */
-    public static function install()
+    public static function activate()
     {
-        $userAuthToken = get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, '');
+        $userAuthToken = get_option(Plugin::OPTION_USER_AUTH_TOKEN, '');
         if (! $userAuthToken) {
             $userAuthToken = md5(wp_generate_password(32, true, true));
-            update_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, $userAuthToken);
+            update_option(Plugin::OPTION_USER_AUTH_TOKEN, $userAuthToken);
         }
 
-        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS);
+        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS);
         if (false !== $textAllocations) {
             return;
         }
 
-        add_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        add_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
 
         self::convertOldAgbConnectorPluginOptions();
         self::update100To110();
@@ -58,7 +58,7 @@ class AGBConnectorInstall
 
         delete_option('agb_connector_wc_append_email');
         delete_option('agb_connector_text_types_allocation');
-        update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
+        update_option(Plugin::OPTION_TEXT_ALLOCATIONS, $textAllocations);
     }
 
     /**
@@ -75,7 +75,7 @@ class AGBConnectorInstall
 
         if (! empty($agbConnectorOptions['agb_connector_api'])) {
             update_option(
-                AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN,
+                Plugin::OPTION_USER_AUTH_TOKEN,
                 $agbConnectorOptions['agb_connector_api']
             );
         }
@@ -117,7 +117,7 @@ class AGBConnectorInstall
             ];
         }
 
-        $updated = update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
+        $updated = update_option(Plugin::OPTION_TEXT_ALLOCATIONS, $textAllocations);
         if ($updated) {
             delete_option('agb_connectors_settings');
         }

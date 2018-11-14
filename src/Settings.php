@@ -1,11 +1,11 @@
 <?php # -*- coding: utf-8 -*-
 
+namespace Inpsyde\AGBConnector;
+
 /**
- * Class AGBConnectorSettings
- *
- * @since 1.0.0
+ * Class Settings
  */
-class AGBConnectorSettings
+class Settings
 {
 
     /**
@@ -14,25 +14,6 @@ class AGBConnectorSettings
      * @var string
      */
     private $message = '';
-
-    /**
-     * The Plugin version.
-     *
-     * @var string
-     */
-    private $pluginVersion;
-
-    /**
-     * AGBConnectorSettings constructor.
-     *
-     * @since 1.0.0
-     *
-     * @param string $pluginVersion The plugin version.
-     */
-    public function __construct($pluginVersion)
-    {
-        $this->pluginVersion = $pluginVersion;
-    }
 
     /**
      * Add the menu entry
@@ -63,7 +44,7 @@ class AGBConnectorSettings
     {
         $addLinks = [
             '<a href="' . admin_url('options-general.php?page=agb_connector_settings') . '">' . __(
-                'settings',
+                'Settings',
                 'agb-connector'
             ) . '</a>',
         ];
@@ -85,7 +66,7 @@ class AGBConnectorSettings
             'agb-connector',
             plugins_url('/assets/css/style.' . (! $debug ? 'min.' : '') . 'css', __DIR__),
             [],
-            $debug ? time() : $this->pluginVersion,
+            $debug ? time() : Plugin::VERSION,
             'all'
         );
 
@@ -93,7 +74,7 @@ class AGBConnectorSettings
         if (null !== $getRegen) {
             check_admin_referer('agb-connector-settings-page-regen');
             $userAuthToken = md5(wp_generate_password(32, true, true));
-            update_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN, $userAuthToken);
+            update_option(Plugin::OPTION_USER_AUTH_TOKEN, $userAuthToken);
             $this->message = __('New APT-Token generated.', 'agb-connector');
 
             return;
@@ -112,14 +93,14 @@ class AGBConnectorSettings
         check_admin_referer('agb-connector-settings-page');
         $textAllocations = [];
         foreach ($postTextAllocation as $type => $allocations) {
-            if (! in_array($type, AGBConnectorAPI::supportedTextTypes(), true)) {
+            if (! in_array($type, XmlApi::supportedTextTypes(), true)) {
                 continue;
             }
             foreach ($allocations as $allocation) {
-                if (! array_key_exists($allocation['country'], AGBConnectorAPI::supportedCountries())) {
+                if (! array_key_exists($allocation['country'], XmlApi::supportedCountries())) {
                     continue;
                 }
-                if (! array_key_exists($allocation['language'], AGBConnectorAPI::supportedLanguages())) {
+                if (! array_key_exists($allocation['language'], XmlApi::supportedLanguages())) {
                     continue;
                 }
                 if (! get_post(absint($allocation['page_id']))) {
@@ -134,7 +115,7 @@ class AGBConnectorSettings
             }
         }
 
-        update_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, $textAllocations);
+        update_option(Plugin::OPTION_TEXT_ALLOCATIONS, $textAllocations);
         $this->message = __('settings updated.', 'agb-connector');
     }
 
@@ -145,7 +126,7 @@ class AGBConnectorSettings
      */
     public function page()
     {
-        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">
             <div class="settings-container">
@@ -183,11 +164,11 @@ class AGBConnectorSettings
                         <tr valign="top">
                             <th scope="row">
                                 <label for="regen">
-                                    <?php esc_html_e('API-Token', 'agb-connector'); ?>
+                                    <?php esc_html_e('XmlApi-Token', 'agb-connector'); ?>
                                 </label>
                             </th>
                             <td><p>
-                                    <code><?php echo esc_attr(get_option(AGBConnectorKeysInterface::OPTION_USER_AUTH_TOKEN)); ?></code>
+                                    <code><?php echo esc_attr(get_option(Plugin::OPTION_USER_AUTH_TOKEN)); ?></code>
                                     <a class="button" href="<?php echo esc_url(wp_nonce_url(
                                         add_query_arg([
                                             'regen' => '',
@@ -288,7 +269,7 @@ class AGBConnectorSettings
                     <div class="inside">
                         <a href="
                         <?php esc_html_e(
-                            'https://inpsyde.com/en/?utm_source=AGBConnector&utm_medium=Banner&utm_campaign=Inpsyde',
+                            'https://inpsyde.com/en/?utm_source=Plugin&utm_medium=Banner&utm_campaign=Inpsyde',
                             'agb-connector'
                         ); ?>
                         " class="inpsyde-logo" title="
@@ -347,7 +328,7 @@ class AGBConnectorSettings
         $emptyPages = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyPages);
 
         $emptyCountryOptions = '';
-        foreach (AGBConnectorAPI::supportedCountries() as $countryCode => $countryText) {
+        foreach (XmlApi::supportedCountries() as $countryCode => $countryText) {
             $emptyCountryOptions .= '<option value="' . $countryCode . '"' .
                                     selected($country, $countryCode, false) .
                                     '>' . $countryText . '</option>';
@@ -355,7 +336,7 @@ class AGBConnectorSettings
         $emptyCountryOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyCountryOptions);
 
         $emptyLanguageOptions = '';
-        foreach (AGBConnectorAPI::supportedLanguages() as $languageCode => $languageText) {
+        foreach (XmlApi::supportedLanguages() as $languageCode => $languageText) {
             $emptyLanguageOptions .= '<option value="' . $languageCode . '"' .
                                      selected($language, $languageCode, false) .
                                      '>' . $languageText . '</option>';
@@ -388,7 +369,7 @@ class AGBConnectorSettings
                         echo '<tr class="' . esc_attr($type) . '_page">';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
-                        foreach (AGBConnectorAPI::supportedCountries() as $countryCode => $countryText) {
+                        foreach (XmlApi::supportedCountries() as $countryCode => $countryText) {
                             echo '<option value="' . esc_attr($countryCode) . '"' .
                                  selected($allocation['country'], $countryCode, false) .
                                  '>' . esc_attr($countryText) . '</option>';
@@ -396,7 +377,7 @@ class AGBConnectorSettings
                         echo '</select></td>';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][language]" size="1">';
-                        foreach (AGBConnectorAPI::supportedLanguages() as $languageCode => $languageText) {
+                        foreach (XmlApi::supportedLanguages() as $languageCode => $languageText) {
                             echo '<option value="' . esc_attr($languageCode) . '"' .
                                  selected($allocation['language'], $languageCode, false) .
                                  '>' . esc_attr($languageText) . '</option>';

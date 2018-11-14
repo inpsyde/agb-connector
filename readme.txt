@@ -1,7 +1,7 @@
 === Terms & Conditions Connector of IT-Recht Kanzlei ===
 Contributors: inpsyde, danielhuesken
 Tags: Law, API, XML
-Requires at least: 4.4
+Requires at least: 4.0
 Tested up to: 4.9.5
 Stable tag: 1.0.4
 License: GPLv3
@@ -79,8 +79,8 @@ No. The plugin does not require special demands for your WordPress shop. Merely,
 == Installation ==
 
 = Minimum requirements =
-* WordPress version >= 4.4
-* PHP Version >= 5.6
+* WordPress version >= 4.0
+* PHP Version >= 5.4
 * Access to a protection package of “IT-Recht Kanzlei München”
 
 = Installation via WordPress Backend = 
@@ -103,6 +103,11 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 
 == Changelog ==
+= Version 1.1.0 =
+
+ - Add support for multilanguage legal texts
+ - PHP 5.4 now required
+ -
 
 = Version 1.0.4 =
 
@@ -110,9 +115,9 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
 = Version 1.0.3 =
 
-Use WordPress internal file get functions
-Hide DOC ID
-Bugfix where you couldn't regenerate your API-Token
+ - Use WordPress internal file get functions
+ - Hide DOC ID
+ - Bugfix where you couldn't regenerate your API-Token
 
 = Version 1.0.2 =
 

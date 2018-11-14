@@ -1,4 +1,6 @@
 <?php # -*- coding: utf-8 -*-
+namespace Inpsyde\AGBConnector;
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,13 +23,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError0()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -49,13 +51,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError1()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>1' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>1' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -77,13 +79,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError2()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '2</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '2</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '2</api_username>
+			<api_password>' . XmlApi::PASSWORD . '2</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -106,13 +108,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError3()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv3</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -129,19 +131,18 @@ class ApiXMLErrorTest extends TestCase
         $error = $api->checkXmlForError(simplexml_load_string($xml), true);
 
         $this->assertEquals($error, 3);
-
     }
 
     public function testAPIError4()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb4</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -165,13 +166,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError5()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -195,13 +196,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError6()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -224,13 +225,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError7()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -253,13 +254,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError9()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -282,13 +283,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError10()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -310,13 +311,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError12()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>12
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -338,13 +339,13 @@ class ApiXMLErrorTest extends TestCase
     public function testDonotCheckPdf()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>impressum</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -364,13 +365,13 @@ class ApiXMLErrorTest extends TestCase
     public function testCountryNotSupported()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>impressum</rechtstext_type>
 			<rechtstext_title>Title</rechtstext_title>
@@ -390,13 +391,13 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError18()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, '1234567890abcdefghijklmnopqrstuv');
+        $api = new XmlApi('1234567890abcdefghijklmnopqrstuv');
 
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
-			<api_version>' . AGBConnectorAPI::VERSION . '</api_version>
-			<api_username>' . AGBConnectorAPI::USERNAME . '</api_username>
-			<api_password>' . AGBConnectorAPI::PASSWORD . '</api_password>
+			<api_version>' . XmlApi::VERSION . '</api_version>
+			<api_username>' . XmlApi::USERNAME . '</api_username>
+			<api_password>' . XmlApi::PASSWORD . '</api_password>
 			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
 			<rechtstext_type>agb</rechtstext_type>
 			<rechtstext_title>Ti</rechtstext_title>
@@ -418,7 +419,7 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError80()
     {
 
-        $api = new \AGBConnectorAPI(AGBConnector::VERSION, 'qqweqweqewq');
+        $api = new XmlApi('qqweqweqewq');
 
         $this->assertFalse($api->checkConfiguration());
     }

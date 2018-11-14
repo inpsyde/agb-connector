@@ -1,11 +1,11 @@
 <?php # -*- coding: utf-8 -*-
 
+namespace Inpsyde\AGBConnector;
+
 /**
- * Class AGBConnectorAPI
- *
- * @since 1.0.0
+ * Class XmlApi
  */
-class AGBConnectorAPI
+class XmlApi
 {
 
     /**
@@ -44,22 +44,13 @@ class AGBConnectorAPI
     private $textAllocations;
 
     /**
-     * Plugin Version
-     *
-     * @var string
-     */
-    private $pluginVersion;
-
-    /**
      * Define some values.
      *
-     * @param string $pluginVersion Plugin Version.
      * @param string $userAuthToken User Auth Token.
      * @param array $textAllocations allocations for Texts.
      */
-    public function __construct($pluginVersion, $userAuthToken, array $textAllocations = null)
+    public function __construct($userAuthToken, array $textAllocations = null)
     {
-        $this->pluginVersion = $pluginVersion;
         $this->userAuthToken = $userAuthToken;
         $this->textAllocations = $textAllocations;
     }
@@ -73,10 +64,12 @@ class AGBConnectorAPI
      */
     public function handleRequest($xml)
     {
+        $xamlErrorState = libxml_use_internal_errors(true);
         $xml = trim(stripslashes($xml));
         if ($xml) {
-            $xml = @simplexml_load_string($xml);
+            $xml = simplexml_load_string($xml);
         }
+        libxml_use_internal_errors($xamlErrorState);
 
         $error = $this->checkXmlForError($xml);
         if ($error) {
@@ -98,7 +91,7 @@ class AGBConnectorAPI
 
         remove_filter('content_save_pre', 'wp_filter_post_kses');
         $post = get_post($foundAllocation['pageId']);
-        if (! $post instanceof WP_Post) {
+        if (! $post instanceof \WP_Post) {
             return $this->returnXml(81);
         }
         if (null !== $xml->rechtstext_title) {
@@ -146,13 +139,13 @@ class AGBConnectorAPI
      *
      * @since 1.0.0
      *
-     * @param SimpleXMLElement $xml The XML object.
+     * @param \SimpleXMLElement $xml The XML object.
      *
      * @return int Error code
      */
     public function checkXmlForError($xml)
     {
-        if (! $xml || ! $xml instanceof SimpleXMLElement) {
+        if (! $xml || ! $xml instanceof \SimpleXMLElement) {
             return 12;
         }
 
@@ -225,13 +218,14 @@ class AGBConnectorAPI
     {
         global $wp_version;
 
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status', $code ? 'error' : 'success');
         if ($code) {
             $xml->addChild('error', $code);
         }
         $xml->addChild('meta_shopversion', $wp_version);
-        $xml->addChild('meta_modulversion', $this->pluginVersion);
+        $xml->addChild('meta_modulversion', Plugin::VERSION);
+        $xml->addChild('meta_phpversion', PHP_VERSION);
 
         return $xml->asXML();
     }
@@ -241,12 +235,12 @@ class AGBConnectorAPI
      *
      * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      *
-     * @param SimpleXMLElement $xml The XML Object.
+     * @param \SimpleXMLElement $xml The XML Object.
      *
      * @return int returns error code
      * @global $wpdb wpdb
      */
-    private function pushPdfFile(SimpleXMLElement $xml)
+    private function pushPdfFile(\SimpleXMLElement $xml)
     {
         if ('impressum' !== (string)$xml->rechtstext_type) {
             return 0;
@@ -334,11 +328,11 @@ class AGBConnectorAPI
     /**
      * Save post and pdf after checks
      *
-     * @param WP_Post $post The post object.
+     * @param \WP_Post $post The post object.
      *
      * @return int returns error code
      */
-    private function savePost(WP_Post $post)
+    private function savePost(\WP_Post $post)
     {
         $postId = wp_update_post($post);
 
@@ -371,7 +365,7 @@ class AGBConnectorAPI
     /**
      * Find the Allocation for that XML request
      *
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return array
      */

@@ -1,9 +1,11 @@
 <?php # -*- coding: utf-8 -*-
 
+namespace Inpsyde\AGBConnector;
+
 /**
- * Class AGBConnectorShortCodes
+ * Class ShortCodes
  */
-class AGBConnectorShortCodes
+class ShortCodes
 {
 
     /**
@@ -140,7 +142,7 @@ class AGBConnectorShortCodes
                             'heading' => esc_html__('Select language', 'agb-connector'),
                             'param_name' => 'language',
                             'std' => $language,
-                            'value' => AGBConnectorAPI::supportedLanguages(),
+                            'value' => XmlApi::supportedLanguages(),
                             'description' => esc_html__(
                                 'Language of text that should be displayed',
                                 'agb-connector'
@@ -153,7 +155,7 @@ class AGBConnectorShortCodes
                             'heading' => esc_html__('Select country', 'agb-connector'),
                             'param_name' => 'country',
                             'std' => $country,
-                            'value' => AGBConnectorAPI::supportedCountries(),
+                            'value' => XmlApi::supportedCountries(),
                             'description' => esc_html__(
                                 'Country of text that should be displayed',
                                 'agb-connector'
@@ -195,7 +197,7 @@ class AGBConnectorShortCodes
             list($attr->language, $attr->country) = explode('-', $locale, 2);
         }
 
-        $textAllocations = get_option(AGBConnectorKeysInterface::OPTION_TEXT_ALLOCATIONS, []);
+        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         $foundAllocation = [];
         if (isset($textAllocations[$setting['setting_key']])) {
             foreach ($textAllocations[$setting['setting_key']] as $allocation) {
