@@ -173,7 +173,7 @@ class ShortCodes
      *
      * @param $attr
      * @param string $content
-     * @param string $shortcode
+     * @param string $shortCode
      *
      * @return string
      */
@@ -192,17 +192,21 @@ class ShortCodes
             'language' => '',
         ], $attr, $shortCode);
 
-        if (!$attr->country || !$attr->language) {
-            $locale = get_bloginfo('language');
-            list($attr->language, $attr->country) = explode('-', $locale, 2);
+        $locale = get_bloginfo('language');
+        list($language, $country) = explode('-', $locale, 2);
+        if (!$attr->country) {
+            $attr->country = $country;
+        }
+        if (!$attr->language) {
+            $attr->language = $language;
         }
 
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         $foundAllocation = [];
         if (isset($textAllocations[$setting['setting_key']])) {
             foreach ($textAllocations[$setting['setting_key']] as $allocation) {
-                if (strtolower($attr->country) === $allocation['country'] &&
-                    strtoupper($attr->language) === $allocation['language']
+                if (strtoupper($attr->country) === $allocation['country'] &&
+                    strtolower($attr->language) === $allocation['language']
                 ) {
                     $foundAllocation = $allocation;
                     break;

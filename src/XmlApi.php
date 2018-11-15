@@ -390,8 +390,8 @@ class XmlApi
     }
 
     /**
-     * Get attachment id by post id for pdfs
-     * @param $postId
+     * Get attachment id by post id for pdf files
+     * @param int $postId
      *
      * @return int
      */
