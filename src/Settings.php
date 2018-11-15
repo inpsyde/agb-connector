@@ -164,7 +164,7 @@ class Settings
                         <tr valign="top">
                             <th scope="row">
                                 <label for="regen">
-                                    <?php esc_html_e('XmlApi-Token', 'agb-connector'); ?>
+                                    <?php esc_html_e('API-Token', 'agb-connector'); ?>
                                 </label>
                             </th>
                             <td><p>

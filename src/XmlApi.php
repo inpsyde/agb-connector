@@ -238,7 +238,6 @@ class XmlApi
      * @param \SimpleXMLElement $xml The XML Object.
      *
      * @return int returns error code
-     * @global $wpdb wpdb
      */
     private function pushPdfFile(\SimpleXMLElement $xml)
     {
@@ -320,7 +319,9 @@ class XmlApi
             WP_Filesystem();
         }
 
-        assert($wp_filesystem instanceof WP_Filesystem_Base);
+        if (!$wp_filesystem instanceof \WP_Filesystem_Base) {
+            return false;
+        }
 
         return $wp_filesystem->put_contents($file, $content, FS_CHMOD_FILE);
     }
