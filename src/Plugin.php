@@ -71,7 +71,10 @@ class Plugin
 
         $settings = $this->settings();
         add_action('admin_menu', [$settings, 'addMenu']);
-        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$settings, 'addActionLinks']);
+        add_filter(
+            'plugin_action_links_' . plugin_basename(dirname(__DIR__) . '/agb-connector.php'),
+            [$settings, 'addActionLinks']
+        );
     }
 
     /**
