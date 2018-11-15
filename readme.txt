@@ -106,7 +106,8 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 = Version 1.1.0 =
 
  - Add support for multilanguage legal texts
- - PHP 5.4 now required
+ - Legal text page title will now be updated
+ - PHP 5.4 is now required
  - Append PDFs also to WooCommerce on hold emails
 
 = Version 1.0.4 =
