@@ -69,8 +69,6 @@ class Plugin
             return;
         }
 
-        load_plugin_textdomain('agb-connector', false, dirname(plugin_basename(__FILE__)) . '/languages');
-
         $settings = $this->settings();
         add_action('admin_menu', [$settings, 'addMenu']);
         add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$settings, 'addActionLinks']);
