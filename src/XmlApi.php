@@ -241,7 +241,7 @@ class XmlApi
      */
     private function pushPdfFile(\SimpleXMLElement $xml)
     {
-        if ('impressum' !== (string)$xml->rechtstext_type) {
+        if ('impressum' === (string)$xml->rechtstext_type) {
             return 0;
         }
 
@@ -249,6 +249,8 @@ class XmlApi
         if (! $foundAllocation) {
             return 81;
         }
+
+        require_once ABSPATH . 'wp-admin/includes/image.php';
 
         $uploads = wp_upload_dir();
         $file = trailingslashit($uploads['basedir']) .
@@ -271,19 +273,16 @@ class XmlApi
             return 7;
         }
 
-        $attachmentId = self::attachmentIdByPostParent($foundAllocation['postId']);
+        $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
         if ($attachmentId && get_attached_file($attachmentId)) {
-            $result = update_attached_file($attachmentId, $file);
-            if (! $result) {
-                return 7;
-            }
+            update_attached_file($attachmentId, $file);
             wp_generate_attachment_metadata($attachmentId, $file);
             return 0;
         }
 
         $args = [
             'post_mime_type' => 'application/pdf',
-            'post_parent' => (int)$foundAllocation['postId'],
+            'post_parent' => (int)$foundAllocation['pageId'],
             'post_type' => 'attachment',
             'file' => $file,
             'post_title' => basename($file),
