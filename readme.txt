@@ -107,7 +107,7 @@ As far as you run a WordPress shop based on WooCommerce, you have the possibilit
 
  - Add support for multilanguage legal texts
  - PHP 5.4 now required
- -
+ - Append PDFs also to WooCommerce on hold emails
 
 = Version 1.0.4 =
 

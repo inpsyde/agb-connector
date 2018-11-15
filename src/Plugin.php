@@ -118,7 +118,7 @@ class Plugin
     }
 
     /**
-     * Handle request from XmlApi
+     * Handle request from API
      */
     public function apiRequest()
     {
