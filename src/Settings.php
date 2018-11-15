@@ -301,6 +301,7 @@ class Settings
      * Generate HTML for page allocations
      *
      * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      *
      * @param array $allocations
      * @param $type
