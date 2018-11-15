@@ -23,7 +23,7 @@ class Plugin
      *              'country' => 'DE',
      *              'language' => 'de',
      *              'pageId' => 15,
-     *              'wcOrderConfirmationEmailAttachment' => true
+     *              'wcOrderEmailAttachment' => true
      *          ]
      *      ]
      * ]
@@ -77,7 +77,7 @@ class Plugin
     }
 
     /**
-     * Append Attachments to WooCommerce processing order email
+     * Append Attachments to WooCommerce customer order emails
      *
      * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
      *
@@ -89,22 +89,21 @@ class Plugin
      */
     public function attachPdfToEmail(array $attachments, $status, $order)
     {
-        $validStatuse = [
-            'customer_completed_order',
+        $validStatuses = [
+            'customer_on_hold_order',
             'customer_processing_order',
+            'customer_completed_order',
+            'customer_refunded_order',
             'customer_invoice',
         ];
-        if (! in_array($status, $validStatuse, true)) {
-            return $attachments;
-        }
-        if (! $order instanceof \WC_Order) {
+        if (! $order instanceof \WC_Order || ! in_array($status, $validStatuses, true)) {
             return $attachments;
         }
 
         $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
         foreach ($textAllocations as $type => $allocations) {
             foreach ($allocations as $allocation) {
-                if (empty($allocation['wcOrderConfirmationEmailAttachment'])) {
+                if (empty($allocation['wcOrderEmailAttachment'])) {
                     continue;
                 }
                 $attachmentId = XmlApi::attachmentIdByPostParent($allocation['pageId']);

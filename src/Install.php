@@ -52,7 +52,7 @@ class Install
                 'country' => 'DE',
                 'language' => 'de',
                 'pageId' => (int)$allocation,
-                'wcOrderConfirmationEmailAttachment' => ! empty($appendEmail[$type]),
+                'wcOrderEmailAttachment' => ! empty($appendEmail[$type]),
             ];
         }
 
@@ -86,7 +86,7 @@ class Install
                 'country' => 'DE',
                 'language' => 'de',
                 'pageId' => absint($agbConnectorOptions['agb_connector_agb_page']),
-                'wcOrderConfirmationEmailAttachment' =>
+                'wcOrderEmailAttachment' =>
                     ! empty($agbConnectorOptions['agb_connector_agb_pdf']),
             ];
         }
@@ -95,7 +95,7 @@ class Install
                 'country' => 'DE',
                 'language' => 'de',
                 'pageId' => absint($agbConnectorOptions['agb_connector_impressum_page']),
-                'wcOrderConfirmationEmailAttachment' => false,
+                'wcOrderEmailAttachment' => false,
             ];
         }
         if (isset($agbConnectorOptions['agb_connector_datenschutz_page'])) {
@@ -103,7 +103,7 @@ class Install
                 'country' => 'DE',
                 'language' => 'de',
                 'pageId' => absint($agbConnectorOptions['agb_connector_datenschutz_page']),
-                'wcOrderConfirmationEmailAttachment' =>
+                'wcOrderEmailAttachment' =>
                     ! empty($agbConnectorOptions['agb_connector_datenschutz_pdf']),
             ];
         }
@@ -112,7 +112,7 @@ class Install
                 'country' => 'DE',
                 'language' => 'de',
                 'pageId' => absint($agbConnectorOptions['agb_connector_widerruf_page']),
-                'wcOrderConfirmationEmailAttachment' =>
+                'wcOrderEmailAttachment' =>
                     ! empty($agbConnectorOptions['agb_connector_widerruf_pdf']),
             ];
         }

@@ -110,7 +110,7 @@ class Settings
                     'country' => $allocation['country'],
                     'language' => $allocation['language'],
                     'pageId' => absint($allocation['page_id']),
-                    'wcOrderConfirmationEmailAttachment' => ! empty($allocation['wc_email']),
+                    'wcOrderEmailAttachment' => ! empty($allocation['wc_email']),
                 ];
             }
         }
@@ -308,6 +308,9 @@ class Settings
      */
     private function getAllocationHtml(array $allocations, $type, $wcEmail = true)
     {
+        if (!\function_exists('wc')) {
+            $wcEmail = false;
+        }
         $locale = get_bloginfo('language');
         list($language, $country) = explode('-', $locale, 2);
         if (! $allocations) {
@@ -315,7 +318,7 @@ class Settings
                 'country' => $country,
                 'language' => $language,
                 'pageId' => 0,
-                'wcOrderConfirmationEmailAttachment' => false,
+                'wcOrderEmailAttachment' => false,
             ];
         }
         $emptyPages = wp_dropdown_pages([ //phpcs:ignore
@@ -355,7 +358,7 @@ class Settings
                     <th><?php esc_html_e('Language', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Page', 'agb-connector'); ?></th>
                     <?php if ($wcEmail) { ?>
-                        <th><?php esc_html_e('Attach PDF on WooCommerce order on hold email', 'agb-connector'); ?></th>
+                        <th><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
                     <?php } ?>
                 </tr>
                 </thead>
@@ -393,7 +396,7 @@ class Settings
                         if ($wcEmail) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
-                                 checked($allocation['wcOrderConfirmationEmailAttachment'], true, false) .
+                                 checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
                         }
                         echo '</tr>';
@@ -431,11 +434,11 @@ class Settings
                                     </td>\
                                 <td>\
                                     <?php echo $emptyPages; //phpcs:ignore ?>\
-                                </td>\
+                                </td>\<?php if ($wcEmail) { //phpcs:ignore ?>
                                 <td>\
                                     <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
                                     size + '][wc_email]" />\
-                                </td>\
+                                </td>\<?php } //phpcs:ignore ?>
                             </tr>')
                         .appendTo('.<?php echo esc_attr($type); ?>_input_table_wrapper table tbody');
                     return false;
