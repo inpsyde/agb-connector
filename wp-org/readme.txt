@@ -102,32 +102,3 @@ To set the transfer of the legal texts, go to *Settings => AGB Connector*.
 As far as you run a WordPress shop based on WooCommerce, you have the possibility to append selected legal texts as PDF to the Email “New Order”. Therefore, you simply need to go to *Settings => AGB Connector* and then place a hook at your selected legal texts at “Send PDF with WooCommerce order on hold email.”
 
 
-== Changelog ==
-= Version 1.1.0 =
-
- - Add support for multilanguage legal texts
- - Legal text page title will now be updated
- - PHP 5.4 is now required
- - Append PDFs also to WooCommerce on hold emails
-
-= Version 1.0.4 =
-
- - Add shortcode for legal text
-
-= Version 1.0.3 =
-
- - Use WordPress internal file get functions
- - Hide DOC ID
- - Bugfix where you couldn't regenerate your API-Token
-
-= Version 1.0.2 =
-
-plugindirectory fixes
-
-= Version 1.0.1 =
-
-plugindirectory fixes
-
-= Version 1.0 =
-
-Init Release
