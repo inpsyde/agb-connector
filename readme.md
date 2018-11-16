@@ -2,7 +2,7 @@
 
 Transfers the legal texts of “IT-Recht Kanzlei München” via API into your WordPress-installation and keeps your judicial pages up to date.
 
-![banner-772x250](wp-org/assets/banner-772x250.png)
+![https://www.it-recht-kanzlei.de/agb-starterpaket.php](wp-org/assets/banner-772x250.png)
 
 ## Description
 

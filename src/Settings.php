@@ -129,17 +129,51 @@ class Settings
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">
+            <h2>
+                <?php
+                printf(
+                    '%s &rsaquo; %s',
+                    esc_html__('Settings', 'agb-connector'),
+                    esc_html__('Terms & Conditions Connector of IT-Recht Kanzlei', 'agb-connector')
+                );
+                ?>
+            </h2>
+            <div class="box-container">
+                <div id="it-recht-kanzlei" class="metabox-holder postbox">
+                    <div class="inside">
+                        <a href="https://www.it-recht-kanzlei.de" class="it-kanzlei-logo"
+                           title="IT-Recht Kanzlei München">IT-Recht Kanzlei München</a><br>
+                    </div>
+                </div>
+                <div id="inpsyde" class="metabox-holder postbox">
+                    <div class="inside">
+                        <a href="
+                        <?php esc_html_e(
+                            'https://inpsyde.com/en/?utm_source=Plugin&utm_medium=Banner&utm_campaign=Inpsyde',
+                            'agb-connector'
+                        ); ?>
+                        " class="inpsyde-logo" title="
+                        <?php esc_html_e('An Inpsyde GmbH Product', 'agb-connector'); ?>
+                        ">Inpsyde GmbH</a>
+                        <br>
+                    </div>
+                </div>
+                <div id="inpsyde" class="metabox-holder postbox">
+                    <div class="inside">
+                        <h3>Support</h3>
+                        <p>
+                            <?php esc_html_e(
+                                'If you have questions please contact “IT-Recht Kanzlei München” directly',
+                                'agb-connector'
+                            ); ?>
+                            <br/>
+                            <?php esc_html_e('via +49 89 13014330 or ', 'agb-connector'); ?>
+                            <a href="mailto:info@it-recht-kanzlei.de">info@it-recht-kanzlei.de</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
             <div class="settings-container">
-                <h2>
-                    <?php
-                    printf(
-                        '%s &raquo %s',
-                        esc_html__('settings', 'agb-connector'),
-                        esc_html__('Terms & Conditions Connector of IT-Recht Kanzlei', 'agb-connector')
-                    );
-                    ?>
-                </h2>
-
                 <?php
                 if ($this->message) {
                     echo '<div id="message" class="updated"><p>' . esc_html($this->message) . '</p></div>';
@@ -257,41 +291,6 @@ class Settings
                     <?php submit_button(__('Save changes', 'agb-connector'), 'primary', 'save'); ?>
 
                 </form>
-            </div>
-            <div class="box-container">
-                <div id="it-recht-kanzlei" class="metabox-holder postbox">
-                    <div class="inside">
-                        <a href="https://www.it-recht-kanzlei.de" class="it-kanzlei-logo"
-                           title="IT-Recht Kanzlei München">IT-Recht Kanzlei München</a><br>
-                    </div>
-                </div>
-                <div id="inpsyde" class="metabox-holder postbox">
-                    <div class="inside">
-                        <a href="
-                        <?php esc_html_e(
-                            'https://inpsyde.com/en/?utm_source=Plugin&utm_medium=Banner&utm_campaign=Inpsyde',
-                            'agb-connector'
-                        ); ?>
-                        " class="inpsyde-logo" title="
-                        <?php esc_html_e('An Inpsyde GmbH Product', 'agb-connector'); ?>
-                        ">Inpsyde GmbH</a>
-                        <br>
-                    </div>
-                </div>
-                <div id="inpsyde" class="metabox-holder postbox">
-                    <div class="inside">
-                        <h3>Support</h3>
-                        <p>
-                            <?php esc_html_e(
-                                'If you have questions please contact “IT-Recht Kanzlei München” directly',
-                                'agb-connector'
-                            ); ?>
-                            <br/>
-                            <?php esc_html_e('via +49 89 13014330 or ', 'agb-connector'); ?>
-                            <a href="mailto:info@it-recht-kanzlei.de">info@it-recht-kanzlei.de</a>
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
         <?php

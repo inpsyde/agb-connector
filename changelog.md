@@ -19,11 +19,11 @@
 
 = Version 1.0.2 =
 
-* Fixed: Plugindirectory fixes
+* Fixed: Plugindirectory
 
 = Version 1.0.1 =
 
-* Fixed: Plugindirectory fixes
+* Fixed: Plugindirectory
 
 = Version 1.0 =
 
