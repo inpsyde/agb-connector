@@ -15,6 +15,14 @@ class RoboFile extends \Robo\Tasks
         $this->taskMinify('assets/css/style.css')->run();
     }
 
+     /**
+     * Minify JS
+     */
+    public function minifyJs()
+    {
+        $this->taskMinify('assets/js/settings.js')->run();
+    }
+
     /**
      * Build package for wp.org
      * @return mixed

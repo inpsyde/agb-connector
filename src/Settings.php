@@ -70,6 +70,14 @@ class Settings
             'all'
         );
 
+        wp_enqueue_script(
+            'agb-connector',
+            plugins_url('/assets/js/settings.' . (! $debug ? 'min.' : '') . 'js', __DIR__),
+            ['jquery'],
+            $debug ? time() : Plugin::VERSION,
+            true
+        );
+
         $getRegen = filter_input(INPUT_GET, 'regen', FILTER_SANITIZE_NUMBER_INT);
         if (null !== $getRegen) {
             check_admin_referer('agb-connector-settings-page-regen');
@@ -360,6 +368,7 @@ class Settings
                     <?php if ($wcEmail) { ?>
                         <th><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
                     <?php } ?>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody class="<?php echo esc_attr($type); ?>_pages">
@@ -399,6 +408,7 @@ class Settings
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
                         }
+                        echo '<td><a class="remove" href="#">x</a></td>';
                         echo '</tr>';
                     }
                 }
@@ -406,13 +416,10 @@ class Settings
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th colspan="4">
+                    <th colspan="5">
                         <a href="#" class="add button">
                             <?php esc_html_e('+ Add page', 'agb-connector'); ?>
                         </a>&nbsp;
-                        <a href="#" class="remove_rows button">
-                            <?php esc_html_e('Remove selected pages(s)', 'agb-connector'); ?>
-                        </a>
                     </th>
                 </tr>
                 </tfoot>
@@ -439,8 +446,12 @@ class Settings
                                     <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
                                     size + '][wc_email]" />\
                                 </td>\<?php } //phpcs:ignore ?>
+                                <td>\
+                                    <a class="remove" href="#">x</a>\
+                                </td>\
                             </tr>')
                         .appendTo('.<?php echo esc_attr($type); ?>_input_table_wrapper table tbody');
+                    removePages();
                     return false;
                 });
             });
