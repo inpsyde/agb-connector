@@ -97,7 +97,7 @@ class XmlApi
         $post->post_title = trim($xml->rechtstext_title);
         $post->post_content = trim($xml->rechtstext_html);
 
-        $htmlTitle = '<h1>'.htmlentities(trim($post->post_title)).'</h1>';
+        $htmlTitle = '<h1>'.htmlentities($post->post_title).'</h1>';
         $post->post_content = trim(str_replace($htmlTitle, '', $post->post_content));
 
         $error = $this->pushPdfFile($xml);
