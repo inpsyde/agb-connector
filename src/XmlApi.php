@@ -64,12 +64,12 @@ class XmlApi
      */
     public function handleRequest($xml)
     {
-        $xamlErrorState = libxml_use_internal_errors(true);
+        $xmlErrorState = libxml_use_internal_errors(true);
         $xml = trim(stripslashes($xml));
         if ($xml) {
             $xml = simplexml_load_string($xml);
         }
-        libxml_use_internal_errors($xamlErrorState);
+        libxml_use_internal_errors($xmlErrorState);
 
         $error = $this->checkXmlForError($xml);
         if ($error) {
