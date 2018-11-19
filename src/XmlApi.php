@@ -94,10 +94,10 @@ class XmlApi
         if (! $post instanceof \WP_Post) {
             return $this->returnXml(81);
         }
-        if (null !== $xml->rechtstext_title) {
-            $post->post_title = (string)$xml->rechtstext_title;
-        }
+
+        $post->post_title = (string)$xml->rechtstext_title;
         $post->post_content = (string)$xml->rechtstext_html;
+        $post->post_content = str_replace('<h1>'.$post->post_title.'</h1>', '', $post->post_content);
 
         $error = $this->pushPdfFile($xml);
         if ($error) {
