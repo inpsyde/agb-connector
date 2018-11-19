@@ -89,24 +89,27 @@ class XmlApi
             return $this->returnXml(81);
         }
 
-        remove_filter('content_save_pre', 'wp_filter_post_kses');
         $post = get_post($foundAllocation['pageId']);
         if (! $post instanceof \WP_Post) {
             return $this->returnXml(81);
         }
 
-        $post->post_title = (string)$xml->rechtstext_title;
-        $post->post_content = (string)$xml->rechtstext_html;
-        $post->post_content = str_replace('<h1>'.$post->post_title.'</h1>', '', $post->post_content);
+        $post->post_title = trim($xml->rechtstext_title);
+        $post->post_content = trim($xml->rechtstext_html);
+
+        $htmlTitle = '<h1>'.htmlentities(trim($post->post_title)).'</h1>';
+        $post->post_content = trim(str_replace($htmlTitle, '', $post->post_content));
 
         $error = $this->pushPdfFile($xml);
         if ($error) {
             return $this->returnXml($error);
         }
 
-        $error = $this->savePost($post);
+        if (! $this->savePost($post)) {
+            return $this->returnXml(99);
+        }
 
-        return $this->returnXml($error);
+        return $this->returnXml(0);
     }
 
     /**
@@ -330,17 +333,15 @@ class XmlApi
      *
      * @param \WP_Post $post The post object.
      *
-     * @return int returns error code
+     * @return bool
      */
     private function savePost(\WP_Post $post)
     {
+        remove_filter('content_save_pre', 'wp_filter_post_kses');
+
         $postId = wp_update_post($post);
 
-        if (is_wp_error($postId)) {
-            return 99;
-        }
-
-        return 0;
+        return !is_wp_error($postId);
     }
 
     /**
