@@ -408,7 +408,8 @@ class Settings
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
                         }
-                        echo '<td><a class="remove" href="#">x</a></td>';
+                        echo '<td><a class="remove" href="#" title="' . esc_html__('Delete page', 'agb-connector') .
+                             '"><span class="dashicons dashicons-trash"></span></a></td>';
                         echo '</tr>';
                     }
                 }
@@ -447,7 +448,8 @@ class Settings
                                     size + '][wc_email]" />\
                                 </td>\<?php } //phpcs:ignore ?>
                                 <td>\
-                                    <a class="remove" href="#">x</a>\
+                                    <a class="remove" href="#" title="<?php esc_html_e('Delete page', 'agb-connector'); ?>">\
+                                    <span class="dashicons dashicons-trash"></span></a>\
                                 </td>\
                             </tr>')
                         .appendTo('.<?php echo esc_attr($type); ?>_input_table_wrapper table tbody');

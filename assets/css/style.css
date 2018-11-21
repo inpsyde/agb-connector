@@ -34,3 +34,7 @@
 	margin-top: 10px;
 }
 
+#agb-connector-settings table th {
+    white-space: nowrap;
+	padding: 10px;
+}
