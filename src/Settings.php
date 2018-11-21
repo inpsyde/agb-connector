@@ -111,6 +111,16 @@ class Settings
                 if (! array_key_exists($allocation['language'], XmlApi::supportedLanguages())) {
                     continue;
                 }
+                if ('create' === $allocation['page_id']) {
+                    $postArray = [
+                        'post_type' => 'page',
+                        'post_title' => $type . ' ' . $allocation['language'] . '_' . $allocation['country'],
+                        'post_content' => '',
+                        'comment_status' => 'closed',
+                        'ping_status' => 'closed',
+                    ];
+                    $allocation['page_id'] = \wp_insert_post($postArray);
+                }
                 if (! get_post(absint($allocation['page_id']))) {
                     continue;
                 }
@@ -332,9 +342,11 @@ class Settings
         $emptyPages = wp_dropdown_pages([ //phpcs:ignore
             'name' => 'text_allocation[' . esc_attr($type) . '][\' + size + \'][page_id]',
             'echo' => 0,
-            'show_option_none' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
-            'option_none_value' => 0,
-            'selected' => 0,
+            'post_status' => ['publish', 'draft', 'pending', 'future'], //phpcs:ignore
+            'show_option_none' => esc_html__('&mdash; Create new page &mdash;', 'agb-connector'),
+            'option_none_value' => 'create',
+            'selected' => 'create',
+            'show_option_no_change' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
         ]);  //phpcs:ignore
         $emptyPages = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyPages);
 
@@ -398,9 +410,11 @@ class Settings
                         echo '<td>' . wp_dropdown_pages([ //phpcs:ignore
                                 'name' => 'text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][page_id]',
                                 'echo' => 0,
-                                'show_option_none' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
-                                'option_none_value' => 0,
+                                'post_status' => ['publish', 'draft', 'pending', 'future'],
+                                'show_option_none' => esc_html__('&mdash; Create new page &mdash;', 'agb-connector'),
+                                'option_none_value' => 'create',
                                 'selected' => (int)$allocation['pageId'],
+                                'show_option_no_change' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
                             ]) . '</td>';
                         if ($wcEmail) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
