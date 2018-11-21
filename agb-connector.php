@@ -7,7 +7,7 @@
  * Description: Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation.
  * Author: Inpsyde GmbH
  * Author URI: http://inpsyde.com
- * Version: 1.1.0
+ * Version: 2.0.0
  * Text Domain: agb-connector
  * Domain Path: /languages/
  * License: GPLv3
