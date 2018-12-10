@@ -12,7 +12,6 @@
  * Domain Path: /languages/
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl-3.0
- * Requires PHP: 5.4
  */
 
 /**
