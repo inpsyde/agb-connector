@@ -27,13 +27,13 @@ class Install
         add_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
 
         self::convertOldAgbConnectorPluginOptions();
-        self::update100To110();
+        self::update100To200();
     }
 
     /**
-     * Update options from 1.0.0 to 1.1.0 version
+     * Update options from 1.0.0 to 2.0.0 version
      */
-    public static function update100To110()
+    public static function update100To200()
     {
         $textTypesAllocation = get_option('agb_connector_text_types_allocation', []);
         if (! $textTypesAllocation) {

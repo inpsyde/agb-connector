@@ -86,7 +86,7 @@ class XmlApi
 
         $foundAllocation = $this->findAllocation($xml);
         if (! $foundAllocation) {
-            return $this->returnXml(81);
+            return $this->returnXml(80);
         }
 
         $post = get_post($foundAllocation['pageId']);
@@ -250,7 +250,7 @@ class XmlApi
 
         $foundAllocation = $this->findAllocation($xml);
         if (! $foundAllocation) {
-            return 81;
+            return 80;
         }
 
         require_once ABSPATH . 'wp-admin/includes/image.php';
