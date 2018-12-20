@@ -103,7 +103,7 @@ class XmlApi
         }
 
         $post = get_post($foundAllocation['pageId']);
-        if (! $post instanceof \WP_Post) {
+        if (! $post instanceof \WP_Post || 'trash' === $post->post_status) {
             return $this->returnXml(81);
         }
 
