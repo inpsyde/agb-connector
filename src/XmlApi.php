@@ -58,6 +58,9 @@ class XmlApi
     /**
      * Get the request and answers it.
      *
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+     * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
+     *
      * @param string $xml XML from push.
      *
      * @return string xml response
@@ -106,9 +109,6 @@ class XmlApi
 
         $post->post_title = trim($xml->rechtstext_title);
         $post->post_content = trim($xml->rechtstext_html);
-
-        $htmlTitle = '<h1>'.htmlentities($post->post_title).'</h1>';
-        $post->post_content = trim(str_replace($htmlTitle, '', $post->post_content));
 
         $error = $this->pushPdfFile($xml);
         if ($error) {
