@@ -419,7 +419,7 @@ class ApiXMLErrorTest extends TestCase
     public function testAPIError80()
     {
 
-        $api = new XmlApi('qqweqweqewq');
+        $api = new XmlApi('');
 
         $this->assertFalse($api->checkConfiguration());
     }

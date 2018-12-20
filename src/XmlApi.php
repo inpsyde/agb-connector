@@ -86,7 +86,17 @@ class XmlApi
 
         $foundAllocation = $this->findAllocation($xml);
         if (! $foundAllocation) {
-            return $this->returnXml(80);
+            $foundCountry = false;
+            foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
+                if ((string)$xml->rechtstext_country === $allocation['country']) {
+                    $foundCountry = true;
+                    break;
+                }
+            }
+            if (! $foundCountry) {
+                return $this->returnXml(17);
+            }
+            return $this->returnXml(9);
         }
 
         $post = get_post($foundAllocation['pageId']);
@@ -123,12 +133,6 @@ class XmlApi
     {
         if (! $this->userAuthToken) {
             return false;
-        }
-
-        foreach (self::supportedTextTypes() as $textType) {
-            if (empty($this->textAllocations[$textType])) {
-                return false;
-            }
         }
 
         return true;
@@ -250,7 +254,7 @@ class XmlApi
 
         $foundAllocation = $this->findAllocation($xml);
         if (! $foundAllocation) {
-            return 80;
+            return 9;
         }
 
         require_once ABSPATH . 'wp-admin/includes/image.php';
