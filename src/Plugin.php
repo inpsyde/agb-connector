@@ -132,6 +132,10 @@ class Plugin
             return;
         }
 
+        if (defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
+        }
+
         $xml = filter_input(INPUT_POST, 'xml');
         $xml = wp_unslash($xml);
 
