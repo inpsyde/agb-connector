@@ -139,6 +139,7 @@ class Plugin
         $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
         $api = new XmlApi($apiKey, $textAllocations);
 
+        nocache_headers();
         header('Content-type: application/xml; charset=utf-8', true, 200);
         die($api->handleRequest($xml)); //phpcs:ignore
     }
