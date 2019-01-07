@@ -132,7 +132,7 @@ class Plugin
             return;
         }
 
-        if (defined('DONOTCACHEPAGE')) {
+        if (!defined('DONOTCACHEPAGE')) {
             define('DONOTCACHEPAGE', true);
         }
 
