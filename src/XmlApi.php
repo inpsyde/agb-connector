@@ -171,7 +171,7 @@ class XmlApi
         }
 
         if (null === $xml->rechtstext_type ||
-            ! in_array((string)$xml->rechtstext_type, self::supportedTextTypes(), true)
+            ! \array_key_exists((string)$xml->rechtstext_type, self::supportedTextTypes())
         ) {
             return 4;
         }
@@ -260,10 +260,16 @@ class XmlApi
         require_once ABSPATH . 'wp-admin/includes/image.php';
 
         $uploads = wp_upload_dir();
-        $file = trailingslashit($uploads['basedir']) .
-                $xml->rechtstext_type . '_' .
-                $xml->rechtstext_language . '-' .
-                $xml->rechtstext_country . '.pdf';
+
+        $fileBaseName = $xml->rechtstext_type . '_' .
+                        $xml->rechtstext_language . '-' .
+                        $xml->rechtstext_country . '.pdf';
+
+        if (null !== $xml->rechtstext_pdf_filename && '' !== trim((string)$xml->rechtstext_pdf_filename)) {
+            $fileBaseName = trim((string)$xml->rechtstext_pdf_filename);
+        }
+
+        $file = trailingslashit($uploads['basedir']) . $fileBaseName;
 
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
         if (! $pdf || 0 !== strpos($pdf, '%PDF')) {
@@ -287,12 +293,16 @@ class XmlApi
             return 0;
         }
 
+        $title = $xml->rechtstext_title . ' (' .
+                 $xml->rechtstext_language . '-' .
+                 $xml->rechtstext_country . ')';
+
         $args = [
             'post_mime_type' => 'application/pdf',
             'post_parent' => (int)$foundAllocation['pageId'],
             'post_type' => 'attachment',
             'file' => $file,
-            'post_title' => basename($file),
+            'post_title' => $title,
         ];
 
         $attachmentId = wp_insert_attachment($args);
@@ -477,10 +487,10 @@ class XmlApi
     public static function supportedTextTypes()
     {
         return [
-            'agb',
-            'datenschutz',
-            'widerruf',
-            'impressum',
+            'agb' => __('Terms and Conditions', 'agb-connector'),
+            'datenschutz' => __('Privacy', 'agb-connector'),
+            'widerruf' => __('Revocation', 'agb-connector'),
+            'impressum' => __('Imprint', 'agb-connector'),
         ];
     }
 }

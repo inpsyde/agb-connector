@@ -99,9 +99,10 @@ class Settings
         }
 
         check_admin_referer('agb-connector-settings-page');
+        $supportedTextTypes = XmlApi::supportedTextTypes();
         $textAllocations = [];
         foreach ($postTextAllocation as $type => $allocations) {
-            if (! in_array($type, XmlApi::supportedTextTypes(), true)) {
+            if (! \array_key_exists($type, $supportedTextTypes)) {
                 continue;
             }
             foreach ($allocations as $allocation) {
@@ -114,7 +115,9 @@ class Settings
                 if ('create' === $allocation['page_id']) {
                     $postArray = [
                         'post_type' => 'page',
-                        'post_title' => $type . ' ' . $allocation['language'] . '_' . $allocation['country'],
+                        'post_title' => $supportedTextTypes[$type] . ' (' .
+                                        $allocation['language'] . '_' .
+                                        $allocation['country'] . ')',
                         'post_content' => '',
                         'comment_status' => 'closed',
                         'ping_status' => 'closed',
