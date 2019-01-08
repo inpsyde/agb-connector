@@ -136,6 +136,8 @@ class Plugin
             define('DONOTCACHEPAGE', true);
         }
 
+        add_filter('w3tc_can_print_comment', '__return_false', 10, 1);
+
         $xml = filter_input(INPUT_POST, 'xml');
         $xml = wp_unslash($xml);
 
