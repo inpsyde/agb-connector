@@ -261,12 +261,18 @@ class XmlApi
 
         $uploads = wp_upload_dir();
 
-        $fileBaseName = $xml->rechtstext_type . '_' .
-                        $xml->rechtstext_language . '-' .
-                        $xml->rechtstext_country . '.pdf';
+        $fileBaseName = $xml->rechtstext_typ;
+        if (null !== $xml->rechtstext_pdf_filenamebase_suggestion &&
+            '' !== trim((string)$xml->rechtstext_pdf_filenamebase_suggestion)
+        ) {
+            $fileBaseName = trim((string)$xml->rechtstext_pdf_filenamebase_suggestion);
+        }
+        $fileBaseName .= $xml->rechtstext_language . '-' . $xml->rechtstext_country . '.pdf';
 
-        if (null !== $xml->rechtstext_pdf_filename && '' !== trim((string)$xml->rechtstext_pdf_filename)) {
-            $fileBaseName = trim((string)$xml->rechtstext_pdf_filename);
+        if (null !== $xml->rechtstext_pdf_filename_suggestion &&
+            '' !== trim((string)$xml->rechtstext_pdf_filename_suggestion)
+        ) {
+            $fileBaseName = trim((string)$xml->rechtstext_pdf_filename_suggestion);
         }
 
         $file = trailingslashit($uploads['basedir']) . $fileBaseName;
