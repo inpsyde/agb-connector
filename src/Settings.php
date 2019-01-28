@@ -342,15 +342,7 @@ class Settings
                 'wcOrderEmailAttachment' => false,
             ];
         }
-        $emptyPages = wp_dropdown_pages([ //phpcs:ignore
-            'name' => 'text_allocation[' . esc_attr($type) . '][\' + size + \'][page_id]',
-            'echo' => 0,
-            'post_status' => ['publish', 'draft', 'pending', 'future'], //phpcs:ignore
-            'show_option_none' => esc_html__('&mdash; Create new page &mdash;', 'agb-connector'),
-            'option_none_value' => 'create',
-            'selected' => 'create',
-            'show_option_no_change' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
-        ]);  //phpcs:ignore
+        $emptyPages = $this->dropdownPages($type, '\' + size + \'', -1);
         $emptyPages = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyPages);
 
         $emptyCountryOptions = '';
@@ -410,15 +402,7 @@ class Settings
                                  '>' . esc_attr($languageText) . '</option>';
                         }
                         echo '</select></td>';
-                        echo '<td>' . wp_dropdown_pages([ //phpcs:ignore
-                                'name' => 'text_allocation[' . esc_attr($type) . '][' . esc_attr($i) . '][page_id]',
-                                'echo' => 0,
-                                'post_status' => ['publish', 'draft', 'pending', 'future'],
-                                'show_option_none' => esc_html__('&mdash; Create new page &mdash;', 'agb-connector'),
-                                'option_none_value' => 'create',
-                                'selected' => (int)$allocation['pageId'],
-                                'show_option_no_change' => esc_html__('&mdash; Select &mdash;', 'agb-connector'),
-                            ]) . '</td>';
+                        echo '<td>' . $this->dropdownPages($type, $i, (int)$allocation['pageId']) . '</td>';  //phpcs:ignore
                         if ($wcEmail) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
@@ -476,5 +460,39 @@ class Settings
             });
         </script>
         <?php
+    }
+
+    /**
+     * Pages Dropdown
+     *
+     * @param string $type
+     * @param string $iterator
+     * @param int $selected
+     *
+     * @return string
+     */
+    private function dropdownPages($type, $iterator, $selected)
+    {
+        $output = '<select name="text_allocation[' . esc_attr($type) . '][' . esc_attr($iterator) .
+                  '][page_id]" id="text_allocation[' . esc_attr($type) . '][' . esc_attr($iterator) .
+                  "][page_id]\">\n";
+        $output .= "\t<option value=\"-1\">" . esc_html__('&mdash; Select &mdash;', 'agb-connector') .
+                   "</option>\n";
+        $output .= "\t<option value=\"create\">" .
+                   esc_html__('&mdash; Create new page &mdash;', 'agb-connector') . "</option>\n";
+
+        $pages = get_pages([
+            'post_status' => ['publish', 'draft', 'pending', 'future'],
+        ]);
+
+        if ($pages) {
+            $walker = new \Walker_PageDropdown();
+            $output .= $walker->walk($pages, 0, [
+                    'selected' => $selected,
+            ]);
+        }
+        $output .= "</select>\n";
+
+        return $output;
     }
 }
