@@ -471,7 +471,7 @@ class XmlApi
             'ES' => __('Spain', 'agb-connector'),
             'IT' => __('Italy', 'agb-connector'),
             'PL' => __('Poland', 'agb-connector'),
-            'UK' => __('England', 'agb-connector'),
+            'GB' => __('England', 'agb-connector'),
             'FR' => __('France', 'agb-connector'),
             'BE' => __('Belgium', 'agb-connector'),
             'NL' => __('Netherlands', 'agb-connector'),
@@ -483,6 +483,7 @@ class XmlApi
             'LU' => __('Luxembourg', 'agb-connector'),
             'SI' => __('Slovenia', 'agb-connector'),
             'AU' => __('Australia', 'agb-connector'),
+            'PT' => __('Portugal', 'agb-connector'),
         ];
     }
 
