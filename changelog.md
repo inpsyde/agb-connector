@@ -1,9 +1,9 @@
 == Changelog ==
 
-= Version 1.1.0 =
+= Version 2.0.0 =
 
 * Added: Support for multilanguage legal texts
-* Added: Legal text page title will now be updated and remove from content
+* Added: Legal text page title will now be updated
 * Changed: PHP 5.4 is now required
 * Changed: Append PDFs also to WooCommerce on hold emails
 
