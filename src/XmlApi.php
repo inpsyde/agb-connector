@@ -453,6 +453,7 @@ class XmlApi
             'da' => __('Danish', 'agb-connector'),
             'cs' => __('Czech', 'agb-connector'),
             'sl' => __('Slovenian', 'agb-connector'),
+            'pt' => __('Portuguese', 'agb-connector'),
         ];
     }
 
