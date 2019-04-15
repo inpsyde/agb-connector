@@ -224,13 +224,20 @@ class Settings
                             </th>
                             <td><p>
                                     <code><?php echo esc_attr(get_option(Plugin::OPTION_USER_AUTH_TOKEN)); ?></code>
-                                    <a class="button" href="<?php echo esc_url(wp_nonce_url(
-                                        add_query_arg([
-                                            'regen' => '',
-                                            'page' => 'agb_connector_settings',
-                                        ], admin_url('options-general.php')),
-                                        'agb-connector-settings-page-regen'
-                                    )); ?>">
+                                    <a class="button" href="
+                                    <?php echo esc_url(
+                                        wp_nonce_url(
+                                            add_query_arg(
+                                                [
+                                                    'regen' => '',
+                                                    'page' => 'agb_connector_settings',
+                                                    ],
+                                                admin_url('options-general.php')
+                                            ),
+                                            'agb-connector-settings-page-regen'
+                                        )
+                                    );
+                                    ?>">
                                         <?php esc_html_e('Regenerate', 'agb-connector'); ?>
                                     </a>
                                 </p>
