@@ -231,7 +231,7 @@ class Settings
                                                 [
                                                     'regen' => '',
                                                     'page' => 'agb_connector_settings',
-                                                    ],
+                                                ],
                                                 admin_url('options-general.php')
                                             ),
                                             'agb-connector-settings-page-regen'
