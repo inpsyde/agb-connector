@@ -5,8 +5,7 @@ Requires at least: 4.0
 Tested up to: 5.0.2
 Stable tag: 1.0.4
 Requires PHP: 5.4
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+License: GPLv2+
 
 Transfers the legal texts of “IT-Recht Kanzlei München” via API into your WordPress-installation and keeps your judicial pages up to date.
 

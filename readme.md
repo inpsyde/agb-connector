@@ -106,8 +106,4 @@ No. The plugin does not require special demands for your WordPress shop. Merely,
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – API-Token and Shop URL</p>
 
 
----
-Stable tag: 1.0.4
-License: GPLv3  
-License URI: http://www.gnu.org/licenses/gpl-3.0.html  
 

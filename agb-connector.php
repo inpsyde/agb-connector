@@ -10,8 +10,7 @@
  * Version: 2.0.0
  * Text Domain: agb-connector
  * Domain Path: /languages/
- * License: GPLv3
- * License URI: http://www.gnu.org/licenses/gpl-3.0
+ * License: GPLv2+
  */
 
 /**

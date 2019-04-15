@@ -44,6 +44,7 @@ class RoboFile extends \Robo\Tasks
             ->addFile('agb-connector/agb-connector.php', 'agb-connector.php')
             ->addFile('agb-connector/readme.txt', sys_get_temp_dir() . '/readme.txt')
             ->addFile('agb-connector/uninstall.php', 'uninstall.php')
+            ->addFile('agb-connector/LICENSE', 'LICENSE')
             ->run();
     }
 }
