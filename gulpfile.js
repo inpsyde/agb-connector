@@ -28,6 +28,7 @@ const options = minimist(process.argv.slice(2), {
     'compressedName',
   ],
   default: {
+    packageVersion: process.packageVersion || '',
     compressPath: process.compressPath || '.',
     compressedName: process.compressedName || '.',
   },
@@ -42,8 +43,8 @@ async function validatePackageVersion (done)
 {
   await 1
 
-  if (!'packageVersion' in options) {
-    throw new Error('Missing --packageVersion option with a semver value.')
+  if (!'packageVersion' in options || '' === options.packageVersion) {
+    done()
   }
 
   if (semver.valid(options.packageVersion) === null) {
@@ -236,9 +237,10 @@ function compressPackage (done)
       {},
       (error, stdout) => {
         let shortHash = error ? timeStamp : stdout
-        const compressedName = options.compressedName || `${PACKAGE_NAME}-${packageVersion}-${shortHash}`;
+        const compressedName = options.compressedName ||
+          `${PACKAGE_NAME}-${packageVersion}-${shortHash}`
 
-          pump(
+        pump(
           gulp.src(`${PACKAGE_DESTINATION}/**/*`, {
             base: PACKAGE_DESTINATION,
           }),
