@@ -5,7 +5,7 @@ const pump = require('pump')
 const uglify = require('gulp-uglify')
 const rename = require('gulp-rename')
 const usage = require('gulp-help-doc')
-const csso = require('gulp-csso');
+const csso = require('gulp-csso')
 const { exec } = require('child_process')
 const gulpZip = require('gulp-zip')
 const concat = require('gulp-concat')
@@ -25,9 +25,11 @@ const options = minimist(process.argv.slice(2), {
   string: [
     'packageVersion',
     'compressPath',
+    'compressedName',
   ],
   default: {
     compressPath: process.compressPath || '.',
+    compressedName: process.compressedName || '.',
   },
 })
 
@@ -127,7 +129,7 @@ function buildCss (done)
     pump(
       gulp.src([`${PACKAGE_PATH}/assets/css/**/*.css`]),
       csso(),
-      rename({suffix: '.min'}),
+      rename({ suffix: '.min' }),
       gulp.dest([
         `${PACKAGE_PATH}/assets/css/`,
       ]),
@@ -234,12 +236,13 @@ function compressPackage (done)
       {},
       (error, stdout) => {
         let shortHash = error ? timeStamp : stdout
+        const compressedName = options.compressedName || `${PACKAGE_NAME}-${packageVersion}-${shortHash}`;
 
-        pump(
+          pump(
           gulp.src(`${PACKAGE_DESTINATION}/**/*`, {
             base: PACKAGE_DESTINATION,
           }),
-          gulpZip(`${PACKAGE_NAME}-${packageVersion}-${shortHash}.zip`),
+          gulpZip(`${compressedName}.zip`),
           gulp.dest(
             compressPath,
             {
@@ -300,6 +303,7 @@ exports.buildAssets = gulp.series(
  *
  * @task {dist}
  * @arg {packageVersion} Package version, the version must to be conformed to semver.
+ * @arg {compressedName} The name of the file after compression. Optional. Default will be {plugin-name}-{version}-{shortash}.zip
  * @arg {compressPath} Where the resulting package zip have to be stored.
  */
 exports.dist = gulp.series(
