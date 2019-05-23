@@ -1,0 +1,32 @@
+{
+  "name": "agb-connector",
+  "version": "2.0.0",
+  "description": "Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inpsyde/agb-connector.git"
+  },
+  "author": "Inpsyde GmbH <info@inpsyde.com>",
+  "license": "GPL-2.0-or-later",
+  "bugs": {
+    "url": "https://github.com/inpsyde/agb-connector/issues"
+  },
+  "homepage": "https://github.com/inpsyde/agb-connector#readme",
+  "devDependencies": {
+    "del": "^4.1.1",
+    "gulp": "^4.0.0",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^3.0.1",
+    "gulp-help-doc": "^1.1.1",
+    "gulp-phpcs": "^2.2.0",
+    "gulp-phpunit": "^0.26.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-zip": "^4.2.0",
+    "minimist": "^1.2.0",
+    "pump": "^3.0.0",
+    "semver": "^6.0.0"
+  }
+}
