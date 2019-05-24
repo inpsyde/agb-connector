@@ -30,7 +30,7 @@ const options = minimist(process.argv.slice(2), {
   default: {
     packageVersion: process.packageVersion || '',
     compressPath: process.compressPath || '.',
-    compressedName: process.compressedName || '.',
+    compressedName: process.compressedName || '',
   },
 })
 
