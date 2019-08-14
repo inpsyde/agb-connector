@@ -120,7 +120,7 @@ class XmlApi
         }
 
         $targetUrl = '';
-        if ('published' === $post->post_status) {
+        if ('publish' === $post->post_status) {
             $targetUrl = get_permalink($post);
         }
 
