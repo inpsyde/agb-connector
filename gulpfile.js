@@ -161,23 +161,6 @@ function buildJs (done)
 }
 
 /**
- * Build Readme.txt
- *
- * Merge Readme.txt with Changelog.txt
- */
-function buildReadmeTxt (done)
-{
-  return new Promise(() => {
-    pump(
-      gulp.src(['./wp-org/readme.txt', './changelog.md']),
-      concat('./readme.txt'),
-      gulp.dest(`${PACKAGE_PATH}`),
-      done,
-    )
-  })
-}
-
-/**
  * Run composer for Dist
  * @returns {Promise}
  */
@@ -314,7 +297,6 @@ exports.dist = gulp.series(
   copyPackageFiles,
   buildJs,
   buildCss,
-  buildReadmeTxt,
   composer,
   cleanupDist,
   compressPackage,

@@ -83,26 +83,26 @@ Yes. The plugin does not distinguish shops or “simple” websites. The only th
 No. The plugin does not require special demands for your WordPress shop. Merely, there must be the appropriate pages to transfer the legal texts.
 
 ## Screenshots
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](wp-org/assets/screenshot-1.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](https://ps.w.org/agb-connector/assets/screenshot-1.png)
 <p style="text-align: center;">Terms & Conditions Connector of IT-Recht Kanzlei – Settings Page
 </p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot2](wp-org/assets/screenshot-2.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot2](https://ps.w.org/agb-connector/assets/screenshot-2.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Registration to the clients’ portal.
 </p>
 
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot5](wp-org/assets/screenshot-5.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot5](https://ps.w.org/agb-connector/assets/screenshot-5.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Overview of legal texts
 </p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot6](wp-org/assets/screenshot-6.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot6](https://ps.w.org/agb-connector/assets/screenshot-6.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Configuration of legal texts</p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot3](wp-org/assets/screenshot-3.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot3](https://ps.w.org/agb-connector/assets/screenshot-3.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Choose shop system</p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot4](wp-org/assets/screenshot-4.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot4](https://ps.w.org/agb-connector/assets/screenshot-4.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – API-Token and Shop URL</p>
 
 
