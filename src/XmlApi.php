@@ -194,10 +194,16 @@ class XmlApi
             return 6;
         }
 
-        if ('impressum' !== (string)$xml->rechtstext_type &&
-            (null === $xml->rechtstext_pdf_url || '' === (string)$xml->rechtstext_pdf_url)
-            ) {
-            return 7;
+        if ('impressum' !== (string)$xml->rechtstext_type) {
+            if (null === $xml->rechtstext_pdf_url || '' === (string)$xml->rechtstext_pdf_url) {
+                return 7;
+            }
+            if (null === $xml->rechtstext_pdf_filename_suggestion || '' === (string)$xml->rechtstext_pdf_filename_suggestion) {
+                return 19;
+            }
+            if (null === $xml->rechtstext_pdf_filenamebase_suggestion || '' === (string)$xml->rechtstext_pdf_filenamebase_suggestion) {
+                return 19;
+            }
         }
 
         if (null === $xml->rechtstext_language || ! array_key_exists(
@@ -261,21 +267,7 @@ class XmlApi
 
         $uploads = wp_upload_dir();
 
-        $fileBaseName = $xml->rechtstext_typ;
-        if (null !== $xml->rechtstext_pdf_filenamebase_suggestion &&
-            '' !== trim((string)$xml->rechtstext_pdf_filenamebase_suggestion)
-        ) {
-            $fileBaseName = trim((string)$xml->rechtstext_pdf_filenamebase_suggestion);
-        }
-        $fileBaseName .= $xml->rechtstext_language . '-' . $xml->rechtstext_country . '.pdf';
-
-        if (null !== $xml->rechtstext_pdf_filename_suggestion &&
-            '' !== trim((string)$xml->rechtstext_pdf_filename_suggestion)
-        ) {
-            $fileBaseName = trim((string)$xml->rechtstext_pdf_filename_suggestion);
-        }
-
-        $file = trailingslashit($uploads['basedir']) . $fileBaseName;
+        $file = trailingslashit($uploads['basedir']) . trim((string)$xml->rechtstext_pdf_filename_suggestion);
 
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
         if (! $pdf || 0 !== strpos($pdf, '%PDF')) {
