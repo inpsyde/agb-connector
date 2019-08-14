@@ -4,8 +4,10 @@
 
 * Added: Support for multilanguage legal texts
 * Added: Legal text page title will now be updated
+* Added: Transmitting of legal page url
 * Changed: PHP 5.4 is now required
 * Changed: Append PDFs also to WooCommerce on hold emails
+* Changed: Get PDF file name from the API
 
 = Version 1.0.4 =
 
