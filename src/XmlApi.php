@@ -119,7 +119,12 @@ class XmlApi
             return $this->returnXml(99);
         }
 
-        return $this->returnXml(0);
+        $targetUrl = '';
+        if ('published' === $post->post_status) {
+            $targetUrl = get_permalink($post);
+        }
+
+        return $this->returnXml(0, $targetUrl);
     }
 
     /**
@@ -228,10 +233,11 @@ class XmlApi
      * Returns the XML answer
      *
      * @param int $code Error code 0 on success.
+     * @param string $targetUrl The url of the site where to find the legal text
      *
      * @return string with xml response
      */
-    private function returnXml($code)
+    private function returnXml($code, $targetUrl = null)
     {
         global $wp_version;
 
@@ -239,6 +245,9 @@ class XmlApi
         $xml->addChild('status', $code ? 'error' : 'success');
         if ($code) {
             $xml->addChild('error', $code);
+        }
+        if (!$code && $targetUrl) {
+            $xml->addChild('target_url', $targetUrl);
         }
         $xml->addChild('meta_shopversion', $wp_version);
         $xml->addChild('meta_modulversion', Plugin::VERSION);
