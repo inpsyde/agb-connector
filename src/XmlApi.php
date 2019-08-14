@@ -370,7 +370,7 @@ class XmlApi
      */
     private function receiveFileContent($url)
     {
-        $response = wp_remote_get($url);
+        $response = wp_remote_get($url, ['timeout' => 30]);
         if (is_wp_error($response) ||
             '200' !== (string)wp_remote_retrieve_response_code($response)
         ) {
