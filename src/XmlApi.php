@@ -198,10 +198,14 @@ class XmlApi
             if (null === $xml->rechtstext_pdf_url || '' === (string)$xml->rechtstext_pdf_url) {
                 return 7;
             }
-            if (null === $xml->rechtstext_pdf_filename_suggestion || '' === (string)$xml->rechtstext_pdf_filename_suggestion) {
+            if (null === $xml->rechtstext_pdf_filename_suggestion ||
+                '' === (string)$xml->rechtstext_pdf_filename_suggestion
+            ) {
                 return 19;
             }
-            if (null === $xml->rechtstext_pdf_filenamebase_suggestion || '' === (string)$xml->rechtstext_pdf_filenamebase_suggestion) {
+            if (null === $xml->rechtstext_pdf_filenamebase_suggestion ||
+                '' === (string)$xml->rechtstext_pdf_filenamebase_suggestion
+            ) {
                 return 19;
             }
         }
@@ -267,7 +271,8 @@ class XmlApi
 
         $uploads = wp_upload_dir();
 
-        $file = trailingslashit($uploads['basedir']) . trim((string)$xml->rechtstext_pdf_filename_suggestion);
+        $file = trailingslashit($uploads['basedir']) .
+                trim((string)$xml->rechtstext_pdf_filename_suggestion);
 
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
         if (! $pdf || 0 !== strpos($pdf, '%PDF')) {
