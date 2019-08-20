@@ -119,48 +119,6 @@ function copyPackageFiles (done)
 }
 
 /**
- * Build Css
- *
- * @param done
- * @returns {Promise<any>}
- */
-function buildCss (done)
-{
-  return new Promise(() => {
-    pump(
-      gulp.src([`${PACKAGE_PATH}/assets/css/**/*.css`]),
-      csso(),
-      rename({ suffix: '.min' }),
-      gulp.dest([
-        `${PACKAGE_PATH}/assets/css/`,
-      ]),
-      done,
-    )
-  })
-}
-
-/**
- * Build JavaScript
- *
- * @param done
- * @returns {Promise<any>}
- */
-function buildJs (done)
-{
-  return new Promise(() => {
-    pump(
-      gulp.src([
-        `${PACKAGE_PATH}/assets/js/**/*.js`,
-      ]),
-      uglify(),
-      rename({ suffix: '.min' }),
-      gulp.dest(`${PACKAGE_PATH}/assets/js/`),
-      done,
-    )
-  })
-}
-
-/**
  * Run composer for Dist
  * @returns {Promise}
  */
@@ -273,15 +231,6 @@ exports.tests = gulp.series(
   phpunit,
 )
 
-/**
- * Run Build Assets
- *
- * @task {buildAssets}
- */
-exports.buildAssets = gulp.series(
-  buildJs,
-  buildCss,
-)
 
 /**
  * Build Package
@@ -295,8 +244,6 @@ exports.dist = gulp.series(
   validatePackageVersion,
   deleteDist,
   copyPackageFiles,
-  buildJs,
-  buildCss,
   composer,
   cleanupDist,
   compressPackage,

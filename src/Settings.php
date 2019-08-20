@@ -60,21 +60,19 @@ class Settings
      */
     public function load()
     {
-        $debug = (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG);
-
         wp_enqueue_style(
             'agb-connector',
-            plugins_url('/assets/css/style.' . (! $debug ? 'min.' : '') . 'css', __DIR__),
+            plugins_url('/assets/css/style.css', __DIR__),
             [],
-            $debug ? time() : Plugin::VERSION,
+            Plugin::VERSION,
             'all'
         );
 
         wp_enqueue_script(
             'agb-connector',
-            plugins_url('/assets/js/settings.' . (! $debug ? 'min.' : '') . 'js', __DIR__),
+            plugins_url('/assets/js/settings.js', __DIR__),
             ['jquery'],
-            $debug ? time() : Plugin::VERSION,
+            Plugin::VERSION,
             true
         );
 
