@@ -237,7 +237,7 @@ class XmlApi
      *
      * @return string with xml response
      */
-    private function returnXml($code, $targetUrl = null)
+    public function returnXml($code, $targetUrl = null)
     {
         global $wp_version;
 
@@ -247,7 +247,10 @@ class XmlApi
             $xml->addChild('error', $code);
         }
         if (!$code && $targetUrl) {
-            $xml->addChild('target_url', $targetUrl);
+            $targetUrlChild = $xml->addChild('target_url');
+            $node = dom_import_simplexml($targetUrlChild);
+            $no = $node->ownerDocument;
+            $node->appendChild($no->createCDATASection($targetUrl));
         }
         $xml->addChild('meta_shopversion', $wp_version);
         $xml->addChild('meta_modulversion', Plugin::VERSION);
