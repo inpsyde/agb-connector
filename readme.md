@@ -16,9 +16,11 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 * Automatic transfer of legal texts from “IT-Recht Kanzlei München” to your WordPress-installation
 * Automatic update of legal texts in WordPress in case of amendments in the clients’ portal
-* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Suitable for both WordPress websites/blogs and WordPress shops, irrespective of your shop system
+* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Simple connection to the clients’ portal of “IT-Recht Kanzlei München” via API-Token and URL
+* Use the shortcodes [agb_terms], [agb_privacy], [agb_revocation], [agb_imprint] to output the legal text e.g. in a page builder element.
+* Supports multilanguage legal texts
 
 ### Benefits
 
@@ -30,7 +32,7 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 ### Support 
 
-You can find technical support for this plugin in the wordpress.org forum: https://wordpress.org/support/plugin/agb-connector
+You can find technical support for this plugin in the [wordpress.org forum](https://wordpress.org/support/plugin/agb-connector).
 
 Please read the FAQ (frequently asked questions) (https://wordpress.org/support/plugin/agb-connector/faq) first and make sure you have installed the newest version of the plugin before contacting us.
 
@@ -41,7 +43,7 @@ If you have questions concerning the legal texts, please contact “IT-Recht Kan
 ## Installation
 
 ### Minimum requirements
-* WordPress version >= 4.0
+* WordPress version >= 4.4
 * PHP Version >= 5.4.0
 * Access to a protection package of “IT-Recht Kanzlei München”
 
