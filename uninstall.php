@@ -1,15 +1,16 @@
 <?php
 /**
  * The uninstall routine.
- *
- * @package agb-connector
  */
+use Inpsyde\AGBConnector\Plugin;
 
-// If uninstall not called from WordPress exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	die();
+if (! defined('WP_UNINSTALL_PLUGIN')) {
+    die();
 }
 
-delete_option( 'agb_connector_user_auth_token' );
-delete_option( 'agb_connector_text_types_allocation' );
-delete_option( 'agb_connector_wc_append_email' );
+if (! class_exists('Inpsyde\AGBConnector\Plugin')) {
+    require_once __DIR__ . '/src/Plugin.php';
+}
+
+delete_option(Plugin::OPTION_USER_AUTH_TOKEN);
+delete_option(Plugin::OPTION_TEXT_ALLOCATIONS);

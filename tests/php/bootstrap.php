@@ -1,15 +1,50 @@
 <?php # -*- coding: utf-8 -*-
-$parent_dir = dirname( dirname( __DIR__ ) ) . '/';
-$vendor = $parent_dir . '/vendor/';
-if ( ! realpath( $vendor ) ) {
-	die('Please run composer install before running the tests.');
+require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+
+
+function __($text) {
+    return $text;
 }
 
-require_once $vendor . 'antecedent/patchwork/Patchwork.php';
-require_once $vendor . '/autoload.php';
+function wp_remote_get($url)
+{
 
-require_once $parent_dir . 'agb-connector.php';
-require_once $parent_dir . 'inc/AGB_Connector_API.php';
+    if ( ! file_exists($url)) {
+        return false;
+    }
+    $content = file_get_contents($url, false);
 
-unset( $vendor );
-unset( $parent_dir );
+    if ( ! $content) {
+        return false;
+    }
+
+    return array(
+        'body' => $content,
+        'response' => array(
+            'code' => 200,
+        ),
+    );
+}
+
+function is_wp_error($possible_error)
+{
+    if (false === $possible_error) {
+        return true;
+    }
+
+    return false;
+}
+
+function wp_remote_retrieve_body($response)
+{
+    if ( ! isset($response['body'])) {
+        return '';
+    }
+
+    return $response['body'];
+}
+
+function wp_remote_retrieve_response_code($response)
+{
+    return $response['response']['code'];
+}

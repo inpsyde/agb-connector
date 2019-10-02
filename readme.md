@@ -1,8 +1,9 @@
 # Terms & Conditions Connector of IT-Recht Kanzlei
 
-
 Transfers the legal texts of “IT-Recht Kanzlei München” via API into your WordPress-installation and keeps your judicial pages up to date.
-![banner-772x250](https://cloud.githubusercontent.com/assets/9631681/22733302/7cc30b92-edf1-11e6-9346-1c6e94ebad4d.png)
+
+![https://www.it-recht-kanzlei.de/agb-starterpaket.php](https://ps.w.org/agb-connector/assets/banner-772x250.png)
+
 ## Description
 
 Due to the **Terms & Conditions Connector of IT-Recht Kanzlei**, the legal texts needn’t be transferred from the clients’ portal to your website by yourself.
@@ -15,9 +16,11 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 * Automatic transfer of legal texts from “IT-Recht Kanzlei München” to your WordPress-installation
 * Automatic update of legal texts in WordPress in case of amendments in the clients’ portal
-* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Suitable for both WordPress websites/blogs and WordPress shops, irrespective of your shop system
+* Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Simple connection to the clients’ portal of “IT-Recht Kanzlei München” via API-Token and URL
+* Use the shortcodes [agb_terms], [agb_privacy], [agb_revocation], [agb_imprint] to output the legal text e.g. in a page builder element.
+* Supports multilanguage legal texts
 
 ### Benefits
 
@@ -29,7 +32,7 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 
 ### Support 
 
-You can find technical support for this plugin in the wordpress.org forum: https://wordpress.org/support/plugin/agb-connector
+You can find technical support for this plugin in the [wordpress.org forum](https://wordpress.org/support/plugin/agb-connector).
 
 Please read the FAQ (frequently asked questions) (https://wordpress.org/support/plugin/agb-connector/faq) first and make sure you have installed the newest version of the plugin before contacting us.
 
@@ -40,8 +43,8 @@ If you have questions concerning the legal texts, please contact “IT-Recht Kan
 ## Installation
 
 ### Minimum requirements
-* WordPress version >= 4.0
-* PHP Version >= 5.2.4
+* WordPress version >= 4.4
+* PHP Version >= 5.4.0
 * Access to a protection package of “IT-Recht Kanzlei München”
 
 ### Installation via WordPress Backend
@@ -82,35 +85,27 @@ Yes. The plugin does not distinguish shops or “simple” websites. The only th
 No. The plugin does not require special demands for your WordPress shop. Merely, there must be the appropriate pages to transfer the legal texts.
 
 ## Screenshots
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](https://cloud.githubusercontent.com/assets/9631681/22927243/8ab225da-f2b0-11e6-8ca9-1f3d2ba65dda.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](https://ps.w.org/agb-connector/assets/screenshot-1.png)
 <p style="text-align: center;">Terms & Conditions Connector of IT-Recht Kanzlei – Settings Page
 </p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot2](https://cloud.githubusercontent.com/assets/9631681/20758876/84595fb2-b71b-11e6-9fdc-b8d14fdb0d24.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot2](https://ps.w.org/agb-connector/assets/screenshot-2.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Registration to the clients’ portal.
 </p>
 
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot5](https://cloud.githubusercontent.com/assets/9631681/20758874/8452e13c-b71b-11e6-9d81-d5975e933e2a.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot5](https://ps.w.org/agb-connector/assets/screenshot-5.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Overview of legal texts
 </p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot6](https://cloud.githubusercontent.com/assets/9631681/20758877/846d0e36-b71b-11e6-8f92-d119db42b523.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot6](https://ps.w.org/agb-connector/assets/screenshot-6.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Configuration of legal texts</p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot3](https://cloud.githubusercontent.com/assets/9631681/20758873/8451e9a8-b71b-11e6-856d-bcbbc9191170.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot3](https://ps.w.org/agb-connector/assets/screenshot-3.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – Choose shop system</p>
 
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot4](https://cloud.githubusercontent.com/assets/9631681/20758875/8457d962-b71b-11e6-8ac3-fe3bd95acb01.png)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot4](https://ps.w.org/agb-connector/assets/screenshot-4.png)
 <p style="text-align: center;">Protection package of IT-Recht Kanzlei München – API-Token and Shop URL</p>
 
 
-## Upgrade Notice
-
-
-## Changelog
-### Version 1.0  
-Stable tag: 1.0  
-License: GPLv3  
-License URI: http://www.gnu.org/licenses/gpl-3.0.html  
 
