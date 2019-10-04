@@ -9,7 +9,6 @@
  * Author URI: http://inpsyde.com
  * Version: 2.0.0
  * Text Domain: agb-connector
- * Domain Path: /languages/
  * License: GPLv2+
  */
 

@@ -43,7 +43,7 @@ If you have questions concerning the legal texts, please contact “IT-Recht Kan
 ## Installation
 
 ### Minimum requirements
-* WordPress version >= 4.4
+* WordPress version >= 4.6
 * PHP Version >= 5.4.0
 * Access to a protection package of “IT-Recht Kanzlei München”
 
