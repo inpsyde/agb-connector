@@ -85,7 +85,7 @@ Yes. The plugin does not distinguish shops or “simple” websites. The only th
 No. The plugin does not require special demands for your WordPress shop. Merely, there must be the appropriate pages to transfer the legal texts.
 
 ## Screenshots
-![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](https://ps.w.org/agb-connector/assets/screenshot-1.png?rev=2167983)
+![Terms & Conditions Connector of IT-Recht Kanzlei - Screenshot1](https://ps.w.org/agb-connector/assets/screenshot-1.png?rev=2169425)
 <p style="text-align: center;">Terms & Conditions Connector of IT-Recht Kanzlei – Settings Page
 </p>
 
