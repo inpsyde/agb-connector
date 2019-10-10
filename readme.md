@@ -20,7 +20,7 @@ To use this plugin, you need an access to the clients’ portal of “IT-Recht K
 * Appends selected legal texts as PDF to the WooCommerce-Email “New Order”
 * Simple connection to the clients’ portal of “IT-Recht Kanzlei München” via API-Token and URL
 * Use the shortcodes [agb_terms], [agb_privacy], [agb_revocation], [agb_imprint] to output the legal text e.g. in a page builder element.
-* Supports multilanguage legal texts
+* Supports foreign / foreign language legal texts
 
 ### Benefits
 
