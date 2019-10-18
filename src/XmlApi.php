@@ -354,7 +354,7 @@ class XmlApi
             return false;
         }
 
-        return $wp_filesystem->put_contents($file, $content, FS_CHMOD_FILE);
+        return $wp_filesystem->put_contents($file, $content);
     }
 
     /**
