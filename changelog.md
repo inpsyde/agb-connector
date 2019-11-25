@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.1
+
+* Fixed: WPML Support: translated pages can't be selected
+* Fixed: Saved Page ID when no PAge is selected
+* Fixed: Error message in API when legal page is not configured for text type
+
 ## Version 2.0.0
 
 * Added: Support for multilanguage legal texts

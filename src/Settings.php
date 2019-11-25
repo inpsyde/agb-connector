@@ -122,7 +122,7 @@ class Settings
                     ];
                     $allocation['page_id'] = \wp_insert_post($postArray);
                 }
-                if (! get_post(absint($allocation['page_id']))) {
+                if ($allocation['page_id'] <= 0 || ! get_post(absint($allocation['page_id']))) {
                     continue;
                 }
                 $textAllocations[$type][] = [
@@ -486,8 +486,10 @@ class Settings
         $output .= "\t<option value=\"create\">" .
                    esc_html__('&mdash; Create new page &mdash;', 'agb-connector') . "</option>\n";
 
-        $pages = get_pages([
+        $pages = get_posts([
             'post_status' => ['publish', 'draft', 'pending', 'future'],
+            'post_type' => 'page',
+            'suppress_filters' => true,
         ]);
 
         if ($pages) {
