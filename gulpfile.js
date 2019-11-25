@@ -108,7 +108,7 @@ function copyPackageFiles (done)
         './agb-connector.php',
         './composer.json',
         './uninstall.php',
-        //'./LICENSE',
+        './LICENSE',
       ], {
         base: './',
       }),
