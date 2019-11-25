@@ -79,7 +79,9 @@ class XmlApi
             return $this->returnXml($error);
         }
 
-        if (! $this->checkConfiguration() || ! isset($this->textAllocations[(string)$xml->rechtstext_type])) {
+        if (! $this->checkConfiguration() ||
+            ! isset($this->textAllocations[(string)$xml->rechtstext_type])
+        ) {
             return $this->returnXml(80);
         }
 
