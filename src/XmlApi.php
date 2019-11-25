@@ -60,6 +60,7 @@ class XmlApi
      *
      * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      * phpcs:disable Generic.Metrics.NestingLevel.TooHigh
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      *
      * @param string $xml XML from push.
      *
