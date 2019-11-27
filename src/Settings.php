@@ -490,6 +490,7 @@ class Settings
             'post_status' => ['publish', 'draft', 'pending', 'future'],
             'post_type' => 'page',
             'suppress_filters' => true,
+            'numberposts' => -1
         ]);
 
         if ($pages) {
