@@ -347,8 +347,7 @@ class Settings
                 'wcOrderEmailAttachment' => false,
             ];
         }
-        $emptyPages = $this->dropdownPages($type, '\' + size + \'', -1);
-        $emptyPages = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyPages);
+        $emptyPages = $this->dropdownPages(-1);
 
         $emptyCountryOptions = '';
         foreach (XmlApi::supportedCountries() as $countryCode => $countryText) {
@@ -356,7 +355,6 @@ class Settings
                                     selected($country, $countryCode, false) .
                                     '>' . $countryText . '</option>';
         }
-        $emptyCountryOptions = str_replace(["\n", '\'', '&#039;'], ['', '"', '\''], $emptyCountryOptions);
 
         $emptyLanguageOptions = '';
         foreach (XmlApi::supportedLanguages() as $languageCode => $languageText) {
@@ -364,11 +362,6 @@ class Settings
                                      selected($language, $languageCode, false) .
                                      '>' . $languageText . '</option>';
         }
-        $emptyLanguageOptions = str_replace(
-            ["\n", '\'', '&#039;'],
-            ['', '"', '\''],
-            $emptyLanguageOptions
-        );
         ?>
         <div class="<?php echo esc_attr($type); ?>_input_table_wrapper">
             <table class="widefat <?php echo esc_attr($type); ?>_input_table" cellspacing="0">
@@ -389,7 +382,6 @@ class Settings
                 if ($allocations) {
                     foreach ($allocations as $allocation) {
                         $i++;
-
                         echo '<tr class="' . esc_attr($type) . '_page">';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
@@ -407,7 +399,10 @@ class Settings
                                  '>' . esc_attr($languageText) . '</option>';
                         }
                         echo '</select></td>';
-                        echo '<td>' . $this->dropdownPages($type, $i, (int)$allocation['pageId']) . '</td>';  //phpcs:ignore
+                        echo '<td><select name="text_allocation[' .
+                            esc_attr($type) . '][' . esc_attr($i) . '][page_id]" size="1">';
+                        echo $this->dropdownPages((int)$allocation['pageId']);  //phpcs:ignore
+                        echo '</select></td>';
                         if ($wcEmail) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
@@ -440,14 +435,18 @@ class Settings
                     jQuery('<tr class="<?php echo esc_attr($type); ?>_page">\
                                 <td>\
                                     <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][country]" size="1">\
-                                    <?php echo $emptyCountryOptions; //phpcs:ignore?>\
+                                    <?php echo substr(json_encode($emptyCountryOptions, JSON_HEX_APOS), 1, -1); //phpcs:ignore?>\
+                                    </select>\
                                 </td>\
                                 <td>\
                                     <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][language]" size="1">\
-                                    <?php echo $emptyLanguageOptions; //phpcs:ignore ?>\
+                                    <?php echo substr(json_encode($emptyLanguageOptions, JSON_HEX_APOS), 1, -1); //phpcs:ignore ?>\
+                                    </select>\
                                     </td>\
                                 <td>\
-                                    <?php echo $emptyPages; //phpcs:ignore ?>\
+                                    <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][page_id]" size="1">\
+                                    <?php echo substr(json_encode($emptyPages, JSON_HEX_APOS), 1, -1); //phpcs:ignore ?>\
+                                    </select>\
                                 </td>\<?php if ($wcEmail) { //phpcs:ignore ?>
                                 <td>\
                                     <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
@@ -470,18 +469,13 @@ class Settings
     /**
      * Pages Dropdown
      *
-     * @param string $type
-     * @param string $iterator
      * @param int $selected
      *
      * @return string
      */
-    private function dropdownPages($type, $iterator, $selected)
+    private function dropdownPages($selected)
     {
-        $output = '<select name="text_allocation[' . esc_attr($type) . '][' . esc_attr($iterator) .
-                  '][page_id]" id="text_allocation[' . esc_attr($type) . '][' . esc_attr($iterator) .
-                  "][page_id]\">\n";
-        $output .= "\t<option value=\"-1\">" . esc_html__('&mdash; Select &mdash;', 'agb-connector') .
+        $output = "\t<option value=\"-1\">" . esc_html__('&mdash; Select &mdash;', 'agb-connector') .
                    "</option>\n";
         $output .= "\t<option value=\"create\">" .
                    esc_html__('&mdash; Create new page &mdash;', 'agb-connector') . "</option>\n";
@@ -501,7 +495,6 @@ class Settings
                     'selected' => $selected,
             ]);
         }
-        $output .= "</select>\n";
 
         return $output;
     }

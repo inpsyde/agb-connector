@@ -5,6 +5,7 @@
 * Fixed: WPML Support: translated pages can't be selected
 * Fixed: Saved Page ID when no PAge is selected
 * Fixed: Error message in API when legal page is not configured for text type
+* Fixed: Adding new site will not work when special chars in site title
 
 ## Version 2.0.0
 
