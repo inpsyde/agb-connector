@@ -490,7 +490,9 @@ class Settings
             'post_status' => ['publish', 'draft', 'pending', 'future'],
             'post_type' => 'page',
             'suppress_filters' => true,
-            'numberposts' => -1
+            'numberposts' => -1,
+            'order' => 'ASC',
+            'orderby' => 'post_title',
         ]);
 
         if ($pages) {
