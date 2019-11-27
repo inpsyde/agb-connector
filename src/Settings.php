@@ -442,7 +442,7 @@ class Settings
                                     <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][language]" size="1">\
                                     <?php echo substr(json_encode($emptyLanguageOptions, JSON_HEX_APOS), 1, -1); //phpcs:ignore ?>\
                                     </select>\
-                                    </td>\
+                                </td>\
                                 <td>\
                                     <select name="text_allocation[<?php echo esc_attr($type); ?>][' + size + '][page_id]" size="1">\
                                     <?php echo substr(json_encode($emptyPages, JSON_HEX_APOS), 1, -1); //phpcs:ignore ?>\
