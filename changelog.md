@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.0.2
+* Fixed: Fixed displaying of Shop URL when WPML is used
+
 ## Version 2.0.1
 
 * Fixed: WPML Support: translated pages can't be selected

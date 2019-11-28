@@ -212,7 +212,18 @@ class Settings
                                     <?php esc_html_e('Your shop URL', 'agb-connector'); ?>
                                 </label>
                             </th>
-                            <td><p><code><?php echo esc_attr(home_url()); ?></code></p></td>
+                            <td>
+                                <p>
+                                    <code>
+                                        <?php
+                                            //Directly use option that that WPML can't change it
+                                            $homeUrl = trailingslashit(get_option('home'));
+                                            $homeUrl = set_url_scheme($homeUrl);
+                                            echo esc_attr($homeUrl);
+                                        ?>
+                                    </code>
+                                </p>
+                            </td>
                         </tr>
                         <tr valign="top">
                             <th scope="row">
@@ -220,7 +231,8 @@ class Settings
                                     <?php esc_html_e('API-Token', 'agb-connector'); ?>
                                 </label>
                             </th>
-                            <td><p>
+                            <td>
+                                <p>
                                     <code><?php echo esc_attr(get_option(Plugin::OPTION_USER_AUTH_TOKEN)); ?></code>
                                     <a class="button" href="
                                     <?php echo esc_url(
@@ -480,6 +492,7 @@ class Settings
         $output .= "\t<option value=\"create\">" .
                    esc_html__('&mdash; Create new page &mdash;', 'agb-connector') . "</option>\n";
 
+        //Use get_posts with suppress_filters so that we get unfiltered pages list (work with WPML)
         $pages = get_posts([
             'post_status' => ['publish', 'draft', 'pending', 'future'],
             'post_type' => 'page',
