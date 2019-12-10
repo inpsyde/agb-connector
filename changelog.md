@@ -2,6 +2,7 @@
 
 ## Version 2.0.2
 * Fixed: Fixed displaying of Shop URL when WPML is used
+* Fixed: Error on reset password page because of type checking
 
 ## Version 2.0.1
 

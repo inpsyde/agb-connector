@@ -88,7 +88,7 @@ class Plugin
      *
      * @return array
      */
-    public function attachPdfToEmail(array $attachments, $status, $order)
+    public function attachPdfToEmail($attachments, $status, $order)
     {
         $validStatuses = [
             'customer_on_hold_order',
