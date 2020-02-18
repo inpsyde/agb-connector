@@ -2,6 +2,15 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Exception;
+use Inpsyde\AGBConnector\customExceptions\countryException;
+use Inpsyde\AGBConnector\customExceptions\generalException;
+use Inpsyde\AGBConnector\customExceptions\languageException;
+use Inpsyde\AGBConnector\customExceptions\pdfMD5Exception;
+use Inpsyde\AGBConnector\customExceptions\pdfUrlException;
+use Inpsyde\AGBConnector\customExceptions\postPageException;
+use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
+
 /**
  * Class XmlApi
  */
@@ -75,39 +84,58 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
-        $error = $this->checkXmlForError($xml);
+        $handler = new MiddlewareRequestHandler($this->userAuthToken, $this->textAllocations);
+        $error = $handler->handle($xml);
         if ($error) {
-            return $this->returnXml($error);
+            return $this->returnXmlWithError($error);
         }
 
-        if (! $this->checkConfiguration() ||
-            ! isset($this->textAllocations[(string)$xml->rechtstext_type])
-        ) {
-            return $this->returnXml(80);
-        }
-
-        if ('push' !== (string)$xml->action) {
-            return $this->returnXml(10);
-        }
-
-        $foundAllocation = $this->findAllocation($xml);
-        if (! $foundAllocation) {
-            $foundCountry = false;
-            foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-                if ((string)$xml->rechtstext_country === $allocation['country']) {
-                    $foundCountry = true;
-                    break;
+        try {
+            $foundAllocation = $this->findAllocation($xml);
+            if (! $foundAllocation) {
+                $foundCountry = false;
+                foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
+                    if ((string)$xml->rechtstext_country === $allocation['country']) {
+                        $foundCountry = true;
+                        break;
+                    }
                 }
+                if (!$foundCountry) {
+                    throw new countryException(
+                        "Country Exception: not found {$xml->rechtstext_country} provided",
+                        17
+                    );
+                }
+                throw new languageException(
+                    'languageException: Allocation not found',
+                    9
+                );
             }
-            if (! $foundCountry) {
-                return $this->returnXml(17);
-            }
-            return $this->returnXml(9);
+        }
+        catch (countryException $exception) {
+            return $this->returnXmlWithError($exception);
+        }
+        catch (languageException $exception) {
+            return $this->returnXmlWithError($exception);
         }
 
-        $post = get_post($foundAllocation['pageId']);
-        if (! $post instanceof \WP_Post || 'trash' === $post->post_status) {
-            return $this->returnXml(81);
+        try {
+            $post = get_post($foundAllocation['pageId']);
+            if (! $post instanceof \WP_Post) {
+                throw new postPageException(
+                    'postPageException: not a Post provided',
+                    81
+                );
+            }
+            if ('trash' === $post->post_status) {
+                throw new postPageException(
+                    'postPageException: Post status trash',
+                    81
+                );
+            }
+        }
+        catch (postPageException $exception){
+            return $this->returnXmlWithError($exception);
         }
 
         $post->post_title = trim($xml->rechtstext_title);
@@ -115,11 +143,17 @@ class XmlApi
 
         $error = $this->pushPdfFile($xml);
         if ($error) {
-            return $this->returnXml($error);
+            return $this->returnXmlWithError($error);
         }
-
-        if (! $this->savePost($post)) {
-            return $this->returnXml(99);
+        try {
+            if (! $this->savePost($post)) {
+                throw new generalException(
+                    'generalException: savePost failed',
+                    99
+                );
+            }
+        }catch (generalException $exception){
+            return $this->returnXmlWithError($exception);
         }
 
         $targetUrl = '';
@@ -127,133 +161,55 @@ class XmlApi
             $targetUrl = get_permalink($post);
         }
 
-        return $this->returnXml(0, $targetUrl);
+        return $this->returnXmlWithSuccess(0, $targetUrl);
     }
 
     /**
-     * Check XML for errors.
-     *
-     * @since 1.1.0
-     *
-     * @return bool
-     */
-    public function checkConfiguration()
-    {
-        if (! $this->userAuthToken) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Check XML for errors.
-     *
-     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
-     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
-     *
-     * @since 1.0.0
-     *
-     * @param \SimpleXMLElement $xml The XML object.
-     *
-     * @return int Error code
-     */
-    public function checkXmlForError($xml)
-    {
-        if (! $xml || ! $xml instanceof \SimpleXMLElement) {
-            return 12;
-        }
-
-        if (self::VERSION !== (string)$xml->api_version) {
-            return 1;
-        }
-
-        if (self::USERNAME !== (string)$xml->api_username &&
-            self::PASSWORD !== (string)$xml->api_password
-        ) {
-            return 2;
-        }
-
-        if (null === $xml->user_auth_token || (string)$xml->user_auth_token !== $this->userAuthToken) {
-            return 3;
-        }
-
-        if (null === $xml->rechtstext_type ||
-            ! \array_key_exists((string)$xml->rechtstext_type, self::supportedTextTypes())
-        ) {
-            return 4;
-        }
-
-        if (null === $xml->rechtstext_country ||
-            ! array_key_exists((string)$xml->rechtstext_country, self::supportedCountries())
-        ) {
-            return 17;
-        }
-
-        if (null === $xml->rechtstext_title || strlen((string)$xml->rechtstext_title) < 3) {
-            return 18;
-        }
-
-        if (null === $xml->rechtstext_text || strlen((string)$xml->rechtstext_text) < 50) {
-            return 5;
-        }
-
-        if (null === $xml->rechtstext_html || strlen((string)$xml->rechtstext_html) < 50) {
-            return 6;
-        }
-
-        if ('impressum' !== (string)$xml->rechtstext_type) {
-            if (null === $xml->rechtstext_pdf_url || '' === (string)$xml->rechtstext_pdf_url) {
-                return 7;
-            }
-            if (null === $xml->rechtstext_pdf_filename_suggestion ||
-                '' === (string)$xml->rechtstext_pdf_filename_suggestion
-            ) {
-                return 19;
-            }
-            if (null === $xml->rechtstext_pdf_filenamebase_suggestion ||
-                '' === (string)$xml->rechtstext_pdf_filenamebase_suggestion
-            ) {
-                return 19;
-            }
-        }
-
-        if (null === $xml->rechtstext_language || ! array_key_exists(
-            (string)$xml->rechtstext_language,
-            self::supportedLanguages()
-        )) {
-            return 9;
-        }
-
-        if (null === $xml->action || 'push' !== (string)$xml->action) {
-            return 10;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Returns the XML answer
+     * Returns the XML positive answer
      *
      * @param int $code Error code 0 on success.
      * @param string $targetUrl The url of the site where to find the legal text
      *
      * @return string with xml response
      */
-    public function returnXml($code, $targetUrl = null)
+    public function returnXmlWithSuccess($code, $targetUrl= null)
     {
         global $wp_version;
 
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
-        $xml->addChild('status', $code ? 'error' : 'success');
-        if ($code) {
-            $xml->addChild('error', $code);
-        }
+        $xml->addChild('status', 'success');
         if (!$code && $targetUrl) {
             $targetUrlChild = $xml->addChild('target_url');
             $node = dom_import_simplexml($targetUrlChild);
             $no = $node->ownerDocument;
             $node->appendChild($no->createCDATASection($targetUrl));
+        }
+        $xml->addChild('meta_shopversion', $wp_version);
+        $xml->addChild('meta_modulversion', Plugin::VERSION);
+        $xml->addChild('meta_phpversion', PHP_VERSION);
+
+        return $xml->asXML();
+    }
+
+    /**
+     * Returns the XML answer with the error
+     *
+     * @param Exception $exception Error code 0 on success.
+     *
+     * @return string with xml response
+     */
+    public function returnXmlWithError($exception)
+    {
+        global $wp_version;
+
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
+        $xml->addChild('status',  'error');
+        if ($exception) {
+            $xml->addChild('error', $exception->getCode());
+            $messageChild = $xml->addChild('error_message');
+            $node = dom_import_simplexml($messageChild);
+            $no = $node->ownerDocument;
+            $node->appendChild($no->createCDATASection($exception->getMessage()));
         }
         $xml->addChild('meta_shopversion', $wp_version);
         $xml->addChild('meta_modulversion', Plugin::VERSION);
@@ -276,10 +232,16 @@ class XmlApi
         if ('impressum' === (string)$xml->rechtstext_type) {
             return 0;
         }
-
-        $foundAllocation = $this->findAllocation($xml);
-        if (! $foundAllocation) {
-            return 9;
+        try {
+            $foundAllocation = $this->findAllocation($xml);
+            if (! $foundAllocation) {
+                throw new languageException(
+                    'languageException: Allocation not found',
+                    9
+                );
+            }
+        }catch (languageException $exception){
+            return $exception;
         }
 
         require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -289,19 +251,49 @@ class XmlApi
         $file = trailingslashit($uploads['basedir']) .
                 trim((string)$xml->rechtstext_pdf_filename_suggestion);
 
-        $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
-        if (! $pdf || 0 !== strpos($pdf, '%PDF')) {
-            return 7;
+        try {
+            $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
+            if (! $pdf ) {
+                throw new pdfUrlException(
+                    'pdfUrlException: pdf not found',
+                    7
+                );
+            }
+            if (0 !== strpos($pdf, '%PDF')) {
+                throw new pdfUrlException(
+                    'pdfUrlException: file is not pdf',
+                    7
+                );
+            }
+        }catch (pdfUrlException $exception){
+            return $exception;
         }
-        if (null === $xml->rechtstext_pdf_md5hash ||
-            (string)$xml->rechtstext_pdf_md5hash !== md5($pdf)
-        ) {
-            return 8;
+        try {
+            if (null === $xml->rechtstext_pdf_md5hash ) {
+                throw new pdfMD5Exception(
+                    'pdfMD5Exception: pdf MD5 is null',
+                    8
+                );
+            }
+            if ((string)$xml->rechtstext_pdf_md5hash !== md5($pdf)) {
+                throw new pdfMD5Exception(
+                    'pdfMD5Exception: MD5 hash does not match',
+                    8
+                );
+            }
+        }catch (pdfMD5Exception $exception){
+            return $exception;
         }
-
-        $result = $this->writeContentToFile($file, $pdf);
-        if (! $result) {
-            return 7;
+        try {
+            $result = $this->writeContentToFile($file, $pdf);
+            if (! $result ) {
+                throw new pdfUrlException(
+                    'pdfUrlException: writeContentToFile failed. Result not found',
+                    7
+                );
+            }
+        }catch (pdfUrlException $exception){
+            return $exception;
         }
 
         $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
@@ -322,10 +314,22 @@ class XmlApi
             'file' => $file,
             'post_title' => $title,
         ];
-
-        $attachmentId = wp_insert_attachment($args);
-        if (! $attachmentId || is_wp_error($attachmentId)) {
-            return 7;
+        try {
+            $attachmentId = wp_insert_attachment($args);
+            if (! $attachmentId ) {
+                throw new pdfUrlException(
+                    'pdfUrlException: wp_insert_attachment failed. $attachmentId not found',
+                    7
+                );
+            }
+            if (is_wp_error($attachmentId)) {
+                throw new pdfUrlException(
+                    'pdfUrlException: is_wp_error thrown',
+                    7
+                );
+            }
+        }catch (pdfUrlException $exception){
+            return $exception;
         }
 
         wp_generate_attachment_metadata($attachmentId, $file);
