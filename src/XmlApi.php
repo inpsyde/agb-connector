@@ -140,7 +140,6 @@ class XmlApi
 
         $post->post_title = trim($xml->rechtstext_title);
         $post->post_content = trim($xml->rechtstext_html);
-
         $error = $this->pushPdfFile($xml);
         if ($error) {
             return $this->returnXmlWithError($error);
