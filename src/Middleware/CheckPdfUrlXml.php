@@ -15,26 +15,26 @@ class CheckPdfUrlXml extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|pdfUrlException\
+     * @return Exception|PdfUrlException|int
      */
     public function process($xml)
     {
         try {
-            if ('impressum' !== (string)$xml->rechtstext_type) {
-                if (null === $xml->rechtstext_pdf_url) {
-                    throw new PdfUrlException(
-                        "PdfUrlException: null provided",
-                        7
-                    );
-                }
-                if ('' === (string)$xml->rechtstext_pdf_url) {
-                    throw new PdfUrlException(
-                        "PdfUrlException: empty string",
-                        7
-                    );
-                }
+            if ('impressum' === (string)$xml->rechtstext_type) {
+                return parent::process($xml);
             }
-            return parent::process($xml);
+            if (null === $xml->rechtstext_pdf_url) {
+                throw new PdfUrlException(
+                    "PdfUrlException: null provided",
+                    7
+                );
+            }
+            if ('' === (string)$xml->rechtstext_pdf_url) {
+                throw new PdfUrlException(
+                    "PdfUrlException: empty string",
+                    7
+                );
+            }
         } catch (PdfUrlException $exception) {
             return $exception;
         }

@@ -62,7 +62,7 @@ class MiddlewareRequestHandler
     /**
      * The client can configure the chain of middleware objects.
      */
-    public function setMiddleware(Middleware $middleware)
+    public function chainOfMiddleware(Middleware $middleware)
     {
         $this->middleware = $middleware;
     }
