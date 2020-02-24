@@ -1,9 +1,12 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
-
+/**
+ * Class Middleware
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 abstract class Middleware
 {
     /**

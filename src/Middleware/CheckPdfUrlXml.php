@@ -1,18 +1,21 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\pdfUrlException;
 
-use Inpsyde\AGBConnector\customExceptions\pdfUrlException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckPdfUrlXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckPdfUrlXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|pdfUrlException\
+     * @return bool|Exception|pdfUrlException\
      */
     public function process($xml)
     {

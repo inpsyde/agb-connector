@@ -1,18 +1,21 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\textException;
 
-use Inpsyde\AGBConnector\customExceptions\textException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckTextXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckTextXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|textException\
+     * @return bool|Exception|textException\
      */
     public function process($xml)
     {

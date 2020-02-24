@@ -3,13 +3,14 @@
 namespace Inpsyde\AGBConnector;
 
 use Exception;
-use Inpsyde\AGBConnector\customExceptions\countryException;
-use Inpsyde\AGBConnector\customExceptions\generalException;
-use Inpsyde\AGBConnector\customExceptions\languageException;
-use Inpsyde\AGBConnector\customExceptions\pdfMD5Exception;
-use Inpsyde\AGBConnector\customExceptions\pdfUrlException;
-use Inpsyde\AGBConnector\customExceptions\postPageException;
+use Inpsyde\AGBConnector\CustomExceptions\countryException;
+use Inpsyde\AGBConnector\CustomExceptions\generalException;
+use Inpsyde\AGBConnector\CustomExceptions\languageException;
+use Inpsyde\AGBConnector\CustomExceptions\pdfMD5Exception;
+use Inpsyde\AGBConnector\CustomExceptions\pdfUrlException;
+use Inpsyde\AGBConnector\CustomExceptions\postPageException;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
+use SimpleXMLElement;
 
 /**
  * Class XmlApi
@@ -175,7 +176,7 @@ class XmlApi
     {
         global $wp_version;
 
-        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status', 'success');
         if (!$code && $targetUrl) {
             $targetUrlChild = $xml->addChild('target_url');
@@ -201,7 +202,7 @@ class XmlApi
     {
         global $wp_version;
 
-        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status',  'error');
         if ($exception) {
             $xml->addChild('error', $exception->getCode());
@@ -222,11 +223,11 @@ class XmlApi
      *
      * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      *
-     * @param \SimpleXMLElement $xml The XML Object.
+     * @param SimpleXMLElement $xml The XML Object.
      *
-     * @return int returns error code
+     * @return int|Exception returns error code
      */
-    private function pushPdfFile(\SimpleXMLElement $xml)
+    private function pushPdfFile(SimpleXMLElement $xml)
     {
         if ('impressum' === (string)$xml->rechtstext_type) {
             return 0;
@@ -401,11 +402,11 @@ class XmlApi
     /**
      * Find the Allocation for that XML request
      *
-     * @param \SimpleXMLElement $xml
+     * @param SimpleXMLElement $xml
      *
      * @return array
      */
-    private function findAllocation(\SimpleXMLElement $xml)
+    private function findAllocation(SimpleXMLElement $xml)
     {
         $foundAllocation = [];
 

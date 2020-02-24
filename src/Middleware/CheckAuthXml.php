@@ -1,14 +1,20 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\authException;
 
-use Inpsyde\AGBConnector\customExceptions\authException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckAuthXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckAuthXml extends Middleware
 {
+    /**
+     * @var API $userAuth
+     */
     private $userAuth;
     /**
      * CheckAuthXml constructor.
@@ -19,11 +25,9 @@ class CheckAuthXml extends Middleware
     }
 
     /**
-     * @param      $xml
+     * @param $xml
      *
-     * @param null $userAuthToken
-     *
-     * @return bool|\Exception|authException
+     * @return Exception|authException|int
      */
     public function process($xml)
     {

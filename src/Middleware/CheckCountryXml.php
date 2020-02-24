@@ -1,18 +1,22 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
-
-use Inpsyde\AGBConnector\customExceptions\countryException;
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\countryException;
 use Inpsyde\AGBConnector\XmlApi;
 
+/**
+ * Class CheckCountryXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckCountryXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|countryException
+     * @return bool|Exception|countryException
      */
     public function process($xml)
     {
@@ -25,7 +29,7 @@ class CheckCountryXml extends Middleware
             }
             if (! array_key_exists((string)$xml->rechtstext_country, XmlApi::supportedCountries())) {
                 throw new countryException(
-                    'Country Exception: not supported',
+                    "Country Exception: provided {$xml->rechtstext_country} is not supported",
                     17
                 );
             }

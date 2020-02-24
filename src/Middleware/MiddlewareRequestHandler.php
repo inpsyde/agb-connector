@@ -1,18 +1,28 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\notSimpleXmlInstanceException;
 
+/**
+ * Class MiddlewareRequestHandler
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class MiddlewareRequestHandler
 {
-
     /**
      * @var Middleware
      */
     private $middleware;
-
+    /**
+     * @var API $userAuthToken
+     */
     private $userAuthToken;
+    /**
+     * @var API $textAllocations
+     */
     private $allocations;
 
     /**
@@ -35,6 +45,7 @@ class MiddlewareRequestHandler
     {
         $this->middleware = $middleware;
     }
+
 
     /**
      * @return checkInstanceSimpleXml
@@ -61,7 +72,7 @@ class MiddlewareRequestHandler
     /**
      * @param $xml
      *
-     * @return bool|\Exception|\Inpsyde\AGBConnector\customExceptions\notSimpleXmlInstanceException
+     * @return bool|Exception|notSimpleXmlInstanceException|int
      */
     public function handle($xml){
         $response = $this->middleware->process($xml);

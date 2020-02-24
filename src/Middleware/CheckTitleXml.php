@@ -1,18 +1,21 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\titleException;
 
-use Inpsyde\AGBConnector\customExceptions\titleException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckTitleXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckTitleXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|titleException\
+     * @return bool|Exception|titleException\
      */
     public function process($xml)
     {

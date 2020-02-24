@@ -1,15 +1,24 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\configurationException;
 
-use Inpsyde\AGBConnector\customExceptions\configurationException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckConfiguration
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckConfiguration extends Middleware
 {
+    /**
+     * @var API $userAuth
+     */
     private $userAuthToken;
+    /**
+     * @var API $textAllocations
+     */
     private $textAllocations;
 
     /**
@@ -28,7 +37,7 @@ class CheckConfiguration extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|\Exception|configurationException\
+     * @return bool|Exception|configurationException\
      */
     public function process($xml)
     {

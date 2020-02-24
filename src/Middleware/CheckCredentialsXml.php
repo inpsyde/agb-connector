@@ -1,18 +1,22 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
-
-use Inpsyde\AGBConnector\customExceptions\credentialsException;
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\credentialsException;
 use Inpsyde\AGBConnector\XmlApi;
 
+/**
+ * Class CheckCredentialsXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckCredentialsXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|credentialsException
+     * @return bool|Exception|credentialsException
      */
     public function process($xml)
     {

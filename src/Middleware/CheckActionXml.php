@@ -1,18 +1,22 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\actionTagException;
 
-use Inpsyde\AGBConnector\customExceptions\actionTagException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckActionXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckActionXml extends Middleware
 {
+
     /**
      * @param $xml
      *
-     * @return bool|\Exception|actionTagException\
+     * @return Exception|actionTagException|int
      */
     public function process($xml)
     {

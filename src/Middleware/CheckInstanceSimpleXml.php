@@ -1,17 +1,21 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\notSimpleXmlInstanceException;
 
-use Inpsyde\AGBConnector\customExceptions\notSimpleXmlInstanceException;
-
+/**
+ * Class checkInstanceSimpleXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class checkInstanceSimpleXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|notSimpleXmlInstanceException
+     * @return bool|Exception|notSimpleXmlInstanceException
      */
     public function process($xml)
     {

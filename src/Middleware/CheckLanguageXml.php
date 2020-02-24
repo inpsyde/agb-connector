@@ -1,18 +1,22 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
-
-use Inpsyde\AGBConnector\customExceptions\languageException;
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\languageException;
 use Inpsyde\AGBConnector\XmlApi;
 
+/**
+ * Class CheckLanguageXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckLanguageXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|languageException\
+     * @return bool|Exception|languageException\
      */
     public function process($xml)
     {

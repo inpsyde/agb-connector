@@ -1,18 +1,21 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Exception;
+use Inpsyde\AGBConnector\CustomExceptions\pdfFilenameException;
 
-use Inpsyde\AGBConnector\customExceptions\pdfFilenameException;
-use Inpsyde\AGBConnector\XmlApi;
-
+/**
+ * Class CheckPdfFilenameXml
+ *
+ * @package Inpsyde\AGBConnector\Middleware
+ */
 class CheckPdfFilenameXml extends Middleware
 {
     /**
      * @param $xml
      *
-     * @return bool|\Exception|pdfFilenameException\
+     * @return bool|Exception|pdfFilenameException\
      */
     public function process($xml)
     {
