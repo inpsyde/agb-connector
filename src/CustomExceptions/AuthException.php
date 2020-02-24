@@ -6,10 +6,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class configurationException
+ * Class AuthException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class configurationException extends Exception
+class AuthException extends Exception
 {
 }

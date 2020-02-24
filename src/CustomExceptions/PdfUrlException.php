@@ -1,15 +1,14 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
 use Exception;
 
 /**
- * Class generalException
+ * Class PdfUrlException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class generalException extends Exception
+class PdfUrlException extends Exception
 {
 }

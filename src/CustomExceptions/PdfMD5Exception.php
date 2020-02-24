@@ -5,10 +5,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class textException
+ * Class PdfMD5Exception
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class textException extends Exception
+class PdfMD5Exception extends Exception
 {
 }

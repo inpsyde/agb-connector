@@ -5,10 +5,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class notSimpleXmlInstanceException
+ * Class VersionException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class notSimpleXmlInstanceException extends Exception
+class VersionException extends Exception
 {
 }

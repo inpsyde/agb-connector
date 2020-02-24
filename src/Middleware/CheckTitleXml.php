@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
-use Inpsyde\AGBConnector\CustomExceptions\titleException;
+use Inpsyde\AGBConnector\CustomExceptions\TitleException;
 
 /**
  * Class CheckTitleXml
@@ -21,19 +21,19 @@ class CheckTitleXml extends Middleware
     {
         try {
             if (null === $xml->rechtstext_title) {
-                throw new titleException(
+                throw new TitleException(
                     "Title Exception: null provided",
                     18
                 );
             }
             if (strlen((string)$xml->rechtstext_title) < 3) {
-                throw new titleException(
+                throw new TitleException(
                     "Title Exception: length < 3",
                     18
                 );
             }
             return parent::process($xml);
-        } catch (titleException $exception) {
+        } catch (TitleException $exception) {
             return $exception;
         }
     }

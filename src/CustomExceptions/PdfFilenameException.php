@@ -1,15 +1,14 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
 use Exception;
 
 /**
- * Class countryException
+ * Class PdfFilenameException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class countryException extends Exception
+class PdfFilenameException extends Exception
 {
 }

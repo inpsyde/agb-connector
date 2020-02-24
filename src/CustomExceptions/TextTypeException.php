@@ -1,15 +1,14 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
 use Exception;
 
 /**
- * Class authException
+ * Class TextTypeException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class authException extends Exception
+class TextTypeException extends Exception
 {
 }

@@ -3,28 +3,22 @@
 namespace Inpsyde\AGBConnector;
 
 use CustomExceptionsTests;
-use Inpsyde\AGBConnector\customExceptions\notSimpleXmlInstanceException;
+use Inpsyde\AGBConnector\customExceptions\NotSimpleXmlInstanceException;
 use PHPUnit\Framework\TestCase;
 
 class CustomExceptionsTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function customException()
+    public function testCustomException()
     {
         $message = 'this is not a xml instance';
         $code = '12';
         try {
-            throw new notSimpleXmlInstanceException($message, $code);
-        }catch (notSimpleXmlInstanceException $exception){
+            throw new NotSimpleXmlInstanceException($message, $code);
+        }catch (NotSimpleXmlInstanceException $exception){
             $catchedMessage = $exception->getMessage();
             $catchedCode = $exception->getCode();
         }
         self::assertEquals($message, $catchedMessage);
         self::assertEquals($code, $catchedCode);
     }
-    //hay que hacer un data provider con message, code y la excepción para cada una
-    // y pasarlo en un único test
-
 }

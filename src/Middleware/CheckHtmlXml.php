@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
-use Inpsyde\AGBConnector\CustomExceptions\htmlTagException;
+use Inpsyde\AGBConnector\CustomExceptions\HtmlTagException;
 
 /**
  * Class CheckHtmlXml
@@ -21,19 +21,19 @@ class CheckHtmlXml extends Middleware
     {
         try {
             if (null === $xml->rechtstext_html) {
-                throw new htmlTagException(
+                throw new HtmlTagException(
                     "Html Tag Exception: null provided",
                     6
                 );
             }
             if (strlen((string)$xml->rechtstext_html) < 50) {
-                throw new htmlTagException(
+                throw new HtmlTagException(
                     "Html Tag Exception: length < 50",
                     6
                 );
             }
             return parent::process($xml);
-        } catch (htmlTagException $exception) {
+        } catch (HtmlTagException $exception) {
             return $exception;
         }
     }

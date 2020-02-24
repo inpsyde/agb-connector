@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
-use Inpsyde\AGBConnector\CustomExceptions\textException;
+use Inpsyde\AGBConnector\CustomExceptions\TextException;
 
 /**
  * Class CheckTextXml
@@ -21,19 +21,19 @@ class CheckTextXml extends Middleware
     {
         try {
             if (null === $xml->rechtstext_text) {
-                throw new textException(
+                throw new TextException(
                     "Text Exception: null provided",
                     5
                 );
             }
             if (strlen((string)$xml->rechtstext_text) < 50) {
-                throw new textException(
+                throw new TextException(
                     "Text Exception: length < 50",
                     5
                 );
             }
             return parent::process($xml);
-        } catch (textException $exception) {
+        } catch (TextException $exception) {
             return $exception;
         }
     }

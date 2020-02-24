@@ -1,15 +1,14 @@
 <?php
 
-
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
 use Exception;
 
 /**
- * Class credentialsException
+ * Class NotSimpleXmlInstanceException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class credentialsException extends Exception
+class NotSimpleXmlInstanceException extends Exception
 {
 }

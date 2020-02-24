@@ -1,14 +1,15 @@
 <?php
 
+
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
 use Exception;
 
 /**
- * Class languageException
+ * Class ActionTagException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class languageException extends Exception
+class ActionTagException extends Exception
 {
 }

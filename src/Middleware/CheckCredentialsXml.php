@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
-use Inpsyde\AGBConnector\CustomExceptions\credentialsException;
+use Inpsyde\AGBConnector\CustomExceptions\CredentialsException;
 use Inpsyde\AGBConnector\XmlApi;
 
 /**
@@ -16,7 +16,7 @@ class CheckCredentialsXml extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|credentialsException
+     * @return bool|Exception|CredentialsException
      */
     public function process($xml)
     {
@@ -24,13 +24,13 @@ class CheckCredentialsXml extends Middleware
             if (XmlApi::USERNAME !== (string)$xml->api_username &&
                 XmlApi::PASSWORD !== (string)$xml->api_password
             ) {
-                throw new credentialsException(
+                throw new CredentialsException(
                     "Credentials Exception: username provided {$xml->api_username}",
                     2
                 );
             }
             return parent::process($xml);
-        } catch (credentialsException $exception) {
+        } catch (CredentialsException $exception) {
             return $exception;
         }
     }

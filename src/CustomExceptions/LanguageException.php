@@ -5,10 +5,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class versionException
+ * Class LanguageException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class versionException extends Exception
+class LanguageException extends Exception
 {
 }

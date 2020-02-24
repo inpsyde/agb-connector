@@ -1,7 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 namespace Inpsyde\AGBConnector;
 
-use Inpsyde\AGBConnector\customExceptions\languageException;
+use Inpsyde\AGBConnector\customExceptions\LanguageException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -57,7 +57,7 @@ class ApiXMLErrorTest extends TestCase
 
         $wp_version = '4.0.0';
         $api = new XmlApi('');
-        $errorCode = new languageException("languageException: not supported Chinese provided",
+        $errorCode = new LanguageException("LanguageException: not supported Chinese provided",
                                            9);
 
         $xml = '<?xml version="1.0" encoding="utf-8" ?>

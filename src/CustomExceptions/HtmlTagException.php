@@ -5,10 +5,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class pdfUrlException
+ * Class HtmlTagException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class pdfUrlException extends Exception
+class HtmlTagException extends Exception
 {
 }

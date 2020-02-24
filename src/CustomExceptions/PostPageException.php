@@ -5,10 +5,10 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 use Exception;
 
 /**
- * Class titleException
+ * Class PostPageException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class titleException extends Exception
+class PostPageException extends Exception
 {
 }

@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
-use Inpsyde\AGBConnector\CustomExceptions\notSimpleXmlInstanceException;
+use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
 
 /**
  * Class MiddlewareRequestHandler
@@ -37,22 +37,12 @@ class MiddlewareRequestHandler
         $this->middleware = $this->checkErrorMiddlewareRoute();
     }
 
-
     /**
-     * The client can configure the chain of middleware objects.
-     */
-    public function setMiddleware(Middleware $middleware)
-    {
-        $this->middleware = $middleware;
-    }
-
-
-    /**
-     * @return checkInstanceSimpleXml
+     * @return CheckInstanceSimpleXml
      */
     private function checkErrorMiddlewareRoute()
     {
-        $middleware = new checkInstanceSimpleXml();
+        $middleware = new CheckInstanceSimpleXml();
         $middleware->linkWith(new CheckVersionXml())
             ->linkWith(new CheckCredentialsXml())
             ->linkWith(new CheckAuthXml($this->userAuthToken))
@@ -65,18 +55,27 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckPdfFilenameXml())
             ->linkWith(new CheckLanguageXml())
             ->linkWith(new CheckActionXml())
-        ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations));
+            ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations));
         return $middleware;
+    }
+
+    /**
+     * The client can configure the chain of middleware objects.
+     */
+    public function setMiddleware(Middleware $middleware)
+    {
+        $this->middleware = $middleware;
     }
 
     /**
      * @param $xml
      *
-     * @return bool|Exception|notSimpleXmlInstanceException|int
+     * @return bool|Exception|NotSimpleXmlInstanceException|int
      */
-    public function handle($xml){
+    public function handle($xml)
+    {
         $response = $this->middleware->process($xml);
+
         return $response;
     }
-
 }
