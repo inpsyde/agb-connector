@@ -31,5 +31,4 @@ class CheckInstanceSimpleXml extends Middleware
             return $exception;
         }
     }
-
 }
