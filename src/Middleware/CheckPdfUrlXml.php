@@ -35,6 +35,7 @@ class CheckPdfUrlXml extends Middleware
                     7
                 );
             }
+            return parent::process($xml);
         } catch (PdfUrlException $exception) {
             return $exception;
         }

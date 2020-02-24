@@ -48,6 +48,7 @@ class CheckPdfFilenameXml extends Middleware
                     19
                 );
             }
+            return parent::process($xml);
         } catch (PdfFilenameException $exception) {
             return $exception;
         }
