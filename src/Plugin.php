@@ -83,35 +83,6 @@ class Plugin
         $this->maybeShowAdminNotice();
     }
 
-    protected function maybeShowAdminNotice()
-    {
-        if (!$this->enabledPermalink()) {
-            $noticeRenderer = new NoticeRender();
-            $controller = new Controller($noticeRenderer);
-            $notice = new Notice(
-                Noticeable::ERROR,
-                esc_html_x(
-                    'IT-Recht Kanzlei: Seems you have permalinks not activated. This plugin needs settings>permalink activated in order to work',
-                    'admin-notice',
-                    'woo-agbconnector'),
-                false,
-                'Inpsyde\AGBConnector\Admin\Notice\PermalinkNotice'
-            );
-            add_action(
-                'admin_notices',
-                function () use ($controller, $notice){
-                    $controller->maybeRender($notice);
-                }
-            );
-        }
-    }
-
-
-    private function enabledPermalink()
-    {
-        return get_option('permalink_structure') !== '';
-    }
-
     /**
      * Append Attachments to WooCommerce customer order emails
      *
@@ -209,5 +180,41 @@ class Plugin
         }
 
         return $this->shortCodes;
+    }
+
+    /**
+     * Show an admin notice if the conditions are met
+     */
+    protected function maybeShowAdminNotice()
+    {
+        if (!$this->enabledPermalink()) {
+            $noticeRenderer = new NoticeRender();
+            $controller = new Controller($noticeRenderer);
+            $notice = new Notice(
+                Noticeable::ERROR,
+                esc_html_x(
+                    'IT-Recht Kanzlei: Seems you have permalinks not activated. This plugin needs settings>permalink activated in order to work',
+                    'admin-notice',
+                    'agb-connector'
+                ),
+                false,
+                'Inpsyde\AGBConnector\Admin\Notice\PermalinkNotice'
+            );
+            add_action(
+                'admin_notices',
+                function () use ($controller, $notice) {
+                    $controller->maybeRender($notice);
+                }
+            );
+        }
+    }
+
+    /**
+     * Check if the permalink is set
+     * @return bool
+     */
+    private function enabledPermalink()
+    {
+        return get_option('permalink_structure') !== '';
     }
 }

@@ -46,7 +46,6 @@ class Notice implements Noticeable
         $this->id = $id;
     }
 
-
     /**
      * @inheritDoc
      */
