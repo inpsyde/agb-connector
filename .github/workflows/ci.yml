@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Continuous Integration
 
 on: [push]
 
@@ -16,8 +16,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
+    - name: Run PHPUnit
+      run: php7.3 vendor/bin/phpunit
 
-    # - name: Run test suite
-    #   run: composer run-script test
+    - name: Run PHPCS
+      run: php7.3 vendor/bin/phpcs
