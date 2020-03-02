@@ -5,19 +5,43 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Validate composer.json and composer.lock
+#      run: composer validate
+#
+#    - name: Install dependencies
+#      run: composer install --prefer-dist --no-progress --no-suggest
+#
+#    - name: Run PHPUnit
+#      run: php7.3 vendor/bin/phpunit
+#
+#    - name: Run PHPCS
+#      run: php7.3 vendor/bin/phpcs
 
-    steps:
-    - uses: actions/checkout@v2
+    run:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions: ['5.6', '7.3']
+                #php-versions: ['5.4', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4']
+        name: PHP ${{ matrix.php-versions }}
+        steps:
+              uses: actions/checkout@v2
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-versions }}
+                  coverage: none
+                  tools: composer, phpunit, phpcs
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+            - name: Run PHPUnit
+              run: php7.3 vendor/bin/phpunit
 
-    - name: Run PHPUnit
-      run: php7.3 vendor/bin/phpunit
+            - name: Run PHPCS
+              run: php7.3 vendor/bin/phpcs
 
-    - name: Run PHPCS
-      run: php7.3 vendor/bin/phpcs
