@@ -40,8 +40,8 @@ jobs:
                   tools: composer, phpunit, phpcs
 
             - name: Run PHPUnit
-              run: php7.3 vendor/bin/phpunit
+              run: vendor/bin/phpunit
 
             - name: Run PHPCS
-              run: php7.3 vendor/bin/phpcs
+              run: vendor/bin/phpcs
 
