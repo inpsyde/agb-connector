@@ -193,7 +193,7 @@ class Plugin
             $notice = new Notice(
                 Noticeable::ERROR,
                 esc_html_x(
-                    'IT-Recht Kanzlei: Seems you have permalinks not activated. This plugin needs settings>permalink activated in order to work',
+                    'AGB-Connector: Seems you have permalinks not activated. This plugin needs settings>permalink activated in order to work',
                     'admin-notice',
                     'agb-connector'
                 ),
