@@ -215,6 +215,6 @@ class Plugin
      */
     private function enabledPermalink()
     {
-        return get_option('permalink_structure') !== '';
+        return (bool) get_option('permalink_structure');
     }
 }
