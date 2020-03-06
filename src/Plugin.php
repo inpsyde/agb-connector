@@ -2,6 +2,11 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Admin\Notice\Controller;
+use Inpsyde\AGBConnector\Admin\Notice\Notice;
+use Inpsyde\AGBConnector\Admin\Notice\Noticeable;
+use Inpsyde\AGBConnector\Admin\Notice\NoticeRender;
+
 /**
  * Class Plugin
  */
@@ -75,6 +80,7 @@ class Plugin
             'plugin_action_links_' . plugin_basename(dirname(__DIR__) . '/agb-connector.php'),
             [$settings, 'addActionLinks']
         );
+        $this->maybeShowAdminNotice();
     }
 
     /**
@@ -174,5 +180,41 @@ class Plugin
         }
 
         return $this->shortCodes;
+    }
+
+    /**
+     * Show an admin notice if the conditions are met
+     */
+    protected function maybeShowAdminNotice()
+    {
+        if (!$this->enabledPermalink()) {
+            $noticeRenderer = new NoticeRender();
+            $controller = new Controller($noticeRenderer);
+            $notice = new Notice(
+                Noticeable::ERROR,
+                esc_html_x(
+                    'AGB-Connector: Seems you have permalinks not activated. This plugin needs settings>permalink activated in order to work',
+                    'admin-notice',
+                    'agb-connector'
+                ),
+                false,
+                'Inpsyde\AGBConnector\Admin\Notice\PermalinkNotice'
+            );
+            add_action(
+                'admin_notices',
+                function () use ($controller, $notice) {
+                    $controller->maybeRender($notice);
+                }
+            );
+        }
+    }
+
+    /**
+     * Check if the permalink is set
+     * @return bool
+     */
+    private function enabledPermalink()
+    {
+        return (bool) get_option('permalink_structure');
     }
 }

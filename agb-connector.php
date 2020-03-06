@@ -35,11 +35,7 @@ function agb_connector()
     /** @var Inpsyde\AGBConnector\Plugin $plugin */
 
     if (! class_exists($pluginClassName)) {
-        require_once __DIR__ . '/src/Plugin.php';
-        require_once __DIR__ . '/src/Install.php';
-        require_once __DIR__ . '/src/Settings.php';
-        require_once __DIR__ . '/src/XmlApi.php';
-        require_once __DIR__ . '/src/ShortCodes.php';
+        require __DIR__.'/vendor/autoload.php';
     }
 
     $plugin = new $pluginClassName();
