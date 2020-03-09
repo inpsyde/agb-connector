@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\ConfigurationException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckConfiguration
@@ -36,21 +37,19 @@ class CheckConfiguration extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|configurationException\
+     * @return bool|XmlApiException|ConfigurationException
      */
     public function process($xml)
     {
         try {
             if (!$this->checkConfiguration($this->userAuthToken)) {
                 throw new ConfigurationException(
-                    'ConfigurationException: no userAuthToken configured',
-                    80
+                    'ConfigurationException: no userAuthToken configured'
                 );
             }
             if (!isset($this->textAllocations[(string)$xml->rechtstext_type])) {
                 throw new ConfigurationException(
-                    'ConfigurationException: no textAllocations configured',
-                    80
+                    'ConfigurationException: no textAllocations configured'
                 );
             }
             return parent::process($xml);

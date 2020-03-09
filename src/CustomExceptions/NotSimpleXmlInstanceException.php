@@ -2,13 +2,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class NotSimpleXmlInstanceException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class NotSimpleXmlInstanceException extends Exception
+class NotSimpleXmlInstanceException extends XmlApiException
 {
+    public function __construct($message, $code = 12, XmlApiException $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

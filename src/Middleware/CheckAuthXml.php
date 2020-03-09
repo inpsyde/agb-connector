@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\AuthException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckAuthXml
@@ -27,21 +28,19 @@ class CheckAuthXml extends Middleware
     /**
      * @param $xml
      *
-     * @return Exception|AuthException|int
+     * @return XmlApiException|AuthException|int
      */
     public function process($xml)
     {
         try {
             if (null === $xml->user_auth_token) {
                 throw new AuthException(
-                    "Auth Exception: null user_auth_token",
-                    3
+                    "Auth Exception: null user_auth_token"
                 );
             }
             if ((string)$xml->user_auth_token !== $this->userAuth) {
                 throw new AuthException(
-                    "Auth Exception: userAuthToken doesn't match",
-                    3
+                    "Auth Exception: userAuthToken doesn't match"
                 );
             }
             return parent::process($xml);

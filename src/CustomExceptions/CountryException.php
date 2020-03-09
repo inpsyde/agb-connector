@@ -3,13 +3,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class CountryException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class CountryException extends Exception
+class CountryException extends XmlApiException
 {
+    public function __construct($message, $code = 17, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

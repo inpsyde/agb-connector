@@ -3,13 +3,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class ActionTagException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class ActionTagException extends Exception
+class ActionTagException extends XmlApiException
 {
+    public function __construct($message, $code = 10, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

@@ -13,7 +13,7 @@ class CustomExceptionsTest extends TestCase
         $message = 'this is not a xml instance';
         $code = '12';
         try {
-            throw new NotSimpleXmlInstanceException($message, $code);
+            throw new NotSimpleXmlInstanceException($message);
         }catch (NotSimpleXmlInstanceException $exception){
             $catchedMessage = $exception->getMessage();
             $catchedCode = $exception->getCode();

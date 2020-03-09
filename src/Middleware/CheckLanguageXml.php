@@ -2,8 +2,8 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApi;
 
 /**
@@ -16,15 +16,14 @@ class CheckLanguageXml extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|languageException\
+     * @return bool|XmlApiException|LanguageException
      */
     public function process($xml)
     {
         try {
             if (null === $xml->rechtstext_language) {
                 throw new LanguageException(
-                    'LanguageException: null provided',
-                    9
+                    'No language provided'
                 );
             }
             if (!array_key_exists(
@@ -33,8 +32,7 @@ class CheckLanguageXml extends Middleware
             )
             ) {
                 throw new LanguageException(
-                    "LanguageException: not supported {$xml->rechtstext_language} provided",
-                    9
+                    "Language {$xml->rechtstext_language} is not supported"
                 );
             }
             return parent::process($xml);

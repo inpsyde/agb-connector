@@ -2,8 +2,8 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\VersionException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApi;
 
 /**
@@ -17,15 +17,14 @@ class CheckVersionXml extends Middleware
     /**
      * @param $xml
      *
-     * @return Exception|VersionException|int
+     * @return XmlApiException|VersionException|int
      */
     public function process($xml)
     {
         try {
             if (XmlApi::VERSION !== (string)$xml->api_version) {
                 throw new VersionException(
-                    "Version Exception: provided {$xml->api_version}",
-                    1
+                    "Version provided {$xml->api_version} does not match the current one"
                 );
             }
             return parent::process($xml);

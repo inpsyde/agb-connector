@@ -3,13 +3,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class AuthException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class AuthException extends Exception
+class AuthException extends XmlApiException
 {
+    public function __construct($message, $code = 3, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

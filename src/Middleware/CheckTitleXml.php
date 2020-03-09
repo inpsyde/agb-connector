@@ -2,8 +2,8 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\TitleException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckTitleXml
@@ -15,21 +15,19 @@ class CheckTitleXml extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|titleException\
+     * @return bool|XmlApiException|TitleException
      */
     public function process($xml)
     {
         try {
             if (null === $xml->rechtstext_title) {
                 throw new TitleException(
-                    "Title Exception: null provided",
-                    18
+                    "There must be a title, null provided"
                 );
             }
             if (strlen((string)$xml->rechtstext_title) < 3) {
                 throw new TitleException(
-                    "Title Exception: length < 3",
-                    18
+                    "Title length must be greater than 3"
                 );
             }
             return parent::process($xml);

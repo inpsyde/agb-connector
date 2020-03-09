@@ -3,13 +3,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class ConfigurationException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class ConfigurationException extends Exception
+class ConfigurationException extends XmlApiException
 {
+    public function __construct($message, $code = 80, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

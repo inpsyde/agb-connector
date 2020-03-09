@@ -12,11 +12,13 @@ class MiddlewareRequestHandlerTest extends TestCase
     /**
      *
      * @dataProvider handlerDataProvider
+     *
+     * @param $xml
+     * @param $code
      */
     public function testHandlerThrowsCorrectExceptionCode($xml, $code)
     {
         $userAuthToken = '1234567890abcdefghijklmnopqrstuv';
-        $code = $code;
         $allocations = ['agb' => 'agb'];
 
         $xml = trim(stripslashes($xml));

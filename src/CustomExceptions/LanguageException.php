@@ -2,13 +2,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class LanguageException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class LanguageException extends Exception
+class LanguageException extends XmlApiException
 {
+    public function __construct($message, $code = 9, XmlApiException $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

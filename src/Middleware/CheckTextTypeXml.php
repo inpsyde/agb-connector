@@ -2,8 +2,8 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApi;
 
 /**
@@ -16,22 +16,20 @@ class CheckTextTypeXml extends Middleware
     /**
      * @param $xml
      *
-     * @return bool|Exception|versionException
+     * @return bool|XmlApiException|TextTypeException
      */
     public function process($xml)
     {
         try {
             if (null === $xml->rechtstext_type) {
                 throw new TextTypeException(
-                    "Text type Exception: null provided",
-                    4
+                    "No text type provided"
                 );
             }
             if (! \array_key_exists((string)$xml->rechtstext_type, XmlApi::supportedTextTypes())
             ) {
                 throw new TextTypeException(
-                    "Text type Exception: not supported",
-                    4
+                    "The texto type provided is not supported"
                 );
             }
             return parent::process($xml);

@@ -2,13 +2,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class PdfUrlException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class PdfUrlException extends Exception
+class PdfUrlException extends XmlApiException
 {
+    public function __construct($message, $code = 7, XmlApiException $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

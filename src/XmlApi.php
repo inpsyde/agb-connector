@@ -9,6 +9,7 @@ use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 use SimpleXMLElement;
 
@@ -103,36 +104,25 @@ class XmlApi
                 }
                 if (!$foundCountry) {
                     throw new CountryException(
-                        "Country Exception: not found {$xml->rechtstext_country} provided",
-                        17
+                        "Country {$xml->rechtstext_country} not found"
                     );
                 }
                 throw new LanguageException(
-                    'LanguageException: Allocation not found',
-                    9
+                    'Allocation not found'
                 );
             }
-        } catch (CountryException $exception) {
-            return $this->returnXmlWithError($exception);
-        } catch (LanguageException $exception) {
-            return $this->returnXmlWithError($exception);
-        }
-
-        try {
             $post = get_post($foundAllocation['pageId']);
             if (!$post instanceof \WP_Post) {
                 throw new PostPageException(
-                    'PostPageException: not a Post provided',
-                    81
+                    'No post page provided'
                 );
             }
             if ('trash' === $post->post_status) {
                 throw new PostPageException(
-                    'PostPageException: Post status trash',
-                    81
+                    'The post status seems to be trash'
                 );
             }
-        } catch (PostPageException $exception) {
+        } catch (XmlApiException $exception) {
             return $this->returnXmlWithError($exception);
         }
 
@@ -145,11 +135,10 @@ class XmlApi
         try {
             if (!$this->savePost($post)) {
                 throw new GeneralException(
-                    'GeneralException: savePost failed',
-                    99
+                    'Failed to save the post'
                 );
             }
-        } catch (GeneralException $exception) {
+        } catch (XmlApiException $exception) {
             return $this->returnXmlWithError($exception);
         }
 
@@ -191,7 +180,7 @@ class XmlApi
     /**
      * Returns the XML answer with the error
      *
-     * @param Exception $exception Error code 0 on success.
+     * @param XmlApiException $exception Error code 0 on success.
      *
      * @return string with xml response
      */
@@ -222,7 +211,7 @@ class XmlApi
      *
      * @param SimpleXMLElement $xml The XML Object.
      *
-     * @return int|Exception returns error code
+     * @return int|XmlApiException returns error code
      */
     private function pushPdfFile(SimpleXMLElement $xml)
     {
@@ -233,8 +222,7 @@ class XmlApi
             $foundAllocation = $this->findAllocation($xml);
             if (!$foundAllocation) {
                 throw new LanguageException(
-                    'LanguageException: Allocation not found',
-                    9
+                    'The allocation was not found'
                 );
             }
         } catch (LanguageException $exception) {
@@ -252,44 +240,31 @@ class XmlApi
             $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
             if (!$pdf) {
                 throw new PdfUrlException(
-                    'PdfUrlException: pdf not found',
-                    7
+                    'Pdf not found'
                 );
             }
             if (0 !== strpos($pdf, '%PDF')) {
                 throw new PdfUrlException(
-                    'PdfUrlException: file is not pdf',
-                    7
+                    'The file provided is not pdf'
                 );
             }
-        } catch (PdfUrlException $exception) {
-            return $exception;
-        }
-        try {
             if (null === $xml->rechtstext_pdf_md5hash) {
                 throw new PdfMD5Exception(
-                    'PdfMD5Exception: pdf MD5 is null',
-                    8
+                    'The pdf hash provided is null'
                 );
             }
             if ((string)$xml->rechtstext_pdf_md5hash !== md5($pdf)) {
                 throw new PdfMD5Exception(
-                    'PdfMD5Exception: MD5 hash does not match',
-                    8
+                    'The pdf hash does not match'
                 );
             }
-        } catch (PdfMD5Exception $exception) {
-            return $exception;
-        }
-        try {
             $result = $this->writeContentToFile($file, $pdf);
             if (!$result) {
                 throw new PdfUrlException(
-                    'PdfUrlException: writeContentToFile failed. Result not found',
-                    7
+                    'WriteContentToFile failed. Result not found'
                 );
             }
-        } catch (PdfUrlException $exception) {
+        } catch (XmlApiException $exception) {
             return $exception;
         }
 
@@ -315,14 +290,12 @@ class XmlApi
             $attachmentId = wp_insert_attachment($args);
             if (!$attachmentId) {
                 throw new PdfUrlException(
-                    'PdfUrlException: wp_insert_attachment failed. $attachmentId not found',
-                    7
+                    'Insert attachment failed'
                 );
             }
             if (is_wp_error($attachmentId)) {
                 throw new PdfUrlException(
-                    'PdfUrlException: is_wp_error thrown',
-                    7
+                    'An error occurred while inserting the attachment'
                 );
             }
         } catch (PdfUrlException $exception) {

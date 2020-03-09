@@ -2,13 +2,14 @@
 
 namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use Exception;
-
 /**
  * Class TitleException
  *
  * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class TitleException extends Exception
+class TitleException extends XmlApiException
 {
+    public function __construct($message, $code = 18, XmlApiException $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
 }

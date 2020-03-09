@@ -2,8 +2,8 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfFilenameException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckPdfFilenameXml
@@ -16,7 +16,7 @@ class CheckPdfFilenameXml extends Middleware
     /**
      * @param $xml
      *
-     * @return Exception|PdfFilenameException|int
+     * @return XmlApiException|PdfFilenameException|int
      */
     public function process($xml)
     {
@@ -26,26 +26,22 @@ class CheckPdfFilenameXml extends Middleware
             }
             if (null === $xml->rechtstext_pdf_filename_suggestion) {
                 throw new PdfFilenameException(
-                    "PdfFilenameException: rechtstext_pdf_filename_suggestion null provided",
-                    19
+                    "No pdf filename provided"
                 );
             }
             if ('' === (string)$xml->rechtstext_pdf_filename_suggestion) {
                 throw new PdfFilenameException(
-                    "PdfFilenameException: rechtstext_pdf_filename_suggestion empty string",
-                    19
+                    "The pdf filename is empty"
                 );
             }
             if (null === $xml->rechtstext_pdf_filenamebase_suggestion) {
                 throw new PdfFilenameException(
-                    "PdfFilenameException: rechtstext_pdf_filenamebase_suggestion null provided",
-                    19
+                    "No pdf base filename provided"
                 );
             }
             if ('' === (string)$xml->rechtstext_pdf_filenamebase_suggestion) {
                 throw new PdfFilenameException(
-                    "PdfFilenameException: rechtstext_pdf_filenamebase_suggestion empty string",
-                    19
+                    "The pdf base filename is empty"
                 );
             }
             return parent::process($xml);
