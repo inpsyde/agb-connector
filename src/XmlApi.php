@@ -2,7 +2,6 @@
 
 namespace Inpsyde\AGBConnector;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\CountryException;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
@@ -324,7 +323,10 @@ class XmlApi
         }
 
         if (!$wp_filesystem) {
-            WP_Filesystem();
+            $success = WP_Filesystem();
+            if (!$success) {
+                return false;
+            }
         }
 
         if (!$wp_filesystem instanceof \WP_Filesystem_Base) {
