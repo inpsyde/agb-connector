@@ -57,8 +57,7 @@ class ApiXMLErrorTest extends TestCase
 
         $wp_version = '4.0.0';
         $api = new XmlApi('');
-        $errorCode = new LanguageException("LanguageException: not supported Chinese provided",
-                                           9);
+        $errorCode = new LanguageException("LanguageException: not supported Chinese provided");
 
         $xml = '<?xml version="1.0" encoding="utf-8" ?>
 		<response>
