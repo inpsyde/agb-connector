@@ -10,8 +10,9 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
  */
 class ConfigurationException extends XmlApiException
 {
-    public function __construct($message, $code = 80, XmlApiException $previous = null)
+    const CODE = 80;
+    public function __construct($message, XmlApiException $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, self::CODE, $previous);
     }
 }

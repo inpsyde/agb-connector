@@ -9,8 +9,9 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
  */
 class PdfFilenameException extends XmlApiException
 {
-    public function __construct($message, $code = 19, XmlApiException $previous = null)
+    const CODE = 19;
+    public function __construct($message, XmlApiException $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, self::CODE, $previous);
     }
 }
