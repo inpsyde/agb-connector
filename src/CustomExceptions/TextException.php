@@ -10,8 +10,8 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 class TextException extends XmlApiException
 {
     const CODE = 5;
-    public function __construct($message, XmlApiException $previous = null)
+    public function __construct($message)
     {
-        parent::__construct($message, self::CODE, $previous);
+        parent::__construct($message,self::CODE);
     }
 }

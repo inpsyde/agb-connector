@@ -11,8 +11,8 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 class CredentialsException extends XmlApiException
 {
     const CODE = 2;
-    public function __construct($message, XmlApiException $previous = null)
+    public function __construct($message)
     {
-        parent::__construct($message, self::CODE, $previous);
+        parent::__construct($message,self::CODE);
     }
 }
