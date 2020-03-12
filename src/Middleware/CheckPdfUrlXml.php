@@ -3,7 +3,6 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
-use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckPdfUrlXml
@@ -15,27 +14,24 @@ class CheckPdfUrlXml extends Middleware
     /**
      * @param $xml
      *
-     * @return XmlApiException|PdfUrlException|int
+     * @return int
+     * @throws PdfUrlException
      */
     public function process($xml)
     {
-        try {
-            if ('impressum' === (string)$xml->rechtstext_type) {
-                return parent::process($xml);
-            }
-            if (null === $xml->rechtstext_pdf_url) {
-                throw new PdfUrlException(
-                    "No url for the pdf provided"
-                );
-            }
-            if ('' === (string)$xml->rechtstext_pdf_url) {
-                throw new PdfUrlException(
-                    "Pdf url is empty"
-                );
-            }
+        if ('impressum' === (string)$xml->rechtstext_type) {
             return parent::process($xml);
-        } catch (PdfUrlException $exception) {
-            return $exception;
         }
+        if (null === $xml->rechtstext_pdf_url) {
+            throw new PdfUrlException(
+                "No url for the pdf provided"
+            );
+        }
+        if ('' === (string)$xml->rechtstext_pdf_url) {
+            throw new PdfUrlException(
+                "Pdf url is empty"
+            );
+        }
+        return parent::process($xml);
     }
 }

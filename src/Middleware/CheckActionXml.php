@@ -2,9 +2,7 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Exception;
 use Inpsyde\AGBConnector\CustomExceptions\ActionTagException;
-use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckActionXml
@@ -17,24 +15,21 @@ class CheckActionXml extends Middleware
     /**
      * @param $xml
      *
-     * @return XmlApiException|ActionTagException|int
+     * @return int
+     * @throws ActionTagException
      */
     public function process($xml)
     {
-        try {
-            if (null === $xml->action) {
-                throw new ActionTagException(
-                    'ActionTag: null provided'
-                );
-            }
-            if ('push' !== (string)$xml->action) {
-                throw new ActionTagException(
-                    "ActionTag: not push provided: {$xml->action}"
-                );
-            }
-            return parent::process($xml);
-        } catch (ActionTagException $exception) {
-            return $exception;
+        if (null === $xml->action) {
+            throw new ActionTagException(
+                'ActionTag: null provided'
+            );
         }
+        if ('push' !== (string)$xml->action) {
+            throw new ActionTagException(
+                "ActionTag: not push provided: {$xml->action}"
+            );
+        }
+        return parent::process($xml);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Middleware\CheckConfiguration;
 use PHPUnit\Framework\TestCase;
 
@@ -37,7 +38,13 @@ class MiddlewareTest extends TestCase
         }
 
         $middleware = new CheckConfiguration($userAuthToken, $allocations);
-        $result = $middleware->process($xml);
+        try {
+            $middleware->process($xml);
+        }
+        catch (XmlApiException $exception){
+            $result = $exception;
+        }
+
 
         self::assertEquals(80, $result->getCode());
     }
