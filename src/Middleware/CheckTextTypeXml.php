@@ -28,7 +28,7 @@ class CheckTextTypeXml extends Middleware
         if (! \array_key_exists((string)$xml->rechtstext_type, XmlApi::supportedTextTypes())
         ) {
             throw new TextTypeException(
-                "The texto type provided is not supported"
+                "The text type provided is not supported"
             );
         }
         return parent::process($xml);

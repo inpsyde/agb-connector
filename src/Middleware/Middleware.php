@@ -16,6 +16,10 @@ abstract class Middleware
 
     /**
      * Method to build a chain of middleware objects (CoR).
+     *
+     * @param Middleware $next
+     *
+     * @return Middleware
      */
     public function linkWith(Middleware $next)
     {
@@ -26,13 +30,18 @@ abstract class Middleware
 
     /**
      * Subclasses must override this method to provide their own checks.
+     *
+     * @param $data
+     *
+     * @return int
      */
-    public function process($xml)
+
+    public function process($data)
     {
         if (!$this->next) {
-            return 0;
+            return $data;
         }
 
-        return $this->next->process($xml);
+        return $this->next->process($data);
     }
 }

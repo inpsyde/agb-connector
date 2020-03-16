@@ -7,11 +7,11 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApi;
 
 /**
- * Class CheckCountryXml
+ * Class CheckCountrySetXml
  *
  * @package Inpsyde\AGBConnector\Middleware
  */
-class CheckCountryXml extends Middleware
+class CheckCountrySetXml extends Middleware
 {
     /**
      * @param $xml
@@ -23,12 +23,12 @@ class CheckCountryXml extends Middleware
     {
         if (null === $xml->rechtstext_country) {
             throw new CountryException(
-                'Country Exception: null provided'
+                'No country provided'
             );
         }
         if (! array_key_exists((string)$xml->rechtstext_country, XmlApi::supportedCountries())) {
             throw new CountryException(
-                "Country Exception: provided {$xml->rechtstext_country} is not supported"
+                "Country {$xml->rechtstext_country} is not supported"
             );
         }
         return parent::process($xml);
