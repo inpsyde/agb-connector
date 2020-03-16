@@ -254,6 +254,8 @@ class CheckPostXml extends Middleware
     }
 
     /**
+     * phpcs:Generic.Metrics.NestingLevel.TooHigh
+     *
      * @param $xml
      *
      * @return array
