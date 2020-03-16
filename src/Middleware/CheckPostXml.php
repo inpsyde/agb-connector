@@ -80,7 +80,7 @@ class CheckPostXml extends Middleware
      * Transfers the PDF file to uploads
      *
      * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
-     *
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      * @param SimpleXMLElement $xml The XML Object.
      *
      * @return int returns error code
