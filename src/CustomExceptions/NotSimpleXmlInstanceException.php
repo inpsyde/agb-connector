@@ -12,6 +12,6 @@ class NotSimpleXmlInstanceException extends XmlApiException
     const CODE = 12;
     public function __construct($message)
     {
-        parent::__construct($message,self::CODE);
+        parent::__construct($message, self::CODE);
     }
 }

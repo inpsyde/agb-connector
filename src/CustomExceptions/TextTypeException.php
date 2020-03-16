@@ -12,6 +12,6 @@ class TextTypeException extends XmlApiException
     const CODE = 4;
     public function __construct($message)
     {
-        parent::__construct($message,self::CODE);
+        parent::__construct($message, self::CODE);
     }
 }

@@ -13,6 +13,6 @@ class ConfigurationException extends XmlApiException
     const CODE = 80;
     public function __construct($message)
     {
-        parent::__construct($message,self::CODE);
+        parent::__construct($message, self::CODE);
     }
 }

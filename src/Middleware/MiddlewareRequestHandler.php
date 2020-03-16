@@ -80,8 +80,7 @@ class MiddlewareRequestHandler
             $targetUrl = $this->middleware->process($data);
 
             return $this->returnXmlWithSuccess(0, $targetUrl);
-        }catch (XmlApiException $exception){
-
+        } catch (XmlApiException $exception) {
             return $this->returnXmlWithError($exception);
         }
     }
