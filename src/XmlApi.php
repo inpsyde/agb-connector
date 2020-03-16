@@ -82,7 +82,6 @@ class XmlApi
         return $handler->handle($xml);
     }
 
-
     /**
      * Get Supported languages
      *
