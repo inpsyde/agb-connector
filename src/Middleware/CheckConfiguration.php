@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\ConfigurationException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckConfiguration
@@ -12,13 +13,13 @@ use Inpsyde\AGBConnector\CustomExceptions\ConfigurationException;
 class CheckConfiguration extends Middleware
 {
     /**
-     * @var API $userAuth
+     * @var string $userAuth
      */
-    private $userAuthToken;
+    protected $userAuthToken;
     /**
-     * @var API $textAllocations
+     * @var array $textAllocations
      */
-    private $textAllocations;
+    protected $textAllocations;
 
     /**
      * CheckConfiguration constructor.
@@ -36,15 +37,11 @@ class CheckConfiguration extends Middleware
      * @param $xml
      *
      * @return bool
-     * @throws ConfigurationException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
-        if (!$this->checkConfiguration($this->userAuthToken)) {
-            throw new ConfigurationException(
-                'ConfigurationException: no userAuthToken configured'
-            );
-        }
+        $this->checkConfiguration($this->userAuthToken);
         if (!isset($this->textAllocations[(string)$xml->rechtstext_type])) {
             throw new ConfigurationException(
                 'ConfigurationException: no textAllocations configured'
@@ -56,16 +53,18 @@ class CheckConfiguration extends Middleware
     /**
      * Check XML for errors.
      *
-     * @return bool
-     * @since 1.1.0
+     * @param $userAuthToken
      *
+     * @return void
+     * @throws ConfigurationException
+     * @since 1.1.0
      */
-    public function checkConfiguration($userAuthToken)
+    protected function checkConfiguration($userAuthToken)
     {
         if (!$userAuthToken) {
-            return false;
+            throw new ConfigurationException(
+                'ConfigurationException: no userAuthToken configured'
+            );
         }
-
-        return true;
     }
 }

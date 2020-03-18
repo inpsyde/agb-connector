@@ -158,7 +158,12 @@ class Plugin
     public function settings()
     {
         if (null === $this->settings) {
-            $this->settings = new Settings();
+            $supportedConfig = new XmlApiSupportedService();
+            $this->settings = new Settings(
+                $supportedConfig->supportedCountries(),
+                $supportedConfig->supportedLanguages(),
+                $supportedConfig->supportedTextTypes()
+            );
         }
 
         return $this->settings;
@@ -170,7 +175,11 @@ class Plugin
     public function shortCodes()
     {
         if (null === $this->shortCodes) {
-            $this->shortCodes = new ShortCodes();
+            $supportedConfig = new XmlApiSupportedService();
+            $this->shortCodes = new ShortCodes(
+                $supportedConfig->supportedCountries(),
+                $supportedConfig->supportedLanguages()
+            );
         }
 
         return $this->shortCodes;

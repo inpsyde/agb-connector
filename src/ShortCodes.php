@@ -7,11 +7,31 @@ namespace Inpsyde\AGBConnector;
  */
 class ShortCodes
 {
-
+    /**
+     * @var array $supportedCountries
+     */
+    protected $supportedCountries;
+    /**
+     * @var array
+     */
+    protected $supportedLanguages;
     /**
      * @var array
      */
     private $registeredShortCodes = [];
+
+    /**
+     * ShortCodes constructor.
+     *
+     * @param array $supportedCountries
+     * @param array $supportedLanguages
+     */
+    public function __construct(array $supportedCountries, array $supportedLanguages)
+    {
+        $this->supportedCountries = $supportedCountries;
+        $this->supportedLanguages = $supportedLanguages;
+    }
+
 
     /**
      * settings for All AGB shortcodes.
@@ -142,7 +162,7 @@ class ShortCodes
                             'heading' => esc_html__('Select language', 'agb-connector'),
                             'param_name' => 'language',
                             'std' => $language,
-                            'value' => XmlApi::supportedLanguages(),
+                            'value' => $this->supportedLanguages,
                             'description' => esc_html__(
                                 'Language of text that should be displayed',
                                 'agb-connector'
@@ -155,7 +175,7 @@ class ShortCodes
                             'heading' => esc_html__('Select country', 'agb-connector'),
                             'param_name' => 'country',
                             'std' => $country,
-                            'value' => XmlApi::supportedCountries(),
+                            'value' => $this->supportedCountries,
                             'description' => esc_html__(
                                 'Country of text that should be displayed',
                                 'agb-connector'

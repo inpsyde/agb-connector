@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Plugin;
+use Inpsyde\AGBConnector\XmlApiSupportedService;
 use SimpleXMLElement;
 
 /**
@@ -14,27 +15,44 @@ use SimpleXMLElement;
 class MiddlewareRequestHandler
 {
     /**
-     * @var Middleware
+     * @var MiddlewareInterface
      */
-    private $middleware;
+    protected $middleware;
     /**
-     * @var API $userAuthToken
+     * @var string $userAuthToken
      */
-    private $userAuthToken;
+    protected $userAuthToken;
     /**
-     * @var API $textAllocations
+     * @var array $textAllocations
      */
-    private $allocations;
+    protected $allocations;
+    /**
+     * @var array $supportedCountries
+     */
+    protected $supportedCountries;
+    /**
+     * @var array
+     */
+    protected $supportedLanguages;
+    /**
+     * @var array
+     */
+    protected $supportedTextTypes;
 
     /**
      * MiddlewareRequestHandler constructor.
      *
-     * @param Middleware $middleware
+     * @param $userAuthToken
+     * @param $allocations
+     * @param XmlApiSupportedService $apiSupportedService
      */
-    public function __construct($userAuthToken, $allocations)
+    public function __construct($userAuthToken, $allocations, $apiSupportedService)
     {
         $this->userAuthToken = $userAuthToken;
         $this->allocations = $allocations;
+        $this->supportedCountries = $apiSupportedService->supportedCountries();
+        $this->supportedLanguages = $apiSupportedService->supportedLanguages();
+        $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
         $this->middleware = $this->checkErrorMiddlewareRoute();
     }
 
@@ -47,14 +65,14 @@ class MiddlewareRequestHandler
         $middleware->linkWith(new CheckVersionXml())
             ->linkWith(new CheckCredentialsXml())
             ->linkWith(new CheckAuthXml($this->userAuthToken))
-            ->linkWith(new CheckTextTypeXml())
-            ->linkWith(new CheckCountrySetXml())
+            ->linkWith(new CheckTextTypeXml($this->supportedTextTypes))
+            ->linkWith(new CheckCountrySetXml($this->supportedCountries))
             ->linkWith(new CheckTitleXml())
             ->linkWith(new CheckTextXml())
             ->linkWith(new CheckHtmlXml())
             ->linkWith(new CheckPdfUrlXml())
             ->linkWith(new CheckPdfFilenameXml())
-            ->linkWith(new CheckLanguageXml())
+            ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
             ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations))
             ->linkWith(new CheckPostXml($this->allocations));
@@ -63,8 +81,10 @@ class MiddlewareRequestHandler
 
     /**
      * The client can configure the chain of middleware objects.
+     *
+     * @param MiddlewareInterface $middleware
      */
-    public function chainOfMiddleware(Middleware $middleware)
+    public function chainOfMiddleware(MiddlewareInterface $middleware)
     {
         $this->middleware = $middleware;
     }

@@ -36,14 +36,14 @@ class XmlApi
      *
      * @var string
      */
-    private $userAuthToken;
+    protected $userAuthToken;
 
     /**
      * Text allocations
      *
      * @var array
      */
-    private $textAllocations;
+    protected $textAllocations;
 
     /**
      * Define some values.
@@ -77,76 +77,33 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
-        $handler = new MiddlewareRequestHandler($this->userAuthToken, $this->textAllocations);
+        $handler = new MiddlewareRequestHandler($this->userAuthToken, $this->textAllocations, new XmlApiSupportedService());
 
         return $handler->handle($xml);
+
     }
 
     /**
-     * Get Supported languages
+     * Get attachment id by post id for pdf files
+     * @param int $postId
      *
-     * @return array
+     * @return int
      */
-    public static function supportedLanguages()
+    public static function attachmentIdByPostParent($postId)
     {
-        return [
-            'de' => __('German', 'agb-connector'),
-            'fr' => __('French', 'agb-connector'),
-            'en' => __('English', 'agb-connector'),
-            'es' => __('Spanish', 'agb-connector'),
-            'it' => __('Italian', 'agb-connector'),
-            'nl' => __('Dutch', 'agb-connector'),
-            'pl' => __('Polish', 'agb-connector'),
-            'sv' => __('Swedish', 'agb-connector'),
-            'da' => __('Danish', 'agb-connector'),
-            'cs' => __('Czech', 'agb-connector'),
-            'sl' => __('Slovenian', 'agb-connector'),
-            'pt' => __('Portuguese', 'agb-connector'),
-        ];
-    }
+        $attachments = get_posts([
+                                     'post_parent' => (int)$postId,
+                                     'post_type' => 'attachment',
+                                     'post_mime_type' => 'application/pdf',
+                                     'numberposts' => 1,
+                                     'fields' => 'ids',
+                                     'suppress_filters' => true,
+                                 ]);
 
-    /**
-     * Get Supported countries
-     *
-     * @return array
-     */
-    public static function supportedCountries()
-    {
-        return [
-            'DE' => __('Germany', 'agb-connector'),
-            'AT' => __('Austria', 'agb-connector'),
-            'CH' => __('Switzerland', 'agb-connector'),
-            'SE' => __('Sweden', 'agb-connector'),
-            'ES' => __('Spain', 'agb-connector'),
-            'IT' => __('Italy', 'agb-connector'),
-            'PL' => __('Poland', 'agb-connector'),
-            'GB' => __('England', 'agb-connector'),
-            'FR' => __('France', 'agb-connector'),
-            'BE' => __('Belgium', 'agb-connector'),
-            'NL' => __('Netherlands', 'agb-connector'),
-            'US' => __('USA', 'agb-connector'),
-            'CA' => __('Canada', 'agb-connector'),
-            'IE' => __('Ireland', 'agb-connector'),
-            'CZ' => __('Czech Republic', 'agb-connector'),
-            'DK' => __('Denmark', 'agb-connector'),
-            'LU' => __('Luxembourg', 'agb-connector'),
-            'SI' => __('Slovenia', 'agb-connector'),
-            'AU' => __('Australia', 'agb-connector'),
-            'PT' => __('Portugal', 'agb-connector'),
-        ];
-    }
+        if ($attachments && isset($attachments[0])) {
+            return (int) $attachments[0];
+        }
 
-    /**
-     * Get supported text types
-     * @return array
-     */
-    public static function supportedTextTypes()
-    {
-        return [
-            'agb' => __('Terms and Conditions', 'agb-connector'),
-            'datenschutz' => __('Privacy', 'agb-connector'),
-            'widerruf' => __('Revocation', 'agb-connector'),
-            'impressum' => __('Imprint', 'agb-connector'),
-        ];
+        return 0;
     }
 }

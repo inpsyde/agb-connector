@@ -3,7 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
-use Inpsyde\AGBConnector\XmlApi;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckLanguageXml
@@ -13,21 +13,35 @@ use Inpsyde\AGBConnector\XmlApi;
 class CheckLanguageXml extends Middleware
 {
     /**
+     * @var array
+     */
+    protected $supportedLanguages;
+
+    /**
+     * CheckCountrySetXml constructor.
+     *
+     * @param array $supported
+     */
+    public function __construct(array $supported)
+    {
+        $this->supportedLanguages = $supported;
+    }
+    /**
      * @param $xml
      *
      * @return bool
-     * @throws LanguageException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
-        if (null === $xml->rechtstext_language) {
+        if ($xml->rechtstext_language === null) {
             throw new LanguageException(
                 'No language provided'
             );
         }
         if (!array_key_exists(
             (string)$xml->rechtstext_language,
-            XmlApi::supportedLanguages()
+            $this->supportedLanguages
         )
         ) {
             throw new LanguageException(

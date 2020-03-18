@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\TextException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckTextXml
@@ -15,11 +16,11 @@ class CheckTextXml extends Middleware
      * @param $xml
      *
      * @return bool
-     * @throws TextException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
-        if (null === $xml->rechtstext_text) {
+        if ($xml->rechtstext_text === null) {
             throw new TextException(
                 "No text provided"
             );

@@ -10,8 +10,8 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 class PostPageException extends XmlApiException
 {
     const CODE = 81;
-    public function __construct($message)
+    public function __construct($message, XmlApiException $previous = null)
     {
-        parent::__construct($message, self::CODE);
+        parent::__construct($message, self::CODE, $previous);
     }
 }

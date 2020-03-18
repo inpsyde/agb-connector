@@ -10,8 +10,8 @@ namespace Inpsyde\AGBConnector\CustomExceptions;
 class VersionException extends XmlApiException
 {
     const CODE = 1;
-    public function __construct($message)
+    public function __construct($message, XmlApiException $previous = null)
     {
-        parent::__construct($message, self::CODE);
+        parent::__construct($message, self::CODE, $previous);
     }
 }

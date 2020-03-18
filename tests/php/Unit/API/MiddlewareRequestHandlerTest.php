@@ -4,24 +4,10 @@ namespace Inpsyde\AGBConnectorTests\Unit\API;
 
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
-use Inpsyde\AGBConnector\Middleware\CheckActionXml;
-use Inpsyde\AGBConnector\Middleware\CheckAuthXml;
-use Inpsyde\AGBConnector\Middleware\CheckConfiguration;
-use Inpsyde\AGBConnector\Middleware\CheckCountrySetXml;
-use Inpsyde\AGBConnector\Middleware\CheckCredentialsXml;
-use Inpsyde\AGBConnector\Middleware\CheckHtmlXml;
-use Inpsyde\AGBConnector\Middleware\CheckInstanceSimpleXml;
-use Inpsyde\AGBConnector\Middleware\CheckLanguageXml;
-use Inpsyde\AGBConnector\Middleware\CheckPdfFilenameXml;
-use Inpsyde\AGBConnector\Middleware\CheckPdfUrlXml;
-use Inpsyde\AGBConnector\Middleware\CheckPostXml;
-use Inpsyde\AGBConnector\Middleware\CheckTextTypeXml;
-use Inpsyde\AGBConnector\Middleware\CheckTextXml;
-use Inpsyde\AGBConnector\Middleware\CheckTitleXml;
-use Inpsyde\AGBConnector\Middleware\CheckVersionXml;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApi;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
+use Inpsyde\AGBConnector\XmlApiSupportedService;
 use Inpsyde\AGBConnectorTests\TestCase;
 
 
@@ -30,12 +16,18 @@ class MiddlewareRequestHandlerTest extends TestCase
     protected $userAuthToken;
     protected $allocations;
     protected $handler;
+    /**
+     * @var XmlApiSupportedService
+     */
+    protected $apiSupportedService;
 
     protected function setUp()
     {
         $this->allocations = ['agb' => 'agb'];
         $this->userAuthToken = '1234567890abcdefghijklmnopqrstuv';
-        $this->handler = new MiddlewareRequestHandler($this->userAuthToken, $this->allocations);
+
+
+        $this->handler = new MiddlewareRequestHandler($this->userAuthToken, $this->allocations, new XmlApiSupportedService());
         parent::setUp();
     }
 

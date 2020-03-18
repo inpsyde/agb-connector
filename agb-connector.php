@@ -34,8 +34,10 @@ function agb_connector()
     $pluginClassName = 'Inpsyde\AGBConnector\Plugin';
     /** @var Inpsyde\AGBConnector\Plugin $plugin */
 
-    if (! class_exists($pluginClassName)) {
-        require __DIR__.'/vendor/autoload.php';
+    $autoload = __DIR__.'/vendor/autoload.php';
+
+    if (! class_exists($pluginClassName) && file_exists($autoload)) {
+        require_once $autoload;
     }
 
     $plugin = new $pluginClassName();

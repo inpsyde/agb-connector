@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\ActionTagException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckActionXml
@@ -16,11 +17,11 @@ class CheckActionXml extends Middleware
      * @param $xml
      *
      * @return int
-     * @throws ActionTagException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
-        if (null === $xml->action) {
+        if ($xml->action === null) {
             throw new ActionTagException(
                 'ActionTag: null provided'
             );

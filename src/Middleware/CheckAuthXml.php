@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\AuthException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckAuthXml
@@ -12,11 +13,14 @@ use Inpsyde\AGBConnector\CustomExceptions\AuthException;
 class CheckAuthXml extends Middleware
 {
     /**
-     * @var API $userAuth
+     * @var string $userAuth
      */
-    private $userAuth;
+    protected $userAuth;
+
     /**
      * CheckAuthXml constructor.
+     *
+     * @param $userAuthToken
      */
     public function __construct($userAuthToken)
     {
@@ -27,11 +31,11 @@ class CheckAuthXml extends Middleware
      * @param $xml
      *
      * @return int
-     * @throws AuthException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
-        if (null === $xml->user_auth_token) {
+        if ($xml->user_auth_token === null) {
             throw new AuthException(
                 "Auth Exception: null user_auth_token"
             );

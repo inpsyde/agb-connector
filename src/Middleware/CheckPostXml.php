@@ -19,9 +19,9 @@ use SimpleXMLElement;
 class CheckPostXml extends Middleware
 {
     /**
-     * @var API $textAllocations
+     * @var array $textAllocations
      */
-    private $textAllocations;
+    protected $textAllocations;
 
     /**
      * CheckPostXml constructor.
@@ -112,12 +112,12 @@ class CheckPostXml extends Middleware
                 'Pdf not found'
             );
         }
-        if (0 !== strpos($pdf, '%PDF')) {
+        if (strpos($pdf, '%PDF' !== 0)) {
             throw new PdfUrlException(
                 'The file provided is not pdf'
             );
         }
-        if (null === $xml->rechtstext_pdf_md5hash) {
+        if ($xml->rechtstext_pdf_md5hash === null) {
             throw new PdfMD5Exception(
                 'The pdf hash provided is null'
             );
@@ -254,7 +254,6 @@ class CheckPostXml extends Middleware
     }
 
     /**
-     * phpcs:Generic.Metrics.NestingLevel.TooHigh
      *
      * @param $xml
      *
@@ -266,18 +265,7 @@ class CheckPostXml extends Middleware
     {
         $foundAllocation = $this->findAllocation($xml);
         if (!$foundAllocation) {
-            $foundCountry = false;
-            foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-                if ((string)$xml->rechtstext_country === $allocation['country']) {
-                    $foundCountry = true;
-                    break;
-                }
-            }
-            if (!$foundCountry) {
-                throw new CountryException(
-                    "Country {$xml->rechtstext_country} not found"
-                );
-            }
+            $this->processCountry($xml);
             throw new LanguageException(
                 'Allocation not found'
             );
@@ -336,5 +324,26 @@ class CheckPostXml extends Middleware
             $targetUrl = get_permalink($post);
         }
         return $targetUrl;
+    }
+
+    /**
+     * @param $xml
+     *
+     * @throws CountryException
+     */
+    protected function processCountry($xml)
+    {
+        $foundCountry = false;
+        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
+            if ((string)$xml->rechtstext_country === $allocation['country']) {
+                $foundCountry = true;
+                break;
+            }
+        }
+        if (!$foundCountry) {
+            throw new CountryException(
+                "Country {$xml->rechtstext_country} not found"
+            );
+        }
     }
 }

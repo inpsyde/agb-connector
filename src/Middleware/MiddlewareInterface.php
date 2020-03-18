@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
+
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
@@ -9,13 +10,8 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
  *
  * @package Inpsyde\AGBConnector\Middleware
  */
-abstract class Middleware implements MiddlewareInterface
+interface MiddlewareInterface
 {
-    /**
-     * @var Middleware
-     */
-    protected $next;
-
     /**
      * Method to build a chain of middleware objects (CoR).
      *
@@ -23,12 +19,7 @@ abstract class Middleware implements MiddlewareInterface
      *
      * @return Middleware
      */
-    public function linkWith(Middleware $next)
-    {
-        $this->next = $next;
-
-        return $next;
-    }
+    public function linkWith(Middleware $next);
 
     /**
      * Subclasses must override this method to provide their own checks.
@@ -38,13 +29,5 @@ abstract class Middleware implements MiddlewareInterface
      * @return int
      * @throws XmlApiException
      */
-
-    public function process($data)
-    {
-        if (!$this->next) {
-            return $data;
-        }
-
-        return $this->next->process($data);
-    }
+    public function process($data);
 }

@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\HtmlTagException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
  * Class CheckHtmlXml
@@ -15,7 +16,7 @@ class CheckHtmlXml extends Middleware
      * @param $xml
      *
      * @return bool
-     * @throws HtmlTagException
+     * @throws XmlApiException
      */
     public function process($xml)
     {
