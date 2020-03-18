@@ -31,8 +31,7 @@ class ShortCodes
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
     }
-
-
+    
     /**
      * settings for All AGB shortcodes.
      *

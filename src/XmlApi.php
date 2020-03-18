@@ -77,10 +77,13 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
-        $handler = new MiddlewareRequestHandler($this->userAuthToken, $this->textAllocations, new XmlApiSupportedService());
+        $handler = new MiddlewareRequestHandler(
+            $this->userAuthToken,
+            $this->textAllocations,
+            new XmlApiSupportedService()
+        );
 
         return $handler->handle($xml);
-
     }
 
     /**
