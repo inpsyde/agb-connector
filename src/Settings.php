@@ -39,6 +39,7 @@ class Settings
         array $supportedLanguages,
         array $supportedTextTypes
     ) {
+
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
         $this->supportedTextTypes = $supportedTextTypes;

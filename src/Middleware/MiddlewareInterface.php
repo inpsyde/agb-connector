@@ -2,7 +2,6 @@
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 
 /**
