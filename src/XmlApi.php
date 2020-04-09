@@ -190,15 +190,15 @@ class XmlApi
             return 17;
         }
 
-        if (null === $xml->rechtstext_title || strlen((string)$xml->rechtstext_title) < 3) {
+        if (null === $xml->rechtstext_title || mb_strlen((string)$xml->rechtstext_title) < 3) {
             return 18;
         }
 
-        if (null === $xml->rechtstext_text || strlen((string)$xml->rechtstext_text) < 50) {
+        if (null === $xml->rechtstext_text || mb_strlen((string)$xml->rechtstext_text) < 50) {
             return 5;
         }
 
-        if (null === $xml->rechtstext_html || strlen((string)$xml->rechtstext_html) < 50) {
+        if (null === $xml->rechtstext_html || mb_strlen((string)$xml->rechtstext_html) < 50) {
             return 6;
         }
 
