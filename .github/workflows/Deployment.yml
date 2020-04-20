@@ -1,6 +1,8 @@
 name: Deployment
 
-on: [push]
+on:
+  push:
+    branches: [ deployment-action ]
 
 jobs:
   deploy:
@@ -25,7 +27,9 @@ jobs:
     - name: Create package
       run: gulp dist --compressedName agb-connector
 
-    #- name: Copy package to remote server
+    - name: Copy package to remote server
+      run: scp agb-connector.zip ${{secrets.DESTINATION}}
+      
     #- name: Extract package
     #- name: rsync    
             
