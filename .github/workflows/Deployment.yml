@@ -33,7 +33,7 @@ jobs:
         ssh-private-key: ${{secrets.DEPLOY_KEY}}
 
     - name: Copy package to remote server
-      run: scp agb-connector.zip ${{secrets.DESTINATION}}
+      run: scp -i ~/.ssh/id_agbconnector agb-connector.zip ${{secrets.DESTINATION}}
 
     #- name: rsync over ssh
     #  run: rsync ./foo/ user@remote:bar/
