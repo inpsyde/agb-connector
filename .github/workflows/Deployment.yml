@@ -28,7 +28,7 @@ jobs:
       run: gulp dist --compressedName agb-connector
     
     - name: Add SSH key
-    - uses: webfactory/ssh-agent@v0.2.0
+      uses: webfactory/ssh-agent@v0.2.0
       with:
         ssh-private-key: ${{secrets.DEPLOY_KEY}}
 
