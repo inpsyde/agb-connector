@@ -26,9 +26,17 @@ jobs:
 
     - name: Create package
       run: gulp dist --compressedName agb-connector
+    
+    - name: Add SSH key
+    - uses: webfactory/ssh-agent@v0.2.0
+      with:
+        ssh-private-key: ${{secrets.DEPLOY_KEY}}
 
     - name: Copy package to remote server
       run: scp agb-connector.zip ${{secrets.DESTINATION}}
+
+    #- name: rsync over ssh
+    #  run: rsync ./foo/ user@remote:bar/
       
     #- name: Extract package
     #- name: rsync    
