@@ -32,7 +32,7 @@ jobs:
       with:
         ssh-private-key: ${{secrets.DEPLOY_KEY}}
     
-    - name: list .ssh
+    - name: list .ssh directory
       run: ls -la $HOME/.ssh
 
     - name: Copy package to remote server
