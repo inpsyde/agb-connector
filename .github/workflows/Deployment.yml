@@ -47,12 +47,9 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{secrets.DEPLOY_KEY}}"
-    
-    - name: list .ssh directory
-      run: ls -la $HOME/.ssh
 
     - name: Copy package to remote server
-      run: scp -i $HOME/.ssh/id_agbconnector agb-connector.zip ${{secrets.DESTINATION}}
+      run: scp agb-connector.zip ${{secrets.DESTINATION}}
 
     #- name: rsync over ssh
     #  run: rsync ./foo/ user@remote:bar/
