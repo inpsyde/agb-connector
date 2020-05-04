@@ -25,7 +25,7 @@ class CheckTitleXml extends Middleware
                 "There must be a title, null provided"
             );
         }
-        if (strlen((string)$xml->rechtstext_title) < 3) {
+        if (mb_strlen((string)$xml->rechtstext_title) < 3) {
             throw new TitleException(
                 "Title length must be greater than 3"
             );

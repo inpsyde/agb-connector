@@ -25,7 +25,7 @@ class CheckTextXml extends Middleware
                 "No text provided"
             );
         }
-        if (strlen((string)$xml->rechtstext_text) < 50) {
+        if (mb_strlen((string)$xml->rechtstext_text) < 50) {
             throw new TextException(
                 "The text size must be greater than 50"
             );
