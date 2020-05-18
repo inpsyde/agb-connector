@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\AuthException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckAuthXml
@@ -20,7 +21,7 @@ class CheckAuthXml extends Middleware
     /**
      * CheckAuthXml constructor.
      *
-     * @param $userAuthToken
+     * @param string $userAuthToken
      */
     public function __construct($userAuthToken)
     {
@@ -28,7 +29,7 @@ class CheckAuthXml extends Middleware
     }
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return int
      * @throws XmlApiException

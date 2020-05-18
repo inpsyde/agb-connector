@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckInstanceSimpleXml
@@ -13,7 +14,7 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 class CheckInstanceSimpleXml extends Middleware
 {
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException

@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckLanguageXml
@@ -27,7 +28,7 @@ class CheckLanguageXml extends Middleware
         $this->supportedLanguages = $supported;
     }
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException

@@ -5,6 +5,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 use Inpsyde\AGBConnector\CustomExceptions\VersionException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApi;
+use SimpleXMLElement;
 
 /**
  * Class CheckVersionXml
@@ -15,7 +16,7 @@ class CheckVersionXml extends Middleware
 {
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return int
      * @throws XmlApiException

@@ -374,7 +374,7 @@ class Settings
      * @param $type
      * @param bool $wcEmail
      */
-    private function getAllocationHtml(array $allocations, $type, $wcEmail = true)
+    protected function getAllocationHtml(array $allocations, $type, $wcEmail = true)
     {
         if (!\function_exists('wc')) {
             $wcEmail = false;
@@ -515,7 +515,7 @@ class Settings
      *
      * @return string
      */
-    private function dropdownPages($selected)
+    protected function dropdownPages($selected)
     {
         $output = "\t<option value=\"-1\">" . esc_html__('&mdash; Select &mdash;', 'agb-connector') .
                    "</option>\n";

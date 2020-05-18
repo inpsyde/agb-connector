@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class Middleware
@@ -33,7 +34,7 @@ abstract class Middleware implements MiddlewareInterface
     /**
      * Subclasses must override this method to provide their own checks.
      *
-     * @param $data
+     * @param SimpleXMLElement|false|string $data
      *
      * @return int
      * @throws XmlApiException

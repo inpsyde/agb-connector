@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\ConfigurationException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckConfiguration
@@ -34,7 +35,7 @@ class CheckConfiguration extends Middleware
     }
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException

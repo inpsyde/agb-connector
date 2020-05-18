@@ -59,7 +59,7 @@ class MiddlewareRequestHandler
     /**
      * @return CheckInstanceSimpleXml
      */
-    private function checkErrorMiddlewareRoute()
+    protected function checkErrorMiddlewareRoute()
     {
         $middleware = new CheckInstanceSimpleXml();
         $middleware->linkWith(new CheckVersionXml())
@@ -90,7 +90,7 @@ class MiddlewareRequestHandler
     }
 
     /**
-     * @param $data
+     * @param SimpleXMLElement $data
      *
      * @return string with xml response
      */
@@ -145,13 +145,11 @@ class MiddlewareRequestHandler
 
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status', 'error');
-        if ($exception) {
-            $xml->addChild('error', $exception->getCode());
-            $messageChild = $xml->addChild('error_message');
-            $node = dom_import_simplexml($messageChild);
-            $no = $node->ownerDocument;
-            $node->appendChild($no->createCDATASection($exception->getMessage()));
-        }
+        $xml->addChild('error', $exception->getCode());
+        $messageChild = $xml->addChild('error_message');
+        $node = dom_import_simplexml($messageChild);
+        $no = $node->ownerDocument;
+        $node->appendChild($no->createCDATASection($exception->getMessage()));
         $xml->addChild('meta_shopversion', $wp_version);
         $xml->addChild('meta_modulversion', Plugin::VERSION);
         $xml->addChild('meta_phpversion', PHP_VERSION);

@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckTextTypeXml
@@ -27,7 +28,7 @@ class CheckTextTypeXml extends Middleware
         $this->supportedTextTypes = $supported;
     }
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException

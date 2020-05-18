@@ -5,6 +5,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 use Inpsyde\AGBConnector\CustomExceptions\CountryException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
+use SimpleXMLElement;
 
 /**
  * Class CheckCountrySetXml
@@ -29,7 +30,7 @@ class CheckCountrySetXml extends Middleware
     }
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException

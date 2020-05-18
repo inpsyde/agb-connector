@@ -34,7 +34,7 @@ class CheckPostXml extends Middleware
     }
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return bool
      * @throws XmlApiException
@@ -56,7 +56,7 @@ class CheckPostXml extends Middleware
      *
      * @return array
      */
-    private function findAllocation(SimpleXMLElement $xml)
+    protected function findAllocation(SimpleXMLElement $xml)
     {
         $foundAllocation = [];
 
@@ -87,7 +87,7 @@ class CheckPostXml extends Middleware
      * @throws XmlApiException
      *
      */
-    private function pushPdfFile(SimpleXMLElement $xml)
+    protected function pushPdfFile(SimpleXMLElement $xml)
     {
         if ('impressum' === (string)$xml->rechtstext_type) {
             return 0;
@@ -174,7 +174,7 @@ class CheckPostXml extends Middleware
      *
      * @return bool
      */
-    private function savePost(\WP_Post $post)
+    protected function savePost(\WP_Post $post)
     {
         remove_filter('content_save_pre', 'wp_filter_post_kses');
 
@@ -189,7 +189,7 @@ class CheckPostXml extends Middleware
      *
      * @return string
      */
-    private function receiveFileContent($url)
+    protected function receiveFileContent($url)
     {
         $response = wp_remote_get($url, ['timeout' => 30]);
         if (is_wp_error($response) ||
@@ -208,14 +208,16 @@ class CheckPostXml extends Middleware
      */
     public static function attachmentIdByPostParent($postId)
     {
-        $attachments = get_posts([
-                                     'post_parent' => (int)$postId,
-                                     'post_type' => 'attachment',
-                                     'post_mime_type' => 'application/pdf',
-                                     'numberposts' => 1,
-                                     'fields' => 'ids',
-                                     'suppress_filters' => true,
-                                 ]);
+        $attachments = get_posts(
+            [
+                'post_parent' => (int)$postId,
+                'post_type' => 'attachment',
+                'post_mime_type' => 'application/pdf',
+                'numberposts' => 1,
+                'fields' => 'ids',
+                'suppress_filters' => true,
+            ]
+        );
 
         if ($attachments && isset($attachments[0])) {
             return (int) $attachments[0];
@@ -231,7 +233,7 @@ class CheckPostXml extends Middleware
      *
      * @return bool
      */
-    private function writeContentToFile($file, $content)
+    protected function writeContentToFile($file, $content)
     {
         global $wp_filesystem;
 

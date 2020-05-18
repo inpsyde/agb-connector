@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\ActionTagException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckActionXml
@@ -14,7 +15,7 @@ class CheckActionXml extends Middleware
 {
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return int
      * @throws XmlApiException

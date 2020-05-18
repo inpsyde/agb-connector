@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckPdfUrlXml
@@ -13,7 +14,7 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 class CheckPdfUrlXml extends Middleware
 {
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return int
      * @throws XmlApiException

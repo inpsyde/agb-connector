@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\PdfFilenameException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use SimpleXMLElement;
 
 /**
  * Class CheckPdfFilenameXml
@@ -14,7 +15,7 @@ class CheckPdfFilenameXml extends Middleware
 {
 
     /**
-     * @param $xml
+     * @param SimpleXMLElement $xml
      *
      * @return int
      * @throws XmlApiException
