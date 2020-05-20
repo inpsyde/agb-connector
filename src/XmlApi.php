@@ -298,12 +298,12 @@ class XmlApi
         ) {
             return 8;
         }
-
-        $result = $this->writeContentToFile($file, $pdf);
-        if (! $result) {
-            return 7;
+        if($foundAllocation['savePdfFile'] === '1'){
+            $result = $this->writeContentToFile($file, $pdf);
+            if (! $result) {
+                return 7;
+            }
         }
-
         $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
