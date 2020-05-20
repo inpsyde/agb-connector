@@ -23,7 +23,8 @@ class Plugin
      *              'country' => 'DE',
      *              'language' => 'de',
      *              'pageId' => 15,
-     *              'wcOrderEmailAttachment' => true
+     *              'wcOrderEmailAttachment' => true,
+     *              'savePdfFile' => true
      *          ]
      *      ]
      * ]

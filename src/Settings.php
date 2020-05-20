@@ -130,6 +130,7 @@ class Settings
                     'language' => $allocation['language'],
                     'pageId' => absint($allocation['page_id']),
                     'wcOrderEmailAttachment' => ! empty($allocation['wc_email']),
+                    'savePdfFile' => $allocation['savePdfFile'],
                 ];
             }
         }
@@ -259,7 +260,6 @@ class Settings
                                 </p>
                             </td>
                         </tr>
-
                         <tr valign="top">
                             <th scope="row">
                                 <label for="page_agb">
@@ -357,6 +357,7 @@ class Settings
                 'language' => $language,
                 'pageId' => 0,
                 'wcOrderEmailAttachment' => false,
+                'savePdfFile' => true,
             ];
         }
         $emptyPages = $this->dropdownPages(-1);
@@ -382,6 +383,7 @@ class Settings
                     <th><?php esc_html_e('Country', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Language', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Page', 'agb-connector'); ?></th>
+                    <th><?php esc_html_e('Save Pdf File', 'agb-connector'); ?></th>
                     <?php if ($wcEmail) { ?>
                         <th><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
                     <?php } ?>
@@ -421,6 +423,10 @@ class Settings
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
                         }
+                        echo '<td><input type="checkbox" value="1" name="text_allocation[' .
+                            esc_attr($type) . '][' . esc_attr($i) . '][savePdfFile]"' .
+                            checked($allocation['savePdfFile'], true, false) .
+                            ' /></td>';
                         echo '<td><a class="remove" href="#" title="' . esc_html__('Delete page', 'agb-connector') .
                              '"><span class="dashicons dashicons-trash"></span></a></td>';
                         echo '</tr>';
