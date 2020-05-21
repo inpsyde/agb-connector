@@ -396,6 +396,7 @@ class Settings
                 if ($allocations) {
                     foreach ($allocations as $allocation) {
                         $i++;
+                        add_option($allocation['savePdfFile'], true);
                         echo '<tr class="' . esc_attr($type) . '_page">';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
@@ -470,6 +471,10 @@ class Settings
                                     <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
                                     size + '][wc_email]" />\
                                 </td>\<?php } //phpcs:ignore ?>
+                                <td>\
+                                    <input type="checkbox" value="1" name="text_allocation[<?php echo esc_attr($type); ?>][' +
+                                    size + '][savePdfFile]" checked/>\
+                                </td>\
                                 <td>\
                                     <a class="remove" href="#" title="<?php esc_html_e('Delete page', 'agb-connector'); ?>">\
                                     <span class="dashicons dashicons-trash"></span></a>\
