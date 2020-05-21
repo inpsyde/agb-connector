@@ -180,6 +180,8 @@ class CheckPostXml extends Middleware
 
         $postId = wp_update_post($post);
 
+        add_filter('content_save_pre', 'wp_filter_post_kses');
+
         return !is_wp_error($postId);
     }
     /**
