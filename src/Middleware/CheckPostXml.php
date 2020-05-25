@@ -112,7 +112,7 @@ class CheckPostXml extends Middleware
                 'Pdf not found'
             );
         }
-        if (strpos($pdf, '%PDF' !== 0)) {
+        if (strpos($pdf, '%PDF') !== 0) {
             throw new PdfUrlException(
                 'The file provided is not pdf'
             );
