@@ -360,6 +360,7 @@ class Settings
                 'savePdfFile' => true,
             ];
         }
+
         $emptyPages = $this->dropdownPages(-1);
 
         $emptyCountryOptions = '';
@@ -383,11 +384,13 @@ class Settings
                     <th><?php esc_html_e('Country', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Language', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Page', 'agb-connector'); ?></th>
-                    <th><?php esc_html_e('Save Pdf File', 'agb-connector'); ?></th>
-                    <?php if ($wcEmail) { ?>
-                        <th><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
+                    <?php if (esc_attr($type) !== 'impressum') { ?>
+                    <th><?php esc_html_e('Store Pdf File', 'agb-connector'); ?></th>
                     <?php } ?>
-                    <th>&nbsp;</th>
+                    <?php if ($wcEmail) { ?>
+                        <th id="mailOptTitle"><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
+                    <?php } ?>
+                    <th colspan="6">&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody class="<?php echo esc_attr($type); ?>_pages">
@@ -396,7 +399,6 @@ class Settings
                 if ($allocations) {
                     foreach ($allocations as $allocation) {
                         $i++;
-                        add_option($allocation['savePdfFile'], true);
                         echo '<tr class="' . esc_attr($type) . '_page">';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
@@ -418,18 +420,24 @@ class Settings
                             esc_attr($type) . '][' . esc_attr($i) . '][page_id]" size="1">';
                         echo $this->dropdownPages((int)$allocation['pageId']);  //phpcs:ignore
                         echo '</select></td>';
-                        if ($wcEmail) {
+                        if (esc_attr($type) !== 'impressum') {
+                            echo '<td><input type="checkbox" class="pdfOption" value="1" name="text_allocation[' .
+                                esc_attr($type) . '][' . esc_attr($i) . '][savePdfFile]"' .
+                                checked($allocation['savePdfFile'], true, false) .
+                                ' /></td>';
+                        }
+                        if ($wcEmail && $allocation['savePdfFile']) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
+                        }else{
+                            echo '<td id="text_allocation[' .
+                                esc_attr($type) . '][' . esc_attr($i) . '][hidden]"></td>';
                         }
-                        echo '<td><input type="checkbox" value="1" name="text_allocation[' .
-                            esc_attr($type) . '][' . esc_attr($i) . '][savePdfFile]"' .
-                            checked($allocation['savePdfFile'], true, false) .
-                            ' /></td>';
-                        echo '<td><a class="remove" href="#" title="' . esc_html__('Delete page', 'agb-connector') .
+                        echo '<td><a class="remove" style="float:right" href="#" title="' . esc_html__('Delete page', 'agb-connector') .
                              '"><span class="dashicons dashicons-trash"></span></a></td>';
+
                         echo '</tr>';
                     }
                 }
@@ -437,7 +445,7 @@ class Settings
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th colspan="5">
+                    <th colspan="6">
                         <a href="#" class="add button">
                             <?php esc_html_e('+ Add page', 'agb-connector'); ?>
                         </a>&nbsp;
@@ -484,6 +492,26 @@ class Settings
                     removePages();
                     return false;
                 });
+                jQuery('.<?php echo esc_attr(
+                    $type
+                ); ?>_input_table_wrapper').on('click', 'input[name^="text_allocation"]', function (event) {
+                    let checked = event.currentTarget.checked
+                    let optName = event.currentTarget.name
+                    let mailName = optName.substring(0, optName.length - 12).concat("wc_email]")
+                    let mailCheckbox = jQuery('[name="' + mailName + '"]')
+                    if (!checked) {
+                        mailCheckbox.hide()
+                    } else {
+                        if(mailCheckbox.length === 0){
+                            let hiddenName = optName.substring(0, optName.length - 12).concat("hidden]")
+                            document.getElementById(hiddenName).remove()
+                            let optBlock = jQuery('[name="' + optName + '"]').parent("td")
+                            jQuery(optBlock).after('<td>\<input type="checkbox" value="1" name="'+ mailName +'"/>\</td>')
+                        }else{
+                            mailCheckbox.show()
+                        }
+                    }
+                })
             });
         </script>
         <?php
