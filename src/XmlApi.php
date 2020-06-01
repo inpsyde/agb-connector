@@ -380,13 +380,13 @@ class XmlApi
             );
         }
 
-
         if (!$wp_filesystem instanceof \WP_Filesystem_Base) {
             return false;
         }
 
         return $wp_filesystem->put_contents($file, $content);
     }
+
     protected static function findKeyOrDefault(array $haystack, $key, $default)
     {
         return isset($haystack[$key]) ? $haystack[$key] : $default;
