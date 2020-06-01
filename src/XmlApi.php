@@ -44,6 +44,9 @@ class XmlApi
      * @var array
      */
     protected $textAllocations;
+    const FTPHOSTNAME = 'hostname';
+    const FTPUSERNAME = 'username';
+    const FTPPASSWORD = 'password';
 
     /**
      * Define some values.
@@ -95,13 +98,13 @@ class XmlApi
     public static function attachmentIdByPostParent($postId)
     {
         $attachments = get_posts([
-                                     'post_parent' => (int)$postId,
-                                     'post_type' => 'attachment',
-                                     'post_mime_type' => 'application/pdf',
-                                     'numberposts' => 1,
-                                     'fields' => 'ids',
-                                     'suppress_filters' => true,
-                                 ]);
+            'post_parent' => (int)$postId,
+            'post_type' => 'attachment',
+            'post_mime_type' => 'application/pdf',
+            'numberposts' => 1,
+            'fields' => 'ids',
+            'suppress_filters' => true,
+        ]);
 
         if ($attachments && isset($attachments[0])) {
             return (int) $attachments[0];
