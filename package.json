@@ -1,6 +1,6 @@
 {
   "name": "agb-connector",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Transfers legal texts from the IT-Recht Kanzlei client portal to your WordPress installation.",
   "main": "index.js",
   "repository": {
