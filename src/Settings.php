@@ -2,6 +2,12 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Walker_PageDropdown;
+
+use function array_key_exists;
+use function function_exists;
+use function wp_insert_post;
+
 /**
  * Class Settings
  */
@@ -14,6 +20,36 @@ class Settings
      * @var string
      */
     private $message = '';
+    /**
+     * @var array $supportedCountries
+     */
+    protected $supportedCountries;
+    /**
+     * @var array
+     */
+    protected $supportedLanguages;
+    /**
+     * @var array
+     */
+    protected $supportedTextTypes;
+
+    /**
+     * Settings constructor.
+     *
+     * @param array $supportedCountries
+     * @param array $supportedLanguages
+     * @param array $supportedTextTypes
+     */
+    public function __construct(
+        array $supportedCountries,
+        array $supportedLanguages,
+        array $supportedTextTypes
+    ) {
+
+        $this->supportedCountries = $supportedCountries;
+        $this->supportedLanguages = $supportedLanguages;
+        $this->supportedTextTypes = $supportedTextTypes;
+    }
 
     /**
      * Add the menu entry
@@ -97,17 +133,17 @@ class Settings
         }
 
         check_admin_referer('agb-connector-settings-page');
-        $supportedTextTypes = XmlApi::supportedTextTypes();
+        $supportedTextTypes = $this->supportedTextTypes;
         $textAllocations = [];
         foreach ($postTextAllocation as $type => $allocations) {
-            if (! \array_key_exists($type, $supportedTextTypes)) {
+            if (! array_key_exists($type, $supportedTextTypes)) {
                 continue;
             }
             foreach ($allocations as $allocation) {
-                if (! array_key_exists($allocation['country'], XmlApi::supportedCountries())) {
+                if (! array_key_exists($allocation['country'], $this->supportedCountries)) {
                     continue;
                 }
-                if (! array_key_exists($allocation['language'], XmlApi::supportedLanguages())) {
+                if (! array_key_exists($allocation['language'], $this->supportedLanguages)) {
                     continue;
                 }
                 if ('create' === $allocation['page_id']) {
@@ -120,7 +156,7 @@ class Settings
                         'comment_status' => 'closed',
                         'ping_status' => 'closed',
                     ];
-                    $allocation['page_id'] = \wp_insert_post($postArray);
+                    $allocation['page_id'] = wp_insert_post($postArray);
                 }
                 if ($allocation['page_id'] <= 0 || ! get_post(absint($allocation['page_id']))) {
                     continue;
@@ -344,9 +380,9 @@ class Settings
      * @param $type
      * @param bool $wcEmail
      */
-    private function getAllocationHtml(array $allocations, $type, $wcEmail = true)
+    protected function getAllocationHtml(array $allocations, $type, $wcEmail = true)
     {
-        if (!\function_exists('wc')) {
+        if (!function_exists('wc')) {
             $wcEmail = false;
         }
         $locale = get_bloginfo('language');
@@ -364,14 +400,14 @@ class Settings
         $emptyPages = $this->dropdownPages(-1);
 
         $emptyCountryOptions = '';
-        foreach (XmlApi::supportedCountries() as $countryCode => $countryText) {
+        foreach ($this->supportedCountries as $countryCode => $countryText) {
             $emptyCountryOptions .= '<option value="' . $countryCode . '"' .
                                     selected($country, $countryCode, false) .
                                     '>' . $countryText . '</option>';
         }
 
         $emptyLanguageOptions = '';
-        foreach (XmlApi::supportedLanguages() as $languageCode => $languageText) {
+        foreach ($this->supportedLanguages as $languageCode => $languageText) {
             $emptyLanguageOptions .= '<option value="' . $languageCode . '"' .
                                      selected($language, $languageCode, false) .
                                      '>' . $languageText . '</option>';
@@ -404,7 +440,7 @@ class Settings
                         echo '<tr class="' . esc_attr($type) . '_page">';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][country]" size="1">';
-                        foreach (XmlApi::supportedCountries() as $countryCode => $countryText) {
+                        foreach ($this->supportedCountries as $countryCode => $countryText) {
                             echo '<option value="' . esc_attr($countryCode) . '"' .
                                  selected($allocation['country'], $countryCode, false) .
                                  '>' . esc_attr($countryText) . '</option>';
@@ -412,7 +448,7 @@ class Settings
                         echo '</select></td>';
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][language]" size="1">';
-                        foreach (XmlApi::supportedLanguages() as $languageCode => $languageText) {
+                        foreach ($this->supportedLanguages as $languageCode => $languageText) {
                             echo '<option value="' . esc_attr($languageCode) . '"' .
                                  selected($allocation['language'], $languageCode, false) .
                                  '>' . esc_attr($languageText) . '</option>';
@@ -526,7 +562,7 @@ class Settings
      *
      * @return string
      */
-    private function dropdownPages($selected)
+    protected function dropdownPages($selected)
     {
         $output = "\t<option value=\"-1\">" . esc_html__('&mdash; Select &mdash;', 'agb-connector') .
                    "</option>\n";
@@ -544,7 +580,7 @@ class Settings
         ]);
 
         if ($pages) {
-            $walker = new \Walker_PageDropdown();
+            $walker = new Walker_PageDropdown();
             $output .= $walker->walk($pages, 0, [
                     'selected' => $selected,
             ]);
