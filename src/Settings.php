@@ -390,8 +390,8 @@ class Settings
                     <?php if ($wcEmail) { ?>
                         <th id="mailOptTitle"><?php esc_html_e(
                             'Attach PDF on WooCommerce emails',
-                            'agb-connector'
-                        ); ?></th>
+                            'agb-connector'); ?>
+                        </th>
                     <?php } ?>
                     <th colspan="6">&nbsp;</th>
                 </tr>
@@ -434,7 +434,7 @@ class Settings
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
-                        } else {
+                        } else {//phpcs:ignore
                             echo '<td id="text_allocation[' .
                                 esc_attr($type) . '][' . esc_attr($i) . '][hidden]"></td>';
                         }
