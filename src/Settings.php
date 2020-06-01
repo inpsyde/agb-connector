@@ -389,9 +389,9 @@ class Settings
                     <?php } ?>
                     <?php if ($wcEmail) { ?>
                         <th id="mailOptTitle"><?php esc_html_e(
-                                'Attach PDF on WooCommerce emails',
-                                'agb-connector'
-                            ); ?></th>
+                            'Attach PDF on WooCommerce emails',
+                            'agb-connector'
+                        ); ?></th>
                     <?php } ?>
                     <th colspan="6">&nbsp;</th>
                 </tr>
@@ -496,7 +496,8 @@ class Settings
                     removePages();
                     return false;
                 });
-                jQuery('.<?php echo esc_attr($type); ?>_input_table_wrapper').on('click', 'input[name^="text_allocation"]', function (event) {
+                jQuery('.<?php echo esc_attr($type); ?>_input_table_wrapper')
+                    .on('click', 'input[name^="text_allocation"]', function (event) {
                     let checked = event.currentTarget.checked
                     let optName = event.currentTarget.name
                     let mailName = optName.substring(0, optName.length - 12).concat("wc_email]")
