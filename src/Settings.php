@@ -389,8 +389,9 @@ class Settings
                     <?php } ?>
                     <?php if ($wcEmail) { ?>
                         <th id="mailOptTitle"><?php esc_html_e(
-                            'Attach PDF on WooCommerce emails',
-                            'agb-connector'); ?>
+                        'Attach PDF on WooCommerce emails',
+                        'agb-connector'
+                            ); ?>
                         </th>
                     <?php } ?>
                     <th colspan="6">&nbsp;</th>
