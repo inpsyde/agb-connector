@@ -53,7 +53,7 @@ class Install
                 'language' => 'de',
                 'pageId' => (int)$allocation,
                 'wcOrderEmailAttachment' => ! empty($appendEmail[$type]),
-                'savePdfFile' => true
+                'savePdfFile' => true,
             ];
         }
 
@@ -89,7 +89,7 @@ class Install
                 'pageId' => absint($agbConnectorOptions['agb_connector_agb_page']),
                 'wcOrderEmailAttachment' =>
                     ! empty($agbConnectorOptions['agb_connector_agb_pdf']),
-                'savePdfFile' => true
+                'savePdfFile' => true,
             ];
         }
         if (isset($agbConnectorOptions['agb_connector_impressum_page'])) {
@@ -107,7 +107,7 @@ class Install
                 'pageId' => absint($agbConnectorOptions['agb_connector_datenschutz_page']),
                 'wcOrderEmailAttachment' =>
                     ! empty($agbConnectorOptions['agb_connector_datenschutz_pdf']),
-                'savePdfFile' => true
+                'savePdfFile' => true,
             ];
         }
         if (isset($agbConnectorOptions['agb_connector_widerruf_page'])) {

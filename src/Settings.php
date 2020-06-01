@@ -388,7 +388,10 @@ class Settings
                     <th><?php esc_html_e('Store Pdf File', 'agb-connector'); ?></th>
                     <?php } ?>
                     <?php if ($wcEmail) { ?>
-                        <th id="mailOptTitle"><?php esc_html_e('Attach PDF on WooCommerce emails', 'agb-connector'); ?></th>
+                        <th id="mailOptTitle"><?php esc_html_e(
+                                'Attach PDF on WooCommerce emails',
+                                'agb-connector'
+                            ); ?></th>
                     <?php } ?>
                     <th colspan="6">&nbsp;</th>
                 </tr>
@@ -431,12 +434,13 @@ class Settings
                                  esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
-                        }else{
+                        } else {
                             echo '<td id="text_allocation[' .
                                 esc_attr($type) . '][' . esc_attr($i) . '][hidden]"></td>';
                         }
-                        echo '<td><a class="remove" style="float:right" href="#" title="' . esc_html__('Delete page', 'agb-connector') .
-                             '"><span class="dashicons dashicons-trash"></span></a></td>';
+                        echo '<td><a class="remove" style="float:right" href="#" title="'
+                            . esc_html__('Delete page', 'agb-connector') .
+                            '"><span class="dashicons dashicons-trash"></span></a></td>';
 
                         echo '</tr>';
                     }
@@ -492,9 +496,7 @@ class Settings
                     removePages();
                     return false;
                 });
-                jQuery('.<?php echo esc_attr(
-                    $type
-                ); ?>_input_table_wrapper').on('click', 'input[name^="text_allocation"]', function (event) {
+                jQuery('.<?php echo esc_attr($type); ?>_input_table_wrapper').on('click', 'input[name^="text_allocation"]', function (event) {
                     let checked = event.currentTarget.checked
                     let optName = event.currentTarget.name
                     let mailName = optName.substring(0, optName.length - 12).concat("wc_email]")

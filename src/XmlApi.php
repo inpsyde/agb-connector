@@ -304,9 +304,9 @@ class XmlApi
         ) {
             return 8;
         }
-        if($foundAllocation['savePdfFile'] === '1'){
+        if ($foundAllocation['savePdfFile'] === '1') {
             $result = $this->writeContentToFile($file, $pdf);
-            if (! $result) {
+            if (!$result) {
                 return 7;
             }
         }
