@@ -2,6 +2,9 @@
 
 namespace Inpsyde\AGBConnector;
 
+use UnexpectedValueException;
+use WP_Filesystem_Base;
+
 /**
  * Class XmlApi
  */
@@ -42,6 +45,9 @@ class XmlApi
      * @var array
      */
     private $textAllocations;
+    const FTPHOSTNAME = 'hostname';
+    const FTPUSERNAME = 'username';
+    const FTPPASSWORD = 'password';
 
     /**
      * Define some values.
@@ -304,6 +310,7 @@ class XmlApi
                 return 7;
             }
         }
+
         $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
@@ -346,11 +353,30 @@ class XmlApi
         global $wp_filesystem;
 
         if (!function_exists('WP_Filesystem')) {
-            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH
+                . '/wp-admin/includes/file.php';
+        }
+        $args = [];
+        $ftpCredentials = get_option('ftp_credentials');
+        if (is_array($ftpCredentials)) {
+            $args = [
+                self::FTPHOSTNAME => self::findKeyOrDefault($ftpCredentials, self::FTPHOSTNAME, ''),
+                self::FTPUSERNAME => self::findKeyOrDefault($ftpCredentials, self::FTPUSERNAME, ''),
+                self::FTPPASSWORD => self::findKeyOrDefault($ftpCredentials, self::FTPPASSWORD, ''),
+            ];
         }
 
-        if (!$wp_filesystem) {
-            WP_Filesystem();
+        $initilized = WP_Filesystem($args);
+
+        if (!$initilized || !$wp_filesystem instanceof WP_Filesystem_Base) {
+            throw new UnexpectedValueException('Wp_FileSystem cannot be initialized');
+        }
+
+        if ($wp_filesystem->errors->has_errors()) {
+            throw new WPFilesystemException(
+                $wp_filesystem->errors,
+                "There where problems in setup the filesystem {$wp_filesystem->method}"
+            );
         }
 
         if (!$wp_filesystem instanceof \WP_Filesystem_Base) {
@@ -358,6 +384,11 @@ class XmlApi
         }
 
         return $wp_filesystem->put_contents($file, $content);
+    }
+
+    protected static function findKeyOrDefault(array $haystack, $key, $default)
+    {
+        return isset($haystack[$key]) ? $haystack[$key] : $default;
     }
 
     /**
