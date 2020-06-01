@@ -1,17 +1,19 @@
 <?php # -*- coding: utf-8 -*-
 
-namespace Inpsyde\AGBConnector;
+namespace Inpsyde\AGBConnector\CustomExceptions;
 
-use RuntimeException;
+use WP_Error;
 
 /**
- * Class ServiceProvider
+ * Class VersionException
+ *
+ * @package Inpsyde\AGBConnector\CustomExceptions
  */
-class WPFilesystemException extends RuntimeException
+class WPFilesystemException extends XmlApiException
 {
     private $wpError;
 
-    public function __construct(\WP_Error $wpError, $message = "", $code = 0, $previous = null)
+    public function __construct(WP_Error $wpError, $message = "", $code = 0, $previous = null)
     {
         $this->wpError = $wpError;
         parent::__construct($message, $code, $previous);

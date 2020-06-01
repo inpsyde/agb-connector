@@ -6,6 +6,8 @@ use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use SimpleXMLElement;
 
+use function array_key_exists;
+
 /**
  * Class CheckTextTypeXml
  *
@@ -40,7 +42,7 @@ class CheckTextTypeXml extends Middleware
                 "No text type provided"
             );
         }
-        if (! \array_key_exists((string)$xml->rechtstext_type, $this->supportedTextTypes)
+        if (! array_key_exists((string)$xml->rechtstext_type, $this->supportedTextTypes)
         ) {
             throw new TextTypeException(
                 "The text type provided is not supported"

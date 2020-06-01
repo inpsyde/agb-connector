@@ -2,6 +2,12 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Walker_PageDropdown;
+
+use function array_key_exists;
+use function function_exists;
+use function wp_insert_post;
+
 /**
  * Class Settings
  */
@@ -130,7 +136,7 @@ class Settings
         $supportedTextTypes = $this->supportedTextTypes;
         $textAllocations = [];
         foreach ($postTextAllocation as $type => $allocations) {
-            if (! \array_key_exists($type, $supportedTextTypes)) {
+            if (! array_key_exists($type, $supportedTextTypes)) {
                 continue;
             }
             foreach ($allocations as $allocation) {
@@ -150,7 +156,7 @@ class Settings
                         'comment_status' => 'closed',
                         'ping_status' => 'closed',
                     ];
-                    $allocation['page_id'] = \wp_insert_post($postArray);
+                    $allocation['page_id'] = wp_insert_post($postArray);
                 }
                 if ($allocation['page_id'] <= 0 || ! get_post(absint($allocation['page_id']))) {
                     continue;
@@ -376,7 +382,7 @@ class Settings
      */
     protected function getAllocationHtml(array $allocations, $type, $wcEmail = true)
     {
-        if (!\function_exists('wc')) {
+        if (!function_exists('wc')) {
             $wcEmail = false;
         }
         $locale = get_bloginfo('language');
@@ -574,7 +580,7 @@ class Settings
         ]);
 
         if ($pages) {
-            $walker = new \Walker_PageDropdown();
+            $walker = new Walker_PageDropdown();
             $output .= $walker->walk($pages, 0, [
                     'selected' => $selected,
             ]);

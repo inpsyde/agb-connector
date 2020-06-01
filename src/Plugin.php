@@ -2,6 +2,8 @@
 
 namespace Inpsyde\AGBConnector;
 
+use WC_Order;
+
 /**
  * Class Plugin
  */
@@ -98,7 +100,7 @@ class Plugin
             'customer_refunded_order',
             'customer_invoice',
         ];
-        if (! $order instanceof \WC_Order || ! in_array($status, $validStatuses, true)) {
+        if (! $order instanceof WC_Order || ! in_array($status, $validStatuses, true)) {
             return $attachments;
         }
 

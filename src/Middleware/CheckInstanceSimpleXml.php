@@ -24,7 +24,7 @@ class CheckInstanceSimpleXml extends Middleware
         if (!$xml) {
             throw new NotSimpleXmlInstanceException('Not xml provided');
         }
-        if (!$xml instanceof \SimpleXMLElement) {
+        if (!$xml instanceof SimpleXMLElement) {
             throw new NotSimpleXmlInstanceException('This is not a simple xml instance');
         }
         return parent::process($xml);

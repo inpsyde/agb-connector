@@ -8,8 +8,12 @@ use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
+use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use SimpleXMLElement;
+use UnexpectedValueException;
+use WP_Filesystem_Base;
+use WP_Post;
 
 /**
  * Class CheckPostXml
@@ -18,6 +22,9 @@ use SimpleXMLElement;
  */
 class CheckPostXml extends Middleware
 {
+    const FTPHOSTNAME = 'hostname';
+    const FTPUSERNAME = 'username';
+    const FTPPASSWORD = 'password';
     /**
      * @var array $textAllocations
      */
@@ -127,13 +134,14 @@ class CheckPostXml extends Middleware
                 'The pdf hash does not match'
             );
         }
-        $result = $this->writeContentToFile($file, $pdf);
-        if (!$result) {
-            throw new PdfUrlException(
-                'WriteContentToFile failed. Result not found'
-            );
+        if ($foundAllocation['savePdfFile'] === '1') {
+            $result = $this->writeContentToFile($file, $pdf);
+            if (!$result) {
+                throw new PdfUrlException(
+                    'WriteContentToFile failed. Result not found'
+                );
+            }
         }
-
         $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
@@ -170,11 +178,11 @@ class CheckPostXml extends Middleware
     /**
      * Save post and pdf after checks
      *
-     * @param \WP_Post $post The post object.
+     * @param WP_Post $post The post object.
      *
      * @return bool
      */
-    protected function savePost(\WP_Post $post)
+    protected function savePost(WP_Post $post)
     {
         remove_filter('content_save_pre', 'wp_filter_post_kses');
 
@@ -227,6 +235,7 @@ class CheckPostXml extends Middleware
 
         return 0;
     }
+
     /**
      * Write content to a file
      *
@@ -234,27 +243,49 @@ class CheckPostXml extends Middleware
      * @param string $content
      *
      * @return bool
+     * @throws WPFilesystemException
      */
-    protected function writeContentToFile($file, $content)
+    private function writeContentToFile($file, $content)
     {
         global $wp_filesystem;
 
         if (!function_exists('WP_Filesystem')) {
-            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH
+                . '/wp-admin/includes/file.php';
+        }
+        $args = [];
+        $ftpCredentials = get_option('ftp_credentials');
+        if (is_array($ftpCredentials)) {
+            $args = [
+                self::FTPHOSTNAME => self::findKeyOrDefault($ftpCredentials, self::FTPHOSTNAME, ''),
+                self::FTPUSERNAME => self::findKeyOrDefault($ftpCredentials, self::FTPUSERNAME, ''),
+                self::FTPPASSWORD => self::findKeyOrDefault($ftpCredentials, self::FTPPASSWORD, ''),
+            ];
         }
 
-        if (!$wp_filesystem) {
-            $success = WP_Filesystem();
-            if (!$success) {
-                return false;
-            }
+        $initilized = WP_Filesystem($args);
+
+        if (!$initilized || !$wp_filesystem instanceof WP_Filesystem_Base) {
+            throw new UnexpectedValueException('Wp_FileSystem cannot be initialized');
         }
 
-        if (!$wp_filesystem instanceof \WP_Filesystem_Base) {
+        if ($wp_filesystem->errors->has_errors()) {
+            throw new WPFilesystemException(
+                $wp_filesystem->errors,
+                "There where problems in setup the filesystem {$wp_filesystem->method}"
+            );
+        }
+
+        if (!$wp_filesystem instanceof WP_Filesystem_Base) {
             return false;
         }
 
         return $wp_filesystem->put_contents($file, $content);
+    }
+
+    protected static function findKeyOrDefault(array $haystack, $key, $default)
+    {
+        return isset($haystack[$key]) ? $haystack[$key] : $default;
     }
 
     /**
@@ -281,13 +312,13 @@ class CheckPostXml extends Middleware
      * @param       $xml
      * @param array $foundAllocation
      *
-     * @return array|\WP_Post|null
+     * @return array|WP_Post|null
      * @throws PostPageException
      */
     protected function processPost($xml, array $foundAllocation)
     {
         $post = get_post($foundAllocation['pageId']);
-        if (!$post instanceof \WP_Post) {
+        if (!$post instanceof WP_Post) {
             throw new PostPageException(
                 'No post page provided'
             );
