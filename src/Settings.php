@@ -421,7 +421,7 @@ class Settings
                     <th><?php esc_html_e('Language', 'agb-connector'); ?></th>
                     <th><?php esc_html_e('Page', 'agb-connector'); ?></th>
                     <?php if (esc_attr($type) !== 'impressum') { ?>
-                    <th><?php esc_html_e('Store Pdf File', 'agb-connector'); ?></th>
+                    <th><?php esc_html_e('Store PDF File', 'agb-connector'); ?></th>
                     <?php } ?>
                     <?php if ($wcEmail) { ?>
                         <th id="mailOptTitle"><?php
