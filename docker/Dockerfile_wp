@@ -9,7 +9,7 @@ ARG BUILD_ROOT_PATH
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 RUN apt-get update && \
-    apt-get install -y zip unzip curl git && \
+    apt-get install -y zip unzip curl git nodejs npm && \
     pecl install xdebug && \
     docker-php-ext-enable xdebug
 
