@@ -38,8 +38,7 @@
     "autoload-dev": {
         "psr-4": {
             "Inpsyde\\AGBConnectorTests\\": "tests/php",
-            "Inpsyde\\AGBConnectorTests\\Unit\\": "tests/php/Unit",
-            "Inpsyde\\AGBConnectorTests\\Functional\\": "tests/php/Functional"
+            "Inpsyde\\AGBConnectorTests\\Unit\\": "tests/php/Unit"
         }
     }
 }
