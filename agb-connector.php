@@ -9,6 +9,8 @@
  * Author URI: http://inpsyde.com
  * Version: 2.1.0
  * Text Domain: agb-connector
+ * Requires PHP: 7.2
+ * Requires at least: 5.0
  * License: GPLv2+
  */
 
