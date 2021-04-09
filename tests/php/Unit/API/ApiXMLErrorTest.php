@@ -1,7 +1,6 @@
 <?php # -*- coding: utf-8 -*-
-namespace Inpsyde\AGBConnector;
+namespace Inpsyde\AGBConnectorTests\Unit\API;
 
-use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use PHPUnit\Framework\TestCase;
 
 /**

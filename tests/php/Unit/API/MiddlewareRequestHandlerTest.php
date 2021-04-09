@@ -9,6 +9,7 @@ use Inpsyde\AGBConnector\XmlApi;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
 use Inpsyde\AGBConnectorTests\TestCase;
+use function Brain\Monkey\Functions\when;
 
 
 class MiddlewareRequestHandlerTest extends TestCase
@@ -21,10 +22,13 @@ class MiddlewareRequestHandlerTest extends TestCase
      */
     protected $apiSupportedService;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->allocations = ['agb' => 'agb'];
         $this->userAuthToken = '1234567890abcdefghijklmnopqrstuv';
+
+        when('__')
+            ->returnArg();
 
 
         $this->handler = new MiddlewareRequestHandler($this->userAuthToken, $this->allocations, new XmlApiSupportedService());

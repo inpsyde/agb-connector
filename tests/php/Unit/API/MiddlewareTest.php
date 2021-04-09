@@ -1,9 +1,10 @@
 <?php
 
-namespace Inpsyde\AGBConnector;
+namespace Inpsyde\AGBConnectorTests\Unit\API;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Middleware\CheckConfiguration;
+use Inpsyde\AGBConnector\XmlApi;
 use PHPUnit\Framework\TestCase;
 
 class MiddlewareTest extends TestCase

@@ -3,8 +3,8 @@
 namespace Inpsyde\AGBConnectorTests;
 
 use Mockery;
-use PHPUnit_Framework_MockObject_MockBuilder;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Framework\MockObject\MockObject;
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
 use PHPUnit\Framework\TestCase as PhpUniTestCase;
@@ -22,7 +22,7 @@ class TestCase extends PhpUniTestCase
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         setUp();
@@ -32,7 +32,7 @@ class TestCase extends PhpUniTestCase
      * Tears down the fixture, for example, close a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
@@ -47,7 +47,7 @@ class TestCase extends PhpUniTestCase
      * @param string $className
      * @param array $constructorArguments
      * @param array $methods
-     * @return PHPUnit_Framework_MockObject_MockBuilder
+     * @return MockBuilder
      */
     protected function buildTesteeMock($className, $constructorArguments, $methods)
     {
@@ -56,7 +56,7 @@ class TestCase extends PhpUniTestCase
             ? $testee->setConstructorArgs($constructorArguments)
             : $testee->disableOriginalConstructor();
 
-        $testee->setMethods($methods);
+        $testee->onlyMethods($methods);
 
         return $testee;
     }
@@ -80,10 +80,10 @@ class TestCase extends PhpUniTestCase
     /**
      * Create a proxy for a mocked class
      *
-     * @param PHPUnit_Framework_MockObject_MockObject $testee
+     * @param MockObject $testee
      * @return Reflection
      */
-    protected function proxyFor(PHPUnit_Framework_MockObject_MockObject $testee)
+    protected function proxyFor(MockObject $testee)
     {
         return $this->reflect($testee);
     }

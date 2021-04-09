@@ -1,8 +1,7 @@
 <?php
 
-namespace Inpsyde\AGBConnector;
+namespace Inpsyde\AGBConnectorTests\Unit\API;
 
-use CustomExceptionsTests;
 use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
 use PHPUnit\Framework\TestCase;
 
