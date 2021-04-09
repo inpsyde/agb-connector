@@ -25,7 +25,7 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.7",
+        "phpunit/phpunit": "^8.5",
         "brain/monkey": "^2.3",
         "ptrofimov/xpmock": "^1",
         "inpsyde/php-coding-standards": "^0.13"
