@@ -26,7 +26,8 @@ FROM php:${PHP_BUILD_VERSION}-cli as test
 ARG BUILD_ROOT_PATH
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-RUN pecl install xdebug-2.6.0
+RUN pecl install xdebug && \
+    docker-php-ext-enable xdebug
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install posix
 
@@ -62,6 +63,13 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     && mv wp-cli.phar /usr/local/bin/wp
 RUN sed -i "s|#ServerName www.example.com|ServerName ${WP_DOMAIN}|" /etc/apache2/sites-available/*.conf
 RUN sed -i "s|#ServerName www.example.com|ServerName ${WP_DOMAIN}|" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+RUN apt-get update && \
+    apt-get install -y zip unzip curl git && \
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug
 
 WORKDIR ${DOCROOT_PATH}
 COPY --from=vendor-dev ${BUILD_ROOT_PATH} ${PROJECT_MOUNT_PATH}
