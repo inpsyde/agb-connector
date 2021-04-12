@@ -28,7 +28,8 @@
         "phpunit/phpunit": "^8.5",
         "brain/monkey": "^2.3",
         "ptrofimov/xpmock": "^1",
-        "inpsyde/php-coding-standards": "^0.13"
+        "inpsyde/php-coding-standards": "^0.13",
+        "roots/wordpress": "^5.0"
     },
     "autoload": {
         "psr-4": {
@@ -39,5 +40,12 @@
         "psr-4": {
             "Inpsyde\\AGBConnectorTests\\": "tests/php"
         }
+    },
+
+    "extra": {
+        "installer-paths": {
+            "vendor/{$vendor}/{$name}": ["type:wordpress-plugin"]
+        },
+        "wordpress-install-dir": "vendor/wordpress/wordpress"
     }
 }
