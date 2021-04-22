@@ -276,10 +276,6 @@ class CheckPostXml extends Middleware
             );
         }
 
-        if (!$wp_filesystem instanceof WP_Filesystem_Base) {
-            return false;
-        }
-
         return $wp_filesystem->put_contents($file, $content);
     }
 
