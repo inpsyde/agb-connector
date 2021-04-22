@@ -18,13 +18,18 @@ interface DocumentInterface
     public function getTitle(): string;
 
     /**
-     * Get document content.
-     *
-     * @param string $format Format of the document content to return, either 'text' or 'html'.
+     * Get document content as text.
      *
      * @return string
      */
-    public function getContent(string $format = 'html'): string;
+    public function getContentAsText(): string;
+
+    /**
+     * Get content as HTML format.
+     *
+     * @return string
+     */
+    public function getContentAsHtml(): string;
 
     /**
      * Get document country.
