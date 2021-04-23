@@ -26,6 +26,8 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     }
 
     /**
+     * Create Document instance from 'wp_block' post type (used in new plugin versions).
+     *
      * @param WP_Post $post Post to get content from.
      *
      * @return DocumentInterface
@@ -44,6 +46,8 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     }
 
     /**
+     * Create Document instance from post added by old plugin versions.
+     *
      * @param WP_Post $post Post to get content from.
      *
      * @return DocumentInterface
