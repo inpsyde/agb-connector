@@ -7,6 +7,7 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\Document;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
+use Inpsyde\AGBConnector\Plugin;
 use WP_Post;
 
 class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
@@ -49,7 +50,17 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
      */
     protected function createFromPost(WP_Post $post): DocumentInterface
     {
-        //todo
+        $allocations = $this->getDocumentDataFromOptions($post);
+
+        return new Document(
+            $post->post_title,
+            '', //todo: see above about the text version
+            $post->post_content,
+            $allocations['country'] ?? '',
+            $allocations['language'] ?? '',
+            $allocations['type'] ?? '',
+            $this->getAttachedPdfUrl($post)
+        );
     }
 
     /**
@@ -92,5 +103,32 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         $attachment = get_posts($args);
 
         return $attachment ? wp_get_attachment_url((int) $attachment) : '';
+    }
+
+    /**
+     * Get document allocations saved in options by old versions of the plugin.
+     *
+     * @param WP_Post $post
+     *
+     * @return array
+     */
+    protected function getDocumentDataFromOptions(WP_Post $post): array
+    {
+        $allAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS);
+
+        if(! is_array($allAllocations)){
+            return [];
+        }
+
+        foreach ($allAllocations as $documentType => $allocationsOfType) {
+            foreach ($allocationsOfType as $documentAllocation) {
+                if(isset($documentAllocation['pageId']) && (int) $documentAllocation['pageId'] === $post->ID) {
+                    $documentAllocation['type'] = $documentType;
+                    return $documentAllocation;
+                }
+            }
+        }
+
+        return [];
     }
 }
