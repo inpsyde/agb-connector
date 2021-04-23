@@ -74,19 +74,22 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
      */
     protected function getAttachedPdfUrl(WP_Post $post): string
     {
-        $attachment = get_posts(
-            [
-                'fields' => 'ids',
-                'nopaging' => true,
-                'no_found_rows' => true,
-                'post_mime_type' => 'application/pdf',
-                'post_parent' => $post->ID,
-                'post_type' => 'attachment',
-                'post_status' => 'publish',
-                'posts_per_page' => 1, //Get only the latest post. By default, WP uses 'date' for sorting by and 'DESC' for order.
-                'meta_key' => 'agbc-document-attachment'
-            ]
-        );
+        $args =  [
+            'fields' => 'ids',
+            'nopaging' => true,
+            'no_found_rows' => true,
+            'post_mime_type' => 'application/pdf',
+            'post_parent' => $post->ID,
+            'post_type' => 'attachment',
+            'post_status' => 'publish',
+            'posts_per_page' => 1, //Get only the latest post. By default, WP uses 'date' for sorting by and 'DESC' for order.
+        ];
+
+        if($post->post_type === 'wp_block'){
+            $args['meta_key'] = 'agbc-document-attachment';
+        }
+
+        $attachment = get_posts($args);
 
         return $attachment ? wp_get_attachment_url((int) $attachment) : '';
     }
