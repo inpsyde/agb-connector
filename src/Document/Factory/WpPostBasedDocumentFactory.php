@@ -37,9 +37,8 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
             $post->post_content,
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE),
-            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)
-            //todo: add pdf link
-
+            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE),
+            $this->getAttachedPdfUrl($post)
         );
     }
 
@@ -64,5 +63,31 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     protected function getPostMeta(WP_Post $post, string $fieldName): string
     {
         return (string) get_post_meta($post->ID, $fieldName, true);
+    }
+
+    /**
+     * Get the url of document post pdf attachment, empty string if not found.
+     *
+     * @param WP_Post $post
+     *
+     * @return string
+     */
+    protected function getAttachedPdfUrl(WP_Post $post): string
+    {
+        $attachment = get_posts(
+            [
+                'fields' => 'ids',
+                'nopaging' => true,
+                'no_found_rows' => true,
+                'post_mime_type' => 'application/pdf',
+                'post_parent' => $post->ID,
+                'post_type' => 'attachment',
+                'post_status' => 'publish',
+                'posts_per_page' => 1, //Get only the latest post. By default, WP uses 'date' for sorting by and 'DESC' for order.
+                'meta_key' => 'agbc-document-attachment'
+            ]
+        );
+
+        return $attachment ? wp_get_attachment_url((int) $attachment) : '';
     }
 }
