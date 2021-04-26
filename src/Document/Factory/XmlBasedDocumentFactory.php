@@ -21,6 +21,7 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
            $this->getTag(XmlMetaFields::XML_FIELD_HTML_CONTENT, $xml),
            $this->getTag(XmlMetaFields::XML_FIELD_COUNTRY, $xml),
            $this->getTag(XmlMetaFields::XML_FIELD_LANGUAGE, $xml),
+           $this->getTag(XmlMetaFields::XML_FIELD_TYPE, $xml),
            $this->getTag(XmlMetaFields::XML_FIELD_PDF_URL, $xml)
         );
     }

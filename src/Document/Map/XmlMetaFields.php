@@ -12,6 +12,8 @@ namespace Inpsyde\AGBConnector\Document\Map;
  */
 class XmlMetaFields
 {
+    const XML_FIELD_TYPE = 'rechtstext_type';
+
     const XML_FIELD_TITLE = 'rechtstext_title';
 
     const XML_FIELD_HTML_CONTENT = 'rechtstext_html';
