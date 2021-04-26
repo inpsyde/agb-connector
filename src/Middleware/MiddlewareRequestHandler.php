@@ -46,7 +46,7 @@ class MiddlewareRequestHandler
      * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
      */
-    public function __construct($userAuthToken, $allocations, $apiSupportedService)
+    public function __construct($userAuthToken, $allocations, XmlApiSupportedService $apiSupportedService)
     {
         $this->userAuthToken = $userAuthToken;
         $this->allocations = $allocations;
