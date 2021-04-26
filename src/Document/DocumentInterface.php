@@ -18,18 +18,11 @@ interface DocumentInterface
     public function getTitle(): string;
 
     /**
-     * Get document content as text.
-     *
-     * @return string
-     */
-    public function getContentAsText(): string;
-
-    /**
      * Get content as HTML format.
      *
      * @return string
      */
-    public function getContentAsHtml(): string;
+    public function getContent(): string;
 
     /**
      * Get document country.

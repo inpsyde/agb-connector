@@ -51,7 +51,7 @@ class DocumentRepository implements DocumentRepositoryInterface
         $args = [
             'ID' => $documentPostId,
             'post_type' => 'wp_block',
-            'post_content' => $document->getContentAsHtml(),
+            'post_content' => $document->getContent(),
             'post_title' => $document->getTitle(),
             'post_status' => 'publish',
             'meta_input' => [

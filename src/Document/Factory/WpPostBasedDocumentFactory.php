@@ -36,7 +36,6 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     {
         return new Document(
             $post->post_title,
-            '', //todo: decide whether we need text version of the document
             $post->post_content,
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE),
@@ -58,7 +57,6 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
 
         return new Document(
             $post->post_title,
-            '', //todo: see above about the text version
             $post->post_content,
             $allocations['country'] ?? '',
             $allocations['language'] ?? '',

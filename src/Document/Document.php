@@ -11,14 +11,11 @@ class Document implements DocumentInterface
      * @var string
      */
     protected $title;
+
     /**
      * @var string
      */
-    protected $textContent;
-    /**
-     * @var string
-     */
-    protected $htmlContent;
+    protected $content;
     /**
      * @var string
      */
@@ -38,7 +35,6 @@ class Document implements DocumentInterface
 
     public function __construct(
         string $title,
-        string $textContent,
         string $htmlContent,
         string $country,
         string $language,
@@ -47,8 +43,7 @@ class Document implements DocumentInterface
     ){
 
         $this->title = $title;
-        $this->textContent = $textContent;
-        $this->htmlContent = $htmlContent;
+        $this->content = $htmlContent;
         $this->country = $country;
         $this->language = $language;
         $this->type = $type;
@@ -94,19 +89,12 @@ class Document implements DocumentInterface
     {
         return $this->pdfUrl;
     }
-    /**
-     * @inheritDoc
-     */
-    public function getContentAsText(): string
-    {
-        return $this->textContent;
-    }
 
     /**
      * @inheritDoc
      */
-    public function getContentAsHtml(): string
+    public function getContent(): string
     {
-        return $this->htmlContent;
+        return $this->content;
     }
 }
