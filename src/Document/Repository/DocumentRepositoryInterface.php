@@ -25,6 +25,14 @@ interface DocumentRepositoryInterface
      */
     public function getAllDocuments(DocumentInterface $document): array;
 
+
+    /**
+     * Return all the documents of given type.
+     *
+     * @return DocumentInterface[]
+     */
+    public function getAllOfType(string $type): array;
+
     /**
      * Find document by it's type, country and language.
      *

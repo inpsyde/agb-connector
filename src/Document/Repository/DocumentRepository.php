@@ -44,6 +44,23 @@ class DocumentRepository implements DocumentRepositoryInterface
     /**
      * @inheritDoc
      */
+    public function getAllOfType(string $type): array
+    {
+        $foundPosts = get_posts(
+            [
+                'numberposts' => -1,
+                'post_type' => 'wp_block',
+                'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
+                'meta_value' => $type
+            ]
+        );
+
+        return array_map([$this->documentFactory, 'createDocument'], $foundPosts);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getDocumentPostIdByTypeCountryAndLanguage(
         string $type,
         string $country,
