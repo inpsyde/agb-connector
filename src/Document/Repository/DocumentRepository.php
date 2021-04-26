@@ -46,7 +46,11 @@ class DocumentRepository implements DocumentRepositoryInterface
      */
     public function saveDocument(DocumentInterface $document): void
     {
-        $documentPostId = $this->getDocumentPostIdByType($document->getType());
+        $documentPostId = $this->getDocumentPostIdByTypeCountryAndLanguage(
+            $document->getType(),
+            $document->getCountry(),
+            $document->getLanguage()
+        );
 
         $args = [
             'ID' => $documentPostId,
@@ -87,17 +91,35 @@ class DocumentRepository implements DocumentRepositoryInterface
      * Return document of given type or null if not found.
      *
      * @param string $type
+     * @param string $country
+     * @param string $language
      *
      * @return int
      */
-    protected function getDocumentPostIdByType(string $type): int
-    {
+    protected function getDocumentPostIdByTypeCountryAndLanguage(
+        string $type,
+        string $country,
+        string $language
+    ): int {
         $foundPostId = get_posts(
             [
                 'numberposts' => 1,
                 'post_type' => 'wp_block',
-                'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                'meta_value' => $type, //todo: only allow here known types of documents
+                'meta_query' => [
+                    'relation' => 'AND',
+                    [
+                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
+                        'value' => $type, //todo: only allow here known types of documents
+                    ],
+                    [
+                        'key'=> WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY,
+                        'value' => $country,
+                    ],
+                    [
+                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE,
+                        'value' => $language
+                    ]
+                ]
             ]
         );
 
