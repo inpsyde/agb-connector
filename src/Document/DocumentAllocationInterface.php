@@ -35,6 +35,18 @@ interface DocumentAllocationInterface
     public function getCountry(): string;
 
     /**
+     * Get the type of the document this allocation is for.
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set the type of the document this allocation is for.
+     */
+    public function setType(string $type): void;
+
+    /**
      * Set the document allocation country.
      *
      * @param string $country
