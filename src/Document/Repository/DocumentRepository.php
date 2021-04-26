@@ -44,6 +44,39 @@ class DocumentRepository implements DocumentRepositoryInterface
     /**
      * @inheritDoc
      */
+    public function getDocumentPostIdByTypeCountryAndLanguage(
+        string $type,
+        string $country,
+        string $language
+    ): int {
+        $foundPostId = get_posts(
+            [
+                'numberposts' => 1,
+                'post_type' => 'wp_block',
+                'meta_query' => [
+                    'relation' => 'AND',
+                    [
+                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
+                        'value' => $type, //todo: only allow here known types of documents
+                    ],
+                    [
+                        'key'=> WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY,
+                        'value' => $country,
+                    ],
+                    [
+                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE,
+                        'value' => $language
+                    ]
+                ]
+            ]
+        );
+
+        return (int) reset($foundPostId) ?? 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function saveDocument(DocumentInterface $document): void
     {
         $documentPostId = $this->getDocumentPostIdByTypeCountryAndLanguage(
@@ -85,44 +118,5 @@ class DocumentRepository implements DocumentRepositoryInterface
             $document->getLanguage(),
             $document->getCountry()
         );
-    }
-
-    /**
-     * Return document of given type or null if not found.
-     *
-     * @param string $type
-     * @param string $country
-     * @param string $language
-     *
-     * @return int
-     */
-    protected function getDocumentPostIdByTypeCountryAndLanguage(
-        string $type,
-        string $country,
-        string $language
-    ): int {
-        $foundPostId = get_posts(
-            [
-                'numberposts' => 1,
-                'post_type' => 'wp_block',
-                'meta_query' => [
-                    'relation' => 'AND',
-                    [
-                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                        'value' => $type, //todo: only allow here known types of documents
-                    ],
-                    [
-                        'key'=> WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY,
-                        'value' => $country,
-                    ],
-                    [
-                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE,
-                        'value' => $language
-                    ]
-                ]
-            ]
-        );
-
-        return (int) reset($foundPostId) ?? 0;
     }
 }

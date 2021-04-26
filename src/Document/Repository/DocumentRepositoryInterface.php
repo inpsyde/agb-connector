@@ -26,6 +26,21 @@ interface DocumentRepositoryInterface
     public function getAllDocuments(DocumentInterface $document): array;
 
     /**
+     * Find document by it's type, country and language.
+     *
+     * @param string $type The document type.
+     * @param string $country The document country.
+     * @param string $language The document language.
+     *
+     * @return int
+     */
+    public function getDocumentPostIdByTypeCountryAndLanguage(
+        string $type,
+        string $country,
+        string $language
+    ): int;
+
+    /**
      * Handle saving of the document.
      *
      * @param DocumentInterface $document
