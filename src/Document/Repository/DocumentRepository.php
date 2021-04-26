@@ -67,6 +67,23 @@ class DocumentRepository implements DocumentRepositoryInterface
     }
 
     /**
+     * Create a title for a document using original title, language and country.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return string
+     */
+    protected function buildDocumentTitle(DocumentInterface $document): string
+    {
+        return sprintf(
+            '%1$s %2$s %3$s',
+            $document->getTitle(),
+            $document->getLanguage(),
+            $document->getCountry()
+        );
+    }
+
+    /**
      * Return document of given type or null if not found.
      *
      * @param string $type
