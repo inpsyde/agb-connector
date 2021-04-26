@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Inpsyde\AGBConnector\Document\Allocation;
+namespace Inpsyde\AGBConnector\Document;
 
 /**
  * Represents a place for the document in the system. Contains information about:
