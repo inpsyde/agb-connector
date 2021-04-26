@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
 use SimpleXMLElement;
@@ -38,6 +39,10 @@ class MiddlewareRequestHandler
      * @var array
      */
     protected $supportedTextTypes;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
 
     /**
      * MiddlewareRequestHandler constructor.
@@ -45,15 +50,21 @@ class MiddlewareRequestHandler
      * @param $userAuthToken
      * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
+     * @param DocumentRepositoryInterface $documentRepository
      */
-    public function __construct($userAuthToken, $allocations, XmlApiSupportedService $apiSupportedService)
-    {
+    public function __construct(
+        $userAuthToken,
+        $allocations,
+        XmlApiSupportedService $apiSupportedService,
+        DocumentRepositoryInterface $documentRepository
+    ) {
         $this->userAuthToken = $userAuthToken;
         $this->allocations = $allocations;
         $this->supportedCountries = $apiSupportedService->supportedCountries();
         $this->supportedLanguages = $apiSupportedService->supportedLanguages();
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
         $this->middleware = $this->checkErrorMiddlewareRoute();
+        $this->documentRepository = $documentRepository;
     }
 
     /**
@@ -75,7 +86,7 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
             ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations))
-            ->linkWith(new CheckPostXml($this->allocations));
+            ->linkWith(new CheckPostXml($this->allocations, $this->documentRepository));
         return $middleware;
     }
 

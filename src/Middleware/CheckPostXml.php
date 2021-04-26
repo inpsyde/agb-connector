@@ -8,8 +8,11 @@ use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
+use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
 use WP_Filesystem_Base;
@@ -29,15 +32,21 @@ class CheckPostXml extends Middleware
      * @var array $textAllocations
      */
     protected $textAllocations;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
 
     /**
      * CheckPostXml constructor.
      *
      * @param $textAllocations
+     * @param DocumentRepositoryInterface $documentRepository
      */
-    public function __construct($textAllocations)
+    public function __construct($textAllocations, DocumentRepositoryInterface $documentRepository)
     {
         $this->textAllocations = $textAllocations;
+        $this->documentRepository = $documentRepository;
     }
 
     /**
@@ -48,8 +57,18 @@ class CheckPostXml extends Middleware
      */
     public function process($xml)
     {
-        $foundAllocation = $this->processAllocation($xml);
-        $post = $this->processPost($xml, $foundAllocation);
+        $allocation = $this->findAllocation($xml);
+
+        if(! $allocation){
+            $this->handleNotFoundAllocation($xml);
+
+            // If something went wrong and the problem wasn't found.
+            throw new GeneralException(
+                'Couldn\'t find post to save document'
+            );
+        }
+
+        $post = $this->checkPost($allocation);
         $this->pushPdfFile($xml);
         $this->processSavePost($post);
         $targetUrl = $this->processPermalink($post);
@@ -61,26 +80,15 @@ class CheckPostXml extends Middleware
      *
      * @param SimpleXMLElement $xml
      *
-     * @return array
+     * @return int
      */
-    protected function findAllocation(SimpleXMLElement $xml)
+    protected function findAllocation(SimpleXMLElement $xml): int
     {
-        $foundAllocation = [];
-
-        if (! isset($this->textAllocations[(string)$xml->rechtstext_type])) {
-            return $foundAllocation;
-        }
-
-        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-            if ((string)$xml->rechtstext_country === $allocation['country'] &&
-                (string)$xml->rechtstext_language === $allocation['language']
-            ) {
-                $foundAllocation = $allocation;
-                break;
-            }
-        }
-
-        return $foundAllocation;
+        return $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_TYPE),
+            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
+            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE)
+        );
     }
 
     /**
@@ -285,35 +293,39 @@ class CheckPostXml extends Middleware
     }
 
     /**
+     * Detect what is wrong: a type, a country or a language and throw the proper exception.
      *
      * @param $xml
      *
-     * @return array
-     * @throws CountryException
-     * @throws LanguageException
+     * @throws CountryException If no such country in user documents.
+     * @throws LanguageException If no such language in user documents.
+     * @throws TextTypeException If no such document type in user documents.
      */
-    protected function processAllocation($xml)
+    protected function handleNotFoundAllocation($xml): void
     {
-        $foundAllocation = $this->findAllocation($xml);
-        if (!$foundAllocation) {
-            $this->processCountry($xml);
-            throw new LanguageException(
-                'Allocation not found'
-            );
-        }
-        return $foundAllocation;
+        $type = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
+
+        $language = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE);
+        $country = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY);
+
+        $allOfType = $this->documentRepository->getAllOfType($type);
+
+        $this->checkType($type, $allOfType);
+        $this->checkCountry($country, $allOfType);
+        $this->checkLanguage($language, $allOfType);
     }
 
     /**
-     * @param       $xml
-     * @param array $foundAllocation
+     * Check if page that should display document is available and published.
+     *
+     * @param int   $postId
      *
      * @return array|WP_Post|null
      * @throws PostPageException
      */
-    protected function processPost($xml, array $foundAllocation)
+    protected function checkPost(int $postId): void
     {
-        $post = get_post($foundAllocation['pageId']);
+        $post = get_post($postId);
         if (!$post instanceof WP_Post) {
             throw new PostPageException(
                 'No post page provided'
@@ -324,9 +336,6 @@ class CheckPostXml extends Middleware
                 'The post status seems to be trash'
             );
         }
-        $post->post_title = trim($xml->rechtstext_title);
-        $post->post_content = trim($xml->rechtstext_html);
-        return $post;
     }
 
     /**
@@ -358,23 +367,61 @@ class CheckPostXml extends Middleware
     }
 
     /**
-     * @param $xml
+     * Throw an exception if no such type in user documents.
+     *
+     * @throws TextTypeException
+     */
+    protected function checkType(string $type, array $allOfType): void
+    {
+        if(! $allOfType){
+            throw new TextTypeException(
+                sprintf('The text type %1$s is not found', $type)
+            );
+        }
+    }
+
+    /**
+     * Throw an exception if no such country in user documents.
+     *
+     * @param string $country
+     * @param array $documentsOfType
      *
      * @throws CountryException
      */
-    protected function processCountry($xml)
+    protected function checkCountry(string $country, array $documentsOfType): void
     {
-        $foundCountry = false;
-        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-            if ((string)$xml->rechtstext_country === $allocation['country']) {
-                $foundCountry = true;
-                break;
+        foreach($documentsOfType as $document){
+            if($document->getCountry() === $country){
+                return;
             }
         }
-        if (!$foundCountry) {
-            throw new CountryException(
-                "Country {$xml->rechtstext_country} not found"
-            );
+
+        throw new CountryException(
+            sprintf('Country %1$s not found', $country)
+        );
+    }
+
+    /**
+     * Throw an exception if no such language in user documents.
+     *
+     * @param string $language
+     * @param array $documentsOfType
+     *
+     * @throws LanguageException
+     */
+    protected function checkLanguage(string $language, array $documentsOfType): void
+    {
+        foreach ($documentsOfType as $document){
+            if($document->getLanguage() === $language){
+                return;
+            }
         }
+
+        throw new LanguageException(
+            sprintf(
+                'Language %1$s is not found',
+                $language
+            )
+        );
     }
 }
