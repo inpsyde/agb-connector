@@ -3,6 +3,7 @@
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
@@ -43,6 +44,10 @@ class MiddlewareRequestHandler
      * @var DocumentRepositoryInterface
      */
     protected $documentRepository;
+    /**
+     * @var AllocationRepositoryInterface
+     */
+    protected $allocationRepository;
 
     /**
      * MiddlewareRequestHandler constructor.
@@ -51,12 +56,14 @@ class MiddlewareRequestHandler
      * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
      * @param DocumentRepositoryInterface $documentRepository
+     * @param AllocationRepositoryInterface $allocationRepository
      */
     public function __construct(
         $userAuthToken,
         $allocations,
         XmlApiSupportedService $apiSupportedService,
-        DocumentRepositoryInterface $documentRepository
+        DocumentRepositoryInterface $documentRepository,
+        AllocationRepositoryInterface $allocationRepository
     ) {
         $this->userAuthToken = $userAuthToken;
         $this->allocations = $allocations;
@@ -65,6 +72,7 @@ class MiddlewareRequestHandler
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
         $this->middleware = $this->checkErrorMiddlewareRoute();
         $this->documentRepository = $documentRepository;
+        $this->allocationRepository = $allocationRepository;
     }
 
     /**
@@ -86,7 +94,7 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
             ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations))
-            ->linkWith(new CheckPostXml($this->allocations, $this->documentRepository));
+            ->linkWith(new CheckPostXml($this->allocations, $this->documentRepository, $this->allocationRepository));
         return $middleware;
     }
 

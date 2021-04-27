@@ -11,7 +11,9 @@ use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
 use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
+use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
@@ -36,17 +38,26 @@ class CheckPostXml extends Middleware
      * @var DocumentRepositoryInterface
      */
     protected $documentRepository;
+    /**
+     * @var AllocationRepositoryInterface
+     */
+    protected $allocationRepository;
 
     /**
      * CheckPostXml constructor.
      *
      * @param $textAllocations
      * @param DocumentRepositoryInterface $documentRepository
+     * @param AllocationRepositoryInterface $allocationRepository
      */
-    public function __construct($textAllocations, DocumentRepositoryInterface $documentRepository)
-    {
+    public function __construct(
+        $textAllocations,
+        DocumentRepositoryInterface $documentRepository,
+        AllocationRepositoryInterface $allocationRepository
+    ){
         $this->textAllocations = $textAllocations;
         $this->documentRepository = $documentRepository;
+        $this->allocationRepository = $allocationRepository;
     }
 
     /**
@@ -68,7 +79,7 @@ class CheckPostXml extends Middleware
             );
         }
 
-        $post = $this->checkPost($allocation);
+        $post = $this->checkPost($allocation->getId());
         $this->pushPdfFile($xml);
         $this->processSavePost($post);
         $targetUrl = $this->processPermalink($post);
@@ -80,11 +91,11 @@ class CheckPostXml extends Middleware
      *
      * @param SimpleXMLElement $xml
      *
-     * @return int
+     * @return DocumentAllocationInterface
      */
-    protected function findAllocation(SimpleXMLElement $xml): int
+    protected function findAllocation(SimpleXMLElement $xml): DocumentAllocationInterface
     {
-        return $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+        return $this->allocationRepository->getByTypeCountryAndLanguage(
             $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_TYPE),
             $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
             $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE)
@@ -308,7 +319,7 @@ class CheckPostXml extends Middleware
         $language = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE);
         $country = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY);
 
-        $allOfType = $this->documentRepository->getAllOfType($type);
+        $allOfType = $this->allocationRepository->getAllOfType($type);
 
         $this->checkType($type, $allOfType);
         $this->checkCountry($country, $allOfType);
@@ -384,14 +395,14 @@ class CheckPostXml extends Middleware
      * Throw an exception if no such country in user documents.
      *
      * @param string $country
-     * @param array $documentsOfType
+     * @param DocumentAllocationInterface[] $allocationsOfType
      *
      * @throws CountryException
      */
-    protected function checkCountry(string $country, array $documentsOfType): void
+    protected function checkCountry(string $country, array $allocationsOfType): void
     {
-        foreach($documentsOfType as $document){
-            if($document->getCountry() === $country){
+        foreach($allocationsOfType as $allocation){
+            if($allocation->getCountry() === $country){
                 return;
             }
         }
@@ -405,14 +416,14 @@ class CheckPostXml extends Middleware
      * Throw an exception if no such language in user documents.
      *
      * @param string $language
-     * @param array $documentsOfType
+     * @param DocumentAllocationInterface[] $allocationsOfType
      *
      * @throws LanguageException
      */
-    protected function checkLanguage(string $language, array $documentsOfType): void
+    protected function checkLanguage(string $language, array $allocationsOfType): void
     {
-        foreach ($documentsOfType as $document){
-            if($document->getLanguage() === $language){
+        foreach ($allocationsOfType as $allocation){
+            if($allocation->getLanguage() === $language){
                 return;
             }
         }
