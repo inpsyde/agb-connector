@@ -63,7 +63,7 @@ class AllocationRepository implements AllocationRepositoryInterface
         );
 
         if(! $foundPost instanceof WP_Post){
-            throw new \Exception(); //todo: replace with more relevant exception.
+            return null;
         }
 
         return $this->allocationFactory->createAllocationFromPost($foundPost);
