@@ -153,7 +153,7 @@ class CheckPostXml extends Middleware
                 'The pdf hash does not match'
             );
         }
-        if ($foundAllocation['savePdfFile'] === '1') {
+        if ($foundAllocation->getSavePdf()) {
             $result = $this->writeContentToFile($file, $pdf);
             if (!$result) {
                 throw new PdfUrlException(
@@ -174,7 +174,7 @@ class CheckPostXml extends Middleware
 
         $args = [
             'post_mime_type' => 'application/pdf',
-            'post_parent' => (int)$foundAllocation['pageId'],
+            'post_parent' => $foundAllocation->getId(),
             'post_type' => 'attachment',
             'file' => $file,
             'post_title' => $title,
