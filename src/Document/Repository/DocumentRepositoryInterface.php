@@ -52,8 +52,9 @@ interface DocumentRepositoryInterface
      * Handle saving of the document.
      *
      * @param DocumentInterface $document
+     * @param int $documentPostId
      */
-    public function saveDocument(DocumentInterface $document): void;
+    public function saveDocument(DocumentInterface $document, int $documentPostId): void;
 
 }
 
