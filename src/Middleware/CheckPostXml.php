@@ -106,9 +106,9 @@ class CheckPostXml extends Middleware
     protected function findAllocation(SimpleXMLElement $xml): DocumentAllocationInterface
     {
         return $this->allocationRepository->getByTypeCountryAndLanguage(
-            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_TYPE),
-            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
-            $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE)
+            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE},
+            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY},
+            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE}
         );
     }
 
@@ -303,10 +303,9 @@ class CheckPostXml extends Middleware
      */
     protected function handleNotFoundAllocation($xml): void
     {
-        $type = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
-
-        $language = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE);
-        $country = $xml->offsetGet(WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY);
+        $type = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE};
+        $language = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE};
+        $country = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY};
 
         $allOfType = $this->allocationRepository->getAllOfType($type);
 

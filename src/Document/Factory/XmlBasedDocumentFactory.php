@@ -17,25 +17,12 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
     public function createDocument(SimpleXMLElement $xml): DocumentInterface
     {
         return new Document(
-           $this->getTag(XmlMetaFields::XML_FIELD_TITLE, $xml),
-           $this->getTag(XmlMetaFields::XML_FIELD_HTML_CONTENT, $xml),
-           $this->getTag(XmlMetaFields::XML_FIELD_COUNTRY, $xml),
-           $this->getTag(XmlMetaFields::XML_FIELD_LANGUAGE, $xml),
-           $this->getTag(XmlMetaFields::XML_FIELD_TYPE, $xml),
-           $this->getTag(XmlMetaFields::XML_FIELD_PDF_URL, $xml)
+            (string) $xml->{XmlMetaFields::XML_FIELD_TITLE},
+            (string) $xml->{XmlMetaFields::XML_FIELD_HTML_CONTENT},
+            (string) $xml->{XmlMetaFields::XML_FIELD_COUNTRY},
+            (string) $xml->{XmlMetaFields::XML_FIELD_LANGUAGE},
+            (string) $xml->{XmlMetaFields::XML_FIELD_TYPE},
+            (string) $xml->{XmlMetaFields::XML_FIELD_PDF_URL}
         );
-    }
-
-    /**
-     * Get content of the top-level XML tag, empty string if tag not found.
-     *
-     * @param string $tagName Tag name to get.
-     * @param SimpleXMLElement $xml XML to search in.
-     *
-     * @return string
-     */
-    protected function getTag(string $tagName, SimpleXMLElement $xml): string
-    {
-        return $xml->offsetExists($tagName) ? (string) $xml->offsetGet($tagName) : '';
     }
 }
