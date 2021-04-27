@@ -79,7 +79,7 @@ class CheckPostXml extends Middleware
             );
         }
 
-        $post = $this->checkPost($allocation->getId());
+        $post = $this->checkPost($allocation->getDisplayingPageId());
         $this->pushPdfFile($xml);
         $this->processSavePost($post);
         $targetUrl = $this->processPermalink($post);
