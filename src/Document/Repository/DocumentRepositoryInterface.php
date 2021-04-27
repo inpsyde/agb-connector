@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\Repository;
 
+use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 
 interface DocumentRepositoryInterface
@@ -53,6 +54,8 @@ interface DocumentRepositoryInterface
      *
      * @param DocumentInterface $document
      * @param int $documentPostId
+     *
+     * @throws GeneralException If failed to save document.
      */
     public function saveDocument(DocumentInterface $document, int $documentPostId): void;
 

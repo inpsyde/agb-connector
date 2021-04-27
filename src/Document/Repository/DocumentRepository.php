@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\Repository;
 
+use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
@@ -115,9 +116,15 @@ class DocumentRepository implements DocumentRepositoryInterface
             ]
         ];
 
-        wp_insert_post( $args, true);
+        $result = wp_insert_post( $args, true);
 
-        //todo: handle errors
+
+        if (is_wp_error($result)) {
+            throw new GeneralException(
+                sprintf('Failed to save the post, WP_Error received when tried: %1$s',
+                    $result->get_error_message())
+            );
+        }
     }
 
     /**
