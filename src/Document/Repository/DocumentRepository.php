@@ -35,7 +35,7 @@ class DocumentRepository implements DocumentRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getAllDocuments(DocumentInterface $document): array
+    public function getAllDocuments(): array
     {
         $posts = get_posts();
 

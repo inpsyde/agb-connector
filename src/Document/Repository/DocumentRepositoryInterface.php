@@ -20,11 +20,9 @@ interface DocumentRepositoryInterface
     /**
      * Return all saved documents.
      *
-     * @param DocumentInterface $document
-     *
      * @return DocumentInterface[]
      */
-    public function getAllDocuments(DocumentInterface $document): array;
+    public function getAllDocuments(): array;
 
 
     /**
