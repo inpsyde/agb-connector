@@ -115,9 +115,11 @@ class DocumentRepository implements DocumentRepositoryInterface
                 WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY => $document->getCountry(),
             ]
         ];
+        remove_filter('content_save_pre', 'wp_filter_post_kses');
 
         $result = wp_insert_post( $args, true);
 
+        add_filter('content_save_pre', 'wp_filter_post_kses');
 
         if (is_wp_error($result)) {
             throw new GeneralException(
