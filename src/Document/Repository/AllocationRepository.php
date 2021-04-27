@@ -48,7 +48,7 @@ class AllocationRepository implements AllocationRepositoryInterface
                     'relation' => 'AND',
                     [
                         'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                        'value' => $type, //todo: only allow here known types of documents
+                        'value' => $type,
                     ],
                     [
                         'key'=> WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY,
