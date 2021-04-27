@@ -2,6 +2,11 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\Factory\DocumentAllocationFactory;
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Repository\AllocationRepository;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 
 /**
@@ -80,10 +85,16 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
+        $documentFactory = new WpPostBasedDocumentFactory();
+        $allocationFactory = new DocumentAllocationFactory();
+
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
             $this->textAllocations,
-            new XmlApiSupportedService()
+            new XmlApiSupportedService(),
+            new DocumentRepository($documentFactory),
+            new AllocationRepository($allocationFactory),
+            new XmlBasedDocumentFactory()
         );
 
         return $handler->handle($xml);
