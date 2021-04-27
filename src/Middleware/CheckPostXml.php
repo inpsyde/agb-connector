@@ -79,15 +79,6 @@ class CheckPostXml extends Middleware
     {
         $allocation = $this->findAllocation($xml);
 
-        if(! $allocation){
-            $this->handleNotFoundAllocation($xml);
-
-            // If something went wrong and the problem wasn't found.
-            throw new GeneralException(
-                'Couldn\'t find post to save document'
-            );
-        }
-
         $post = $this->checkPost($allocation->getDisplayingPageId());
         $document = $this->documentFactory->createDocument($xml);
         $this->pushPdfFile($xml);
@@ -96,19 +87,36 @@ class CheckPostXml extends Middleware
 
         return parent::process($targetUrl);
     }
+
     /**
      * Find the Allocation for the document from request
      *
      * @param SimpleXMLElement $xml
      *
      * @return DocumentAllocationInterface
+     *
+     * @throws CountryException
+     * @throws GeneralException
+     * @throws LanguageException
+     * @throws TextTypeException
      */
     protected function findAllocation(SimpleXMLElement $xml): DocumentAllocationInterface
     {
-        return $this->allocationRepository->getByTypeCountryAndLanguage(
+        $allocation = $this->allocationRepository->getByTypeCountryAndLanguage(
             (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE},
             (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY},
             (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE}
+        );
+
+        if($allocation) {
+            return $allocation;
+        }
+
+        $this->handleNotFoundAllocation($xml);
+
+        // If something went wrong and the problem wasn't found.
+        throw new GeneralException(
+            'Couldn\'t find post to save document'
         );
     }
 
