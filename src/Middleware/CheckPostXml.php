@@ -276,9 +276,9 @@ class CheckPostXml extends Middleware
         $ftpCredentials = get_option('ftp_credentials');
         if (is_array($ftpCredentials)) {
             $args = [
-                self::FTPHOSTNAME => self::findKeyOrDefault($ftpCredentials, self::FTPHOSTNAME, ''),
-                self::FTPUSERNAME => self::findKeyOrDefault($ftpCredentials, self::FTPUSERNAME, ''),
-                self::FTPPASSWORD => self::findKeyOrDefault($ftpCredentials, self::FTPPASSWORD, ''),
+                self::FTPHOSTNAME => $ftpCredentials[self::FTPHOSTNAME] ?? '',
+                self::FTPUSERNAME => $ftpCredentials[self::FTPUSERNAME] ?? '',
+                self::FTPPASSWORD => $ftpCredentials[self::FTPPASSWORD] ?? '',
             ];
         }
 
@@ -296,11 +296,6 @@ class CheckPostXml extends Middleware
         }
 
         return $wp_filesystem->put_contents($file, $content);
-    }
-
-    protected static function findKeyOrDefault(array $haystack, $key, $default)
-    {
-        return isset($haystack[$key]) ? $haystack[$key] : $default;
     }
 
     /**
