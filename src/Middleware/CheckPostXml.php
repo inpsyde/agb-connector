@@ -12,6 +12,7 @@ use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
@@ -42,6 +43,10 @@ class CheckPostXml extends Middleware
      * @var AllocationRepositoryInterface
      */
     protected $allocationRepository;
+    /**
+     * @var XmlBasedDocumentFactory
+     */
+    protected $documentFactory;
 
     /**
      * CheckPostXml constructor.
@@ -49,15 +54,18 @@ class CheckPostXml extends Middleware
      * @param $textAllocations
      * @param DocumentRepositoryInterface $documentRepository
      * @param AllocationRepositoryInterface $allocationRepository
+     * @param XmlBasedDocumentFactory $documentFactory
      */
     public function __construct(
         $textAllocations,
         DocumentRepositoryInterface $documentRepository,
-        AllocationRepositoryInterface $allocationRepository
+        AllocationRepositoryInterface $allocationRepository,
+        XmlBasedDocumentFactory $documentFactory
     ){
         $this->textAllocations = $textAllocations;
         $this->documentRepository = $documentRepository;
         $this->allocationRepository = $allocationRepository;
+        $this->documentFactory = $documentFactory;
     }
 
     /**
@@ -80,14 +88,15 @@ class CheckPostXml extends Middleware
         }
 
         $post = $this->checkPost($allocation->getDisplayingPageId());
+        $document = $this->documentFactory->createDocument($xml);
         $this->pushPdfFile($xml);
-        $this->processSavePost($post);
+        $this->documentRepository->saveDocument($document, $allocation->getId());
         $targetUrl = $this->processPermalink($post);
 
         return parent::process($targetUrl);
     }
     /**
-     * Find the Allocation for that XML request
+     * Find the Allocation for the document from request
      *
      * @param SimpleXMLElement $xml
      *
@@ -194,23 +203,7 @@ class CheckPostXml extends Middleware
 
         return 0;
     }
-    /**
-     * Save post and pdf after checks
-     *
-     * @param WP_Post $post The post object.
-     *
-     * @return bool
-     */
-    protected function savePost(WP_Post $post)
-    {
-        remove_filter('content_save_pre', 'wp_filter_post_kses');
 
-        $postId = wp_update_post($post);
-
-        add_filter('content_save_pre', 'wp_filter_post_kses');
-
-        return !is_wp_error($postId);
-    }
     /**
      * Download a file and return its content.
      *
@@ -340,20 +333,6 @@ class CheckPostXml extends Middleware
         if ('trash' === $post->post_status) {
             throw new PostPageException(
                 'The post status seems to be trash'
-            );
-        }
-    }
-
-    /**
-     * @param $post
-     *
-     * @throws GeneralException
-     */
-    protected function processSavePost($post)
-    {
-        if (!$this->savePost($post)) {
-            throw new GeneralException(
-                'Failed to save the post'
             );
         }
     }
