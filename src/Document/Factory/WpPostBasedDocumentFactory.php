@@ -66,8 +66,8 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         $allocations = $this->getDocumentDataFromOptions($post);
 
         $documentSettings = new DocumentSettings();
-        $documentSettings->setSavePdf((bool) $allocations['savePdfFile'] ?? false);
-        $documentSettings->setAttachToWcEmail((bool) $allocations['wcOrderEmailAttachment'] ?? false);
+        $documentSettings->setSavePdf(! empty($allocations['savePdfFile']) );
+        $documentSettings->setAttachToWcEmail(! empty($allocations['wcOrderEmailAttachment']));
         $documentSettings->setPdfUrl(
             $this->getAttachedPdfUrl($post)
         );
