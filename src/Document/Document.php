@@ -28,10 +28,7 @@ class Document implements DocumentInterface
      * @var string
      */
     protected $type;
-    /**
-     * @var string
-     */
-    protected $pdfUrl;
+
     /**
      * @var DocumentSettingsInterface
      */
@@ -43,8 +40,7 @@ class Document implements DocumentInterface
         string $htmlContent,
         string $country,
         string $language,
-        string $type,
-        string $pdfUrl = ''
+        string $type
     ){
 
         $this->title = $title;
@@ -52,7 +48,6 @@ class Document implements DocumentInterface
         $this->country = $country;
         $this->language = $language;
         $this->type = $type;
-        $this->pdfUrl = $pdfUrl;
         $this->settings = $settings;
     }
 
@@ -86,14 +81,6 @@ class Document implements DocumentInterface
     public function getType(): string
     {
         return $this->type;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPdfUrl(): string
-    {
-        return $this->pdfUrl;
     }
 
     /**

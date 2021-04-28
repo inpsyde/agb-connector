@@ -52,13 +52,6 @@ interface DocumentInterface
     public function getType(): string;
 
     /**
-     * Get the link to the pdf version of the document, empty string if no pdf version.
-     *
-     * @return string
-     */
-    public function getPdfUrl(): string;
-
-    /**
      * Get the document settings object.
      *
      * @return DocumentSettingsInterface

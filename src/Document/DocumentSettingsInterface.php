@@ -56,4 +56,18 @@ interface DocumentSettingsInterface
      * @param bool $shouldSavePdf
      */
     public function setSavePdf(bool $shouldSavePdf): void;
+
+    /**
+     * Get the URL of the locally stored version of the document, empty string if no pdf.
+     *
+     * @return string
+     */
+    public function getPdfUrl(): string;
+
+    /**
+     * Set the URL of the locally stored version of the document.
+     *
+     * @param string $pdfUrl
+     */
+    public function setPdfUrl(string $pdfUrl): void;
 }

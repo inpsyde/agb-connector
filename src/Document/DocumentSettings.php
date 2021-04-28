@@ -24,6 +24,8 @@ class DocumentSettings implements DocumentSettingsInterface
 
     protected $savePdf = false;
 
+    protected $pdfUrl = '';
+
     /**
      * @inheritDoc
      */
@@ -70,5 +72,21 @@ class DocumentSettings implements DocumentSettingsInterface
     public function setSavePdf(bool $shouldSavePdf): void
     {
         $this->savePdf = $shouldSavePdf;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPdfUrl(): string
+    {
+        return $this->pdfUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPdfUrl(string $pdfUrl): void
+    {
+        $this->pdfUrl = $pdfUrl;
     }
 }
