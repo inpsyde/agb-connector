@@ -24,8 +24,6 @@ class DocumentSettings implements DocumentSettingsInterface
 
     protected $savePdf = false;
 
-    protected $displayingPageId = 0;
-
     /**
      * @inheritDoc
      */
@@ -72,21 +70,5 @@ class DocumentSettings implements DocumentSettingsInterface
     public function setSavePdf(bool $shouldSavePdf): void
     {
         $this->savePdf = $shouldSavePdf;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getDisplayingPageId(): int
-    {
-        return $this->displayingPageId;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setDisplayingPageId(int $displayingPageId): void
-    {
-        $this->displayingPageId = $displayingPageId;
     }
 }

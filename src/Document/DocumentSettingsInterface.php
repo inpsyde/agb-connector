@@ -56,18 +56,4 @@ interface DocumentSettingsInterface
      * @param bool $shouldSavePdf
      */
     public function setSavePdf(bool $shouldSavePdf): void;
-
-    /**
-     * Get the ID of the public page displaying the document on the site.
-     *
-     * @return int
-     */
-    public function getDisplayingPageId(): int;
-
-    /**
-     * Set the ID of the public page displaying the document.
-     *
-     * @param int $displayingPageId
-     */
-    public function setDisplayingPageId(int $displayingPageId): void;
 }
