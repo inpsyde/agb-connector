@@ -5,7 +5,6 @@ namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
-use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
@@ -47,10 +46,6 @@ class MiddlewareRequestHandler
      */
     protected $documentRepository;
     /**
-     * @var AllocationRepositoryInterface
-     */
-    protected $allocationRepository;
-    /**
      * @var XmlBasedDocumentFactoryInterface
      */
     protected $documentFactory;
@@ -62,7 +57,6 @@ class MiddlewareRequestHandler
      * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
      * @param DocumentRepositoryInterface $documentRepository
-     * @param AllocationRepositoryInterface $allocationRepository
      * @param XmlBasedDocumentFactoryInterface $documentFactory
      */
     public function __construct(
@@ -70,7 +64,6 @@ class MiddlewareRequestHandler
         $allocations,
         XmlApiSupportedService $apiSupportedService,
         DocumentRepositoryInterface $documentRepository,
-        AllocationRepositoryInterface $allocationRepository,
         XmlBasedDocumentFactoryInterface $documentFactory
     ) {
         $this->userAuthToken = $userAuthToken;
@@ -80,7 +73,6 @@ class MiddlewareRequestHandler
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
         $this->middleware = $this->checkErrorMiddlewareRoute();
         $this->documentRepository = $documentRepository;
-        $this->allocationRepository = $allocationRepository;
         $this->documentFactory = $documentFactory;
     }
 
@@ -106,7 +98,6 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckPostXml(
                 $this->allocations,
                 $this->documentRepository,
-                $this->allocationRepository,
                 $this->documentFactory
             ));
         return $middleware;

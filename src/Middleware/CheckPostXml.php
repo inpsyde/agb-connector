@@ -14,8 +14,6 @@ use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
-use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
-use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
@@ -41,10 +39,6 @@ class CheckPostXml extends Middleware
      */
     protected $documentRepository;
     /**
-     * @var AllocationRepositoryInterface
-     */
-    protected $allocationRepository;
-    /**
      * @var XmlBasedDocumentFactory
      */
     protected $documentFactory;
@@ -54,18 +48,15 @@ class CheckPostXml extends Middleware
      *
      * @param $textAllocations
      * @param DocumentRepositoryInterface $documentRepository
-     * @param AllocationRepositoryInterface $allocationRepository
      * @param XmlBasedDocumentFactory $documentFactory
      */
     public function __construct(
         $textAllocations,
         DocumentRepositoryInterface $documentRepository,
-        AllocationRepositoryInterface $allocationRepository,
         XmlBasedDocumentFactory $documentFactory
     ){
         $this->textAllocations = $textAllocations;
         $this->documentRepository = $documentRepository;
-        $this->allocationRepository = $allocationRepository;
         $this->documentFactory = $documentFactory;
     }
 
@@ -89,7 +80,7 @@ class CheckPostXml extends Middleware
     }
 
     /**
-     * Find the Allocation for the document from request
+     * Find the ID of the page supposed to display this document.
      *
      * @param SimpleXMLElement $xml
      *
@@ -100,24 +91,9 @@ class CheckPostXml extends Middleware
      * @throws LanguageException
      * @throws TextTypeException
      */
-    protected function findAllocation(SimpleXMLElement $xml): DocumentSettingsInterface
+    protected function findDisplayingPage(SimpleXMLElement $xml): int
     {
-        $allocation = $this->allocationRepository->getByTypeCountryAndLanguage(
-            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE},
-            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY},
-            (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE}
-        );
-
-        if($allocation) {
-            return $allocation;
-        }
-
-        $this->handleNotFoundAllocation($xml);
-
-        // If something went wrong and the problem wasn't found.
-        throw new GeneralException(
-            'Couldn\'t find post to save document'
-        );
+        return 1;// todo: replace stub
     }
 
     /**
@@ -298,28 +274,6 @@ class CheckPostXml extends Middleware
         }
 
         return $wp_filesystem->put_contents($file, $content);
-    }
-
-    /**
-     * Detect what is wrong: a type, a country or a language and throw the proper exception.
-     *
-     * @param $xml
-     *
-     * @throws CountryException If no such country in user documents.
-     * @throws LanguageException If no such language in user documents.
-     * @throws TextTypeException If no such document type in user documents.
-     */
-    protected function handleNotFoundAllocation($xml): void
-    {
-        $type = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE};
-        $language = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE};
-        $country = $xml->{WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY};
-
-        $allOfType = $this->allocationRepository->getAllOfType($type);
-
-        $this->checkType($type, $allOfType);
-        $this->checkCountry($country, $allOfType);
-        $this->checkLanguage($language, $allOfType);
     }
 
     /**
