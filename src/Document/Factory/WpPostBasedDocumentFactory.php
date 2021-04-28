@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\Factory;
 
-use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\Document;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettings;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use Inpsyde\AGBConnector\Plugin;
 use WP_Post;
@@ -34,13 +34,23 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
      */
     protected function createFromWpBlock(WP_Post $post): DocumentInterface
     {
+        $documentSettings = new DocumentSettings();
+        $documentSettings->setAttachToWcEmail(
+            (bool)$this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL)
+        );
+        $documentSettings->setDocumentId($post->ID);
+        $documentSettings->setSavePdf(
+            (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_DONT_SAVE_PDF)
+        );
+
+
         return new Document(
+            $documentSettings,
             $post->post_title,
             $post->post_content,
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE),
-            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE),
-            $this->getAttachedPdfUrl($post)
+            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)
         );
     }
 
@@ -55,13 +65,20 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     {
         $allocations = $this->getDocumentDataFromOptions($post);
 
+        $documentSettings = new DocumentSettings();
+        $documentSettings->setSavePdf((bool) $allocations['savePdfFile'] ?? false);
+        $documentSettings->setAttachToWcEmail((bool) $allocations['wcOrderEmailAttachment'] ?? false);
+        $documentSettings->setPdfUrl(
+            $this->getAttachedPdfUrl($post)
+        );
+
         return new Document(
+            $documentSettings,
             $post->post_title,
             $post->post_content,
             $allocations['country'] ?? '',
             $allocations['language'] ?? '',
-            $allocations['type'] ?? '',
-            $this->getAttachedPdfUrl($post)
+            $allocations['type'] ?? ''
         );
     }
 
