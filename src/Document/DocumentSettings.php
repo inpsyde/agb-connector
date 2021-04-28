@@ -6,11 +6,11 @@ namespace Inpsyde\AGBConnector\Document;
 /**
  * WP Post based document allocation.
  *
- * Class DocumentAllocation
+ * Class DocumentSettings
  *
  * @package Inpsyde\AGBConnector\Document
  */
-class DocumentAllocation implements DocumentAllocationInterface
+class DocumentSettings implements DocumentSettingsInterface
 {
     protected $id = 0;
 
@@ -29,7 +29,7 @@ class DocumentAllocation implements DocumentAllocationInterface
     /**
      * @inheritDoc
      */
-    public function getId(): int
+    public function getDocumentId(): int
     {
         return $this->id;
     }
@@ -37,57 +37,9 @@ class DocumentAllocation implements DocumentAllocationInterface
     /**
      * @inheritDoc
      */
-    public function setId(int $allocationId): void
+    public function setDocumentId(int $allocationId): void
     {
         $this->id = $allocationId;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setCountry(string $country): void
-    {
-        $this->country = $country;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getLanguage(): string
-    {
-        return $this->language;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setLanguage(string $language): void
-    {
-        $this->language = $language;
     }
 
     /**

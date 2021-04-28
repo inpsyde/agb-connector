@@ -12,7 +12,7 @@ use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
 use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
-use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\AllocationRepositoryInterface;
@@ -82,7 +82,7 @@ class CheckPostXml extends Middleware
         $post = $this->checkPost($allocation->getDisplayingPageId());
         $document = $this->documentFactory->createDocument($xml);
         $this->pushPdfFile($xml);
-        $this->documentRepository->saveDocument($document, $allocation->getId());
+        $this->documentRepository->saveDocument($document, $allocation->getDocumentId());
         $targetUrl = $this->processPermalink($post);
 
         return parent::process($targetUrl);
@@ -93,14 +93,14 @@ class CheckPostXml extends Middleware
      *
      * @param SimpleXMLElement $xml
      *
-     * @return DocumentAllocationInterface
+     * @return DocumentSettingsInterface
      *
      * @throws CountryException
      * @throws GeneralException
      * @throws LanguageException
      * @throws TextTypeException
      */
-    protected function findAllocation(SimpleXMLElement $xml): DocumentAllocationInterface
+    protected function findAllocation(SimpleXMLElement $xml): DocumentSettingsInterface
     {
         $allocation = $this->allocationRepository->getByTypeCountryAndLanguage(
             (string) $xml->{WpPostMetaFields::WP_POST_DOCUMENT_TYPE},
@@ -192,7 +192,7 @@ class CheckPostXml extends Middleware
 
         $args = [
             'post_mime_type' => 'application/pdf',
-            'post_parent' => $foundAllocation->getId(),
+            'post_parent' => $foundAllocation->getDocumentId(),
             'post_type' => 'attachment',
             'file' => $file,
             'post_title' => $title,
@@ -377,7 +377,7 @@ class CheckPostXml extends Middleware
      * Throw an exception if no such country in user documents.
      *
      * @param string $country
-     * @param DocumentAllocationInterface[] $allocationsOfType
+     * @param DocumentSettingsInterface[] $allocationsOfType
      *
      * @throws CountryException
      */
@@ -398,7 +398,7 @@ class CheckPostXml extends Middleware
      * Throw an exception if no such language in user documents.
      *
      * @param string $language
-     * @param DocumentAllocationInterface[] $allocationsOfType
+     * @param DocumentSettingsInterface[] $allocationsOfType
      *
      * @throws LanguageException
      */

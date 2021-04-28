@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector\Document\Factory;
 
 
-use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 use WP_Post;
 
 /**
- * Service able to create new DocumentAllocation instances.
+ * Service able to create new DocumentSettings instances.
  *
  * Interface DocumentAllocationFactoryInterface
  *
@@ -16,7 +16,7 @@ use WP_Post;
  */
 interface DocumentAllocationFactoryInterface
 {
-    public function createAllocationFromPost(WP_Post $post): DocumentAllocationInterface;
+    public function createAllocationFromPost(WP_Post $post): DocumentSettingsInterface;
 
-    public function createAllocationFromArray(array $allocationData): DocumentAllocationInterface;
+    public function createAllocationFromArray(array $allocationData): DocumentSettingsInterface;
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\Repository;
 
-use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 
 interface AllocationRepositoryInterface
 {
@@ -13,9 +13,9 @@ interface AllocationRepositoryInterface
      *
      * @param int $id
      *
-     * @return DocumentAllocationInterface
+     * @return DocumentSettingsInterface
      */
-    public function getById(int $id): DocumentAllocationInterface;
+    public function getById(int $id): DocumentSettingsInterface;
 
     /**
      * Get the allocation for the given document type, country and language.
@@ -24,9 +24,9 @@ interface AllocationRepositoryInterface
      * @param string $country
      * @param string $language
      *
-     * @return DocumentAllocationInterface|null
+     * @return DocumentSettingsInterface|null
      */
-    public function getByTypeCountryAndLanguage(string $type, string $country, string $language): ?DocumentAllocationInterface;
+    public function getByTypeCountryAndLanguage(string $type, string $country, string $language): ?DocumentSettingsInterface;
 
     /**
      * Get all document allocations of the given type.
@@ -40,8 +40,8 @@ interface AllocationRepositoryInterface
     /**
      * Save the allocation to the DB.
      *
-     * @param DocumentAllocationInterface $allocation
+     * @param DocumentSettingsInterface $allocation
      */
-    public function saveDocumentAllocation(DocumentAllocationInterface $allocation): void;
+    public function saveDocumentAllocation(DocumentSettingsInterface $allocation): void;
 
 }

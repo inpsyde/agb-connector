@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\Repository;
 
-use Inpsyde\AGBConnector\Document\DocumentAllocationInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 use Inpsyde\AGBConnector\Document\Factory\DocumentAllocationFactoryInterface;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use WP_Post;
@@ -28,7 +28,7 @@ class AllocationRepository implements AllocationRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getById(int $id): DocumentAllocationInterface
+    public function getById(int $id): DocumentSettingsInterface
     {
         $post = get_post($id);
 
@@ -38,7 +38,7 @@ class AllocationRepository implements AllocationRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getByTypeCountryAndLanguage(string $type, string $country, string $language): ?DocumentAllocationInterface
+    public function getByTypeCountryAndLanguage(string $type, string $country, string $language): ?DocumentSettingsInterface
     {
         $foundPost = get_posts(
             [
@@ -72,10 +72,10 @@ class AllocationRepository implements AllocationRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function saveDocumentAllocation(DocumentAllocationInterface $allocation): void
+    public function saveDocumentAllocation(DocumentSettingsInterface $allocation): void
     {
         wp_insert_post([
-            'ID' => $allocation->getId(),
+            'ID' => $allocation->getDocumentId(),
             'post_type' => 'wp_block',
             'post_status' => 'publish',
             'meta_input' => [
