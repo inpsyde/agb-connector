@@ -56,7 +56,7 @@ interface DocumentInterface
      *
      * @return string
      */
-    public function getPDFUrl(): string;
+    public function getPdfUrl(): string;
 
     /**
      * Get the document settings object.

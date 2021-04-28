@@ -91,7 +91,7 @@ class Document implements DocumentInterface
     /**
      * @inheritDoc
      */
-    public function getPDFUrl(): string
+    public function getPdfUrl(): string
     {
         return $this->pdfUrl;
     }
