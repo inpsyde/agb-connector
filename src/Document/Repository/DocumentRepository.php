@@ -95,7 +95,7 @@ class DocumentRepository implements DocumentRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function saveDocument(DocumentInterface $document, int $documentPostId): int
+    public function saveDocument(DocumentInterface $document): int
     {
         $documentPostId = $this->getDocumentPostIdByTypeCountryAndLanguage(
             $document->getType(),

@@ -51,13 +51,12 @@ interface DocumentRepositoryInterface
      * Handle saving of the document.
      *
      * @param DocumentInterface $document
-     * @param int $documentPostId
      *
      * @return int The id of the saved document.
      *
      * @throws GeneralException If failed to save document.
      */
-    public function saveDocument(DocumentInterface $document, int $documentPostId): int;
+    public function saveDocument(DocumentInterface $document): int;
 
 }
 
