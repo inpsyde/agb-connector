@@ -68,32 +68,12 @@ class CheckPostXml extends Middleware
      */
     public function process($xml)
     {
-        $allocation = $this->findAllocation($xml);
-
-        $post = $this->checkPost($allocation->getDisplayingPageId());
         $document = $this->documentFactory->createDocument($xml);
         $this->pushPdfFile($xml);
-        $this->documentRepository->saveDocument($document, $allocation->getDocumentId());
-        $targetUrl = $this->processPermalink($post);
+        $savedDocumentId = $this->documentRepository->saveDocument($document);
+        $targetUrl = $this->processPermalink($savedDocumentId);
 
         return parent::process($targetUrl);
-    }
-
-    /**
-     * Find the ID of the page supposed to display this document.
-     *
-     * @param SimpleXMLElement $xml
-     *
-     * @return DocumentSettingsInterface
-     *
-     * @throws CountryException
-     * @throws GeneralException
-     * @throws LanguageException
-     * @throws TextTypeException
-     */
-    protected function findDisplayingPage(SimpleXMLElement $xml): int
-    {
-        return 1;// todo: replace stub
     }
 
     /**
@@ -277,98 +257,16 @@ class CheckPostXml extends Middleware
     }
 
     /**
-     * Check if page that should display document is available and published.
-     *
-     * @param int   $postId
-     *
-     * @return array|WP_Post|null
-     * @throws PostPageException
-     */
-    protected function checkPost(int $postId): void
-    {
-        $post = get_post($postId);
-        if (!$post instanceof WP_Post) {
-            throw new PostPageException(
-                'No post page provided'
-            );
-        }
-        if ('trash' === $post->post_status) {
-            throw new PostPageException(
-                'The post status seems to be trash'
-            );
-        }
-    }
-
-    /**
-     * @param $post
+     * @param int The id of the saving document.
      *
      * @return false|string
      */
-    protected function processPermalink($post)
+    protected function processPermalink(int $savedDocumentId)
     {
         $targetUrl = '';
-        if ('publish' === $post->post_status) {
-            $targetUrl = get_permalink($post);
+        if ('publish' === get_post_status($savedDocumentId)) {
+            $targetUrl = get_permalink($savedDocumentId);
         }
         return $targetUrl;
-    }
-
-    /**
-     * Throw an exception if no such type in user documents.
-     *
-     * @throws TextTypeException
-     */
-    protected function checkType(string $type, array $allOfType): void
-    {
-        if(! $allOfType){
-            throw new TextTypeException(
-                sprintf('The text type %1$s is not found', $type)
-            );
-        }
-    }
-
-    /**
-     * Throw an exception if no such country in user documents.
-     *
-     * @param string $country
-     * @param DocumentSettingsInterface[] $allocationsOfType
-     *
-     * @throws CountryException
-     */
-    protected function checkCountry(string $country, array $allocationsOfType): void
-    {
-        foreach($allocationsOfType as $allocation){
-            if($allocation->getCountry() === $country){
-                return;
-            }
-        }
-
-        throw new CountryException(
-            sprintf('Country %1$s not found', $country)
-        );
-    }
-
-    /**
-     * Throw an exception if no such language in user documents.
-     *
-     * @param string $language
-     * @param DocumentSettingsInterface[] $allocationsOfType
-     *
-     * @throws LanguageException
-     */
-    protected function checkLanguage(string $language, array $allocationsOfType): void
-    {
-        foreach ($allocationsOfType as $allocation){
-            if($allocation->getLanguage() === $language){
-                return;
-            }
-        }
-
-        throw new LanguageException(
-            sprintf(
-                'Language %1$s is not found',
-                $language
-            )
-        );
     }
 }
