@@ -32,8 +32,13 @@ class Document implements DocumentInterface
      * @var string
      */
     protected $pdfUrl;
+    /**
+     * @var DocumentSettingsInterface
+     */
+    protected $settings;
 
     public function __construct(
+        DocumentSettingsInterface $settings,
         string $title,
         string $htmlContent,
         string $country,
@@ -48,6 +53,7 @@ class Document implements DocumentInterface
         $this->language = $language;
         $this->type = $type;
         $this->pdfUrl = $pdfUrl;
+        $this->settings = $settings;
     }
 
     /**
@@ -96,5 +102,10 @@ class Document implements DocumentInterface
     public function getContent(): string
     {
         return $this->content;
+    }
+
+    public function getSettings(): DocumentSettingsInterface
+    {
+        return $this->settings;
     }
 }
