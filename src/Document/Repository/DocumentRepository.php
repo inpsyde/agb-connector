@@ -37,7 +37,18 @@ class DocumentRepository implements DocumentRepositoryInterface
      */
     public function getAllDocuments(): array
     {
-        $posts = get_posts();
+        $posts = get_posts(
+            [
+                'numberposts' => -1,
+                'post_type' => 'wp_block',
+                'meta_query' => [
+                    [
+                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
+                        'compare' => 'EXISTS'
+                    ]
+                ]
+            ]
+        );
 
         return array_map([$this->documentFactory, 'createDocument'], $posts);
     }
