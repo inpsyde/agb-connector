@@ -3,22 +3,16 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Inpsyde\AGBConnector\CustomExceptions\CountryException;
-use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
-use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
-use Inpsyde\AGBConnector\CustomExceptions\TextTypeException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
-use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
 use WP_Filesystem_Base;
-use WP_Post;
 
 /**
  * Class CheckPostXml
