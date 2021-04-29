@@ -84,12 +84,10 @@ class CheckPostXml extends Middleware
     {
         $document = $this->documentRepository->getDocumentById($documentId);
 
-        if ('impressum' === $document->getType()) {
+        if (! $document->getSettings()->getSavePdf()) {
             return 0;
         }
 
-
-        require_once ABSPATH . 'wp-admin/includes/image.php';
 
         $uploads = wp_upload_dir();
 
@@ -97,6 +95,7 @@ class CheckPostXml extends Middleware
             trim((string)$xml->rechtstext_pdf_filename_suggestion);
 
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
+
         if (!$pdf) {
             throw new PdfUrlException(
                 'Pdf not found'
@@ -117,14 +116,19 @@ class CheckPostXml extends Middleware
                 'The pdf hash does not match'
             );
         }
-        if ($document->getSettings()->getSavePdf()) {
-            $result = $this->writeContentToFile($file, $pdf);
-            if (!$result) {
-                throw new PdfUrlException(
-                    'WriteContentToFile failed. Result not found'
-                );
-            }
+
+        $result = $this->writeContentToFile($file, $pdf);
+
+        if (!$result) {
+            throw new PdfUrlException(
+                'WriteContentToFile failed. Result not found'
+            );
         }
+
+        if(! function_exists('wp_generate_attachment_metadata')) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+        }
+
         $attachmentId = self::attachmentIdByPostParent($documentId);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
