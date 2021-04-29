@@ -71,9 +71,10 @@ class MiddlewareRequestHandler
         $this->supportedCountries = $apiSupportedService->supportedCountries();
         $this->supportedLanguages = $apiSupportedService->supportedLanguages();
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
-        $this->middleware = $this->checkErrorMiddlewareRoute();
         $this->documentRepository = $documentRepository;
         $this->documentFactory = $documentFactory;
+
+        $this->middleware = $this->checkErrorMiddlewareRoute();
     }
 
     /**
@@ -169,7 +170,7 @@ class MiddlewareRequestHandler
 
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status', 'error');
-        $xml->addChild('error', $exception->getCode());
+        $xml->addChild('error', (string) $exception->getCode());
         $messageChild = $xml->addChild('error_message');
         $node = dom_import_simplexml($messageChild);
         $no = $node->ownerDocument;
