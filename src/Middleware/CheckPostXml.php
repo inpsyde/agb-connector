@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
@@ -63,8 +62,8 @@ class CheckPostXml extends Middleware
     public function process($xml)
     {
         $document = $this->documentFactory->createDocument($xml);
-        $this->pushPdfFile($xml);
         $savedDocumentId = $this->documentRepository->saveDocument($document);
+        $this->pushPdfFile($xml, $savedDocumentId);
         $targetUrl = $this->processPermalink($savedDocumentId);
 
         return parent::process($targetUrl);
@@ -81,17 +80,14 @@ class CheckPostXml extends Middleware
      * @throws XmlApiException
      *
      */
-    protected function pushPdfFile(SimpleXMLElement $xml)
+    protected function pushPdfFile(SimpleXMLElement $xml, int $documentId)
     {
-        if ('impressum' === (string)$xml->rechtstext_type) {
+        $document = $this->documentRepository->getDocumentById($documentId);
+
+        if ('impressum' === $document->getType()) {
             return 0;
         }
-        $foundAllocation = $this->findAllocation($xml);
-        if (!$foundAllocation) {
-            throw new LanguageException(
-                'The allocation was not found'
-            );
-        }
+
 
         require_once ABSPATH . 'wp-admin/includes/image.php';
 
@@ -121,7 +117,7 @@ class CheckPostXml extends Middleware
                 'The pdf hash does not match'
             );
         }
-        if ($foundAllocation->getSavePdf()) {
+        if ($document->getSettings()->getSavePdf()) {
             $result = $this->writeContentToFile($file, $pdf);
             if (!$result) {
                 throw new PdfUrlException(
@@ -129,7 +125,7 @@ class CheckPostXml extends Middleware
                 );
             }
         }
-        $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
+        $attachmentId = self::attachmentIdByPostParent($documentId);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
             wp_generate_attachment_metadata($attachmentId, $file);
@@ -142,7 +138,7 @@ class CheckPostXml extends Middleware
 
         $args = [
             'post_mime_type' => 'application/pdf',
-            'post_parent' => $foundAllocation->getDocumentId(),
+            'post_parent' => $documentId,
             'post_type' => 'attachment',
             'file' => $file,
             'post_title' => $title,
