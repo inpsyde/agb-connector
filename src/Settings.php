@@ -2,6 +2,9 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use Walker_PageDropdown;
 
 use function array_key_exists;
@@ -182,6 +185,16 @@ class Settings
      */
     public function page()
     {
+
+        $documentFactory = new WpPostBasedDocumentFactory();
+        $documentRepository = new DocumentRepository($documentFactory);
+        $documentFinder = new Document\DocumentPageFinder\DocumentPageFinder();
+        $table = new DocumentsTable($documentRepository, $documentFinder);
+
+        $table->prepare_items();
+        $table->display();
+        return;
+
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">
