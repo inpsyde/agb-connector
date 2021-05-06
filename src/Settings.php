@@ -193,7 +193,6 @@ class Settings
 
         $table->prepare_items();
         $table->display();
-        return;
 
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
