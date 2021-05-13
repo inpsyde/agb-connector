@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
@@ -188,7 +189,9 @@ class Settings
 
         $documentFactory = new WpPostBasedDocumentFactory();
         $documentRepository = new DocumentRepository($documentFactory);
-        $documentFinder = new Document\DocumentPageFinder\DocumentPageFinder();
+        $plugin = agb_connector();
+        $shortcodes = array_keys($plugin->shortCodes()->settings());
+        $documentFinder = new DocumentPageFinder($shortcodes);
         $table = new DocumentsTable($documentRepository, $documentFinder);
 
         $table->prepare_items();
