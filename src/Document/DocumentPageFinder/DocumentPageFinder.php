@@ -17,26 +17,10 @@ class DocumentPageFinder implements DocumentFinderInterface
      */
     protected $shortcodes;
 
-    /**
-     * The list of documents ids.
-     *
-     * @var int[]
-     */
-    protected $documentsIds;
-    /**
-     * @var string
-     */
-    protected $blockName;
-
-    protected function __construct(
-        array $shortcodes,
-        array $documentsIds,
-        string $blockName
+    public function __construct(
+        array $shortcodes
     ){
-
         $this->shortcodes = $shortcodes;
-        $this->documentsIds = $documentsIds;
-        $this->blockName = $blockName;
     }
 
     /**
