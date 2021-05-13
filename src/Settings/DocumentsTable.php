@@ -29,7 +29,7 @@ class DocumentsTable extends WP_List_Table
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
         DocumentFinderInterface $documentFinder,
-        $args = array()
+        array $args = array()
     ){
 
         $this->documentRepository = $documentRepository;
