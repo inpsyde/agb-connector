@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\DocumentPageFinder;
 
+use Inpsyde\AGBConnector\Plugin;
 use WP_Post;
 
 class DocumentPageFinder implements DocumentFinderInterface
 {
 
-    protected $posts = null;
+    protected $foundPosts = null;
 
     /**
      * The list of available plugin shortcodes.
@@ -45,38 +46,56 @@ class DocumentPageFinder implements DocumentFinderInterface
     public function findPagesDisplayingDocument(int $documentId): array
     {
         return array_merge(
-            $this->findTextUsageWithShortcode(),
-            $this->findTextUsageWithBlock()
+            $this->findTextUsageInPosts($documentId),
+            $this->findTextUsageInPostsLegacy($documentId)
         );
     }
 
     /**
      * Return ids of the posts having at least one of the plugin shortcodes in the content.
      *
+     * @param int $documentId
+     *
      * @return array
      */
-    protected function findTextUsageWithShortcode(): array
+    protected function findTextUsageInPostsLegacy(int $documentId): array
     {
-        $posts = $this->getPostsToSearchIn();
+        $allocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
 
-        return $this->filterPostsContainingPluginShortcodes($posts);
-    }
+        $found = [];
 
-    protected function findTextUsageWithBlock(): array
-    {
-        $posts = $this->getPostsToSearchIn();
-
-        $postsWithBlock = [];
-
-        foreach ($posts as $post) {
-            if(has_block($this->blockName)) {
-                $postsWithBlock[] = $post;
+        foreach ($allocations as $allocationsOfType){
+            foreach ($allocationsOfType as $allocation){
+                if(isset($allocation['pageId']) && (int) $allocation['pageId'] === $documentId) {
+                    $found[] = get_post($allocation['pageId']);
+                }
             }
         }
 
-        return array_map(function(WP_Post $post){
-            return $post->ID;
-        }, $postsWithBlock);
+        return $found;
+    }
+
+    protected function findTextUsageInPosts(int $documentId): array
+    {
+        $foundPostsWithDocuments = get_posts(
+            [
+                'numberposts' => -1, //todo: think about optimization or limits
+                'meta_key' => 'agb_page_contain_documents',
+                'fields' => 'ids'
+            ]
+        );
+
+        $posts = [];
+
+        foreach ($foundPostsWithDocuments as $postId) {
+            $documents = get_post_meta($postId, 'abg_page_contain_documents', true);
+            $documents = array_map( 'intval', $documents);
+            if(in_array($documentId, $documents, true)){
+                $posts[] = get_post($postId);
+            }
+        }
+
+        return $posts;
     }
 
     /**
@@ -84,15 +103,15 @@ class DocumentPageFinder implements DocumentFinderInterface
      *
      * @return WP_Post[]
      */
-    protected function getPostsToSearchIn(): array
+    protected function findPostsContaining(string $search): array
     {
-        if($this->posts === null) {
-            $this->posts = get_posts( //todo: find a more efficient way to check all the posts
-                ['numberposts' => -1]
-            );
-        }
+        return get_posts(
+           [
+               'numberposts' => -1, //todo: think about optimization or limits
+               's' => $search,
 
-        return $this->posts;
+           ]
+        );
     }
 
     /**
