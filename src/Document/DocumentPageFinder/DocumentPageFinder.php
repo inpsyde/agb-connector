@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector\Document\DocumentPageFinder;
 
 use Inpsyde\AGBConnector\Plugin;
-use WP_Post;
 
 class DocumentPageFinder implements DocumentFinderInterface
 {
@@ -96,43 +95,5 @@ class DocumentPageFinder implements DocumentFinderInterface
         }
 
         return $posts;
-    }
-
-    /**
-     * Get list of posts to look for the plugin shortcodes.
-     *
-     * @return WP_Post[]
-     */
-    protected function findPostsContaining(string $search): array
-    {
-        return get_posts(
-           [
-               'numberposts' => -1, //todo: think about optimization or limits
-               's' => $search,
-
-           ]
-        );
-    }
-
-    /**
-     * Return ids of the posts containing plugin shortcodes.
-     *
-     * @param WP_Post[] $posts
-     *
-     * @return int[]
-     */
-    protected function filterPostsContainingPluginShortcodes(array $posts): array
-    {
-        $postsWithShortcodes = array_map(function (WP_Post $post): ?int {
-            foreach ($this->shortcodes as $shortcode) {
-                $content = is_string($post->post_content) ? $post->post_content : '';
-                if (has_shortcode($content, $shortcode)) {
-                    return $post->ID;
-                }
-            }
-            return null;
-        }, $posts);
-
-        return array_filter($postsWithShortcodes);
     }
 }
