@@ -45,6 +45,7 @@ class DocumentsTable extends WP_List_Table
     public function get_columns()
     {
         return [
+            'title' => __('Title', 'agb-connector'),
             'country' => __('Country', 'agb-connector'),
             'language' => __('Language', 'agb-connector'),
             'page' => __('Page', 'agb-connector'),
@@ -76,6 +77,8 @@ class DocumentsTable extends WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
+            case 'title':
+                return $item->getTitle();
             case 'country':
                 return $item->getCountry();
             case 'language':
