@@ -43,11 +43,6 @@ class CheckConfiguration extends Middleware
     public function process($xml)
     {
         $this->checkConfiguration($this->userAuthToken);
-        if (!isset($this->textAllocations[(string)$xml->rechtstext_type])) {
-            throw new ConfigurationException(
-                'ConfigurationException: no textAllocations configured'
-            );
-        }
         return parent::process($xml);
     }
 
