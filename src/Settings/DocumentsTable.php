@@ -7,6 +7,7 @@ use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use WP_List_Table;
+use WP_Post;
 
 class DocumentsTable extends WP_List_Table
 {
@@ -80,8 +81,9 @@ class DocumentsTable extends WP_List_Table
             case 'language':
                 return $item->getLanguage();
             case 'page':
-                $pages = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
-                return '';
+                $postIds = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
+                $posts = array_map('get_post', $postIds);
+                return $this->buildPagesList($posts);
             case 'store_pdf':
                 return $item->getSettings()->getSavePdf() ? 'yes' : 'no';
             case 'attach_pdf_to_wc':
@@ -89,5 +91,21 @@ class DocumentsTable extends WP_List_Table
                 return $item->getSettings()->getAttachToWcEmail() ? 'yes' : 'no';
 
         }
+    }
+
+    /**
+     * @param WP_Post[] $posts
+     *
+     * @return string
+     */
+    protected function buildPagesList(array $posts): string
+    {
+        return implode(' ', array_map(function(WP_Post $post): string {
+            return sprintf(
+                '<p><a href="%1$s" target="_blank">%2$s</a></p>',
+                get_permalink($post),
+                $post->post_title
+            );
+        }, $posts));
     }
 }
