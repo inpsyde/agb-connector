@@ -8,6 +8,7 @@ jQuery(document).ready(function($){
             {
                 url: ajaxurl,
                 data: {
+                    action: agbConnectorSettings.action,
                     documentId: documentId,
                     nonce: agbConnectorSettings.nonce,
                     fieldName: fieldName,

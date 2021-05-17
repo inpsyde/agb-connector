@@ -18,6 +18,8 @@ use function wp_insert_post;
 class Settings
 {
 
+    const AJAX_ACTION = 'agb-update-document-settings';
+
     /**
      * The save message.
      *
@@ -53,6 +55,13 @@ class Settings
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
         $this->supportedTextTypes = $supportedTextTypes;
+    }
+
+    public function init()
+    {
+        add_action('wp_ajax_' . self::AJAX_ACTION, function (){
+            wp_send_json(['nonce' => wp_create_nonce(self::AJAX_ACTION)]);
+        });
     }
 
     /**
@@ -119,7 +128,8 @@ class Settings
         );
 
         wp_localize_script('agb-connector', 'agbConnectorSettings', [
-            'nonce' => wp_create_nonce('agb-update-document-settings')
+            'action' => self::AJAX_ACTION,
+            'nonce' => wp_create_nonce(self::AJAX_ACTION)
             ]
         );
 
