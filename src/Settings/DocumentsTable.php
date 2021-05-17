@@ -89,11 +89,19 @@ class DocumentsTable extends WP_List_Table
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
             case 'store_pdf':
-                return $item->getSettings()->getSavePdf() ? 'yes' : 'no';
+                return $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
             case 'attach_pdf_to_wc':
+                return $this->renderCheckbox(
+                    'attach_pdf_to_wc',
+                    $item->getSettings()->getAttachToWcEmail()
+                );
+            case 'hide_title':
+                return $this->renderCheckbox(
+                    'hide_title',
+                    false
+                );
             default:
-                return $item->getSettings()->getAttachToWcEmail() ? 'yes' : 'no';
-
+                return '';
         }
     }
 
@@ -181,6 +189,22 @@ class DocumentsTable extends WP_List_Table
         ];
 
         return $this->row_actions($actions);
+    }
+
+    /**
+     * Render a settings checkbox.
+     *
+     * @param string $name
+     * @param bool $checked
+     *
+     * @return string
+     */
+    protected function renderCheckbox(string $name, bool $checked): string {
+        return sprintf(
+            '<input type="checkbox" name="%1$s" class="agb-document-settings" %2$s>',
+            esc_attr($name),
+            checked(true, $checked, false)
+        );
     }
 
     protected function handleBulkAction(): void
