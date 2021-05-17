@@ -210,8 +210,6 @@ class Settings
         $table->display();
         echo '</form>';
 
-        $table->inlineEditFields($table->get_column_count());
-
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">

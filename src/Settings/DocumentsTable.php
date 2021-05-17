@@ -177,91 +177,10 @@ class DocumentsTable extends WP_List_Table
         }
         $deleteLink = get_delete_post_link($item->getSettings()->getDocumentId());
         $actions =  [
-            'inline hide-if-no-js' => $this->prepareQuickEditButton(__('Quick Edit', 'agb-connector')),
             'delete' => "<a href=$deleteLink>" . __('Trash', 'agb-connector') . '</a>',
         ];
 
         return $this->row_actions($actions);
-    }
-
-    public function inlineEditFields(int $columnCount): void
-    { ?>
-        <form method="get">
-            <table style="display: none">
-                <tbody id="inlineedit">
-
-                <tr id="inline-edit" class="inline-edit-row" style="display: none">
-                    <td colspan="<?php echo esc_attr($columnCount); ?>" class="colspanchange">
-
-                        <fieldset>
-                            <legend class="inline-edit-legend"><?php _e('Quick Edit'); ?></legend>
-                            <div class="inline-edit-col">
-                                <label>
-                                    <span class="title"><?php
-                                        _ex('Save PDF', 'document setting', 'agb-connector');
-                                        ?></span>
-                                    <span class="input-text-wrap"><input type="checkbox" name="save-pdf"/></span>
-                                </label>
-                                <label>
-                                    <span class="title"><?php
-                                        _ex(
-                                            'Attach the PDF version of this document to the WooCommerce emails',
-                                            'document setting',
-                                            'agb-connector'
-                                        );
-                                        ?></span>
-                                    <span class="input-text-wrap"><input type="checkbox" name="attach-to-wc-emails"/></span>
-                                </label>
-                            </div>
-                        </fieldset>
-
-                        <?php
-                        $core_columns = array(
-                            'cb' => true,
-                            'description' => true,
-                            'name' => true,
-                            'slug' => true,
-                            'posts' => true,
-                        );
-
-                        list($columns) = $this->get_column_info();
-
-                        foreach ($columns as $column_name => $column_display_name) {
-                            if (isset($core_columns[$column_name])) {
-                                continue;
-                            }
-
-                            /** This action is documented in wp-admin/includes/class-wp-posts-list-table.php */
-                            do_action('quick_edit_custom_box', $column_name, 'edit-tags', $this->screen->taxonomy);
-                        }
-                        ?>
-
-                        <div class="inline-edit-save submit">
-                            <button type="button"
-                                    class="cancel button alignleft"><?php _e('Cancel'); ?></button>
-                            <button type="button"
-                                    class="save button button-primary alignright"><?php echo 'Test'//$tax->labels->update_item; ?></button>
-                            <span class="spinner"></span>
-
-                            <?php wp_nonce_field('taxinlineeditnonce', '_inline_edit', false); ?>
-                            <input type="hidden" name="taxonomy"
-                                   value="<?php echo esc_attr($this->screen->taxonomy); ?>"/>
-                            <input type="hidden" name="post_type"
-                                   value="<?php echo esc_attr($this->screen->post_type); ?>"/>
-                            <br class="clear"/>
-
-                            <div class="notice notice-error notice-alt inline hidden">
-                                <p class="error"></p>
-                            </div>
-                        </div>
-
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
-        </form>
-        <?php
     }
 
     protected function handleBulkAction(): void
@@ -270,16 +189,6 @@ class DocumentsTable extends WP_List_Table
         if('bulk-delete' === $this->current_action()){
             //todo: handle bulk delete here
         }
-    }
-
-    protected function prepareQuickEditButton(string $title): string
-    {
-        return sprintf(
-            '<button type="button" class="button-link editinline" aria-label="%s" aria-expanded="false">%s</button>',
-            /* translators: %s: Post title. */
-            esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221; inline' ), $title ) ),
-            __( 'Quick&nbsp;Edit' )
-        );
     }
 
 }
