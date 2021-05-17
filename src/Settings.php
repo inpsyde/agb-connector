@@ -1,7 +1,7 @@
 <?php # -*- coding: utf-8 -*-
 
 namespace Inpsyde\AGBConnector;
-
+use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
@@ -675,6 +675,7 @@ class Settings
      * @param bool $fieldValue
      *
      * @throws InvalidArgumentException If document settings field not found.
+     * @throws GeneralException
      */
     protected function updateDocumentSettings(DocumentInterface $document, string $fieldName, bool $fieldValue): void
     {
@@ -693,5 +694,7 @@ class Settings
                     __('Failed to update document: no such field found.', 'agb-connector')
                 );
         }
+
+        $this->repository->saveDocument($document);
     }
 }
