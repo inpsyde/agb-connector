@@ -1,7 +1,5 @@
-function removePages() {
-    jQuery('.remove').on('click', function () {
-        jQuery(this).parent().parent().remove();
-        return false;
-    });
-}
-removePages();
+jQuery(document).ready(function($){
+    /*$('.button-link.editinline').on('click', function (e){
+        console.log(e.target);
+    });*/
+});

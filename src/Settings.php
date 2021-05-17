@@ -108,6 +108,8 @@ class Settings
             'all'
         );
 
+        wp_enqueue_script('inline-edit-post');
+
         wp_enqueue_script(
             'agb-connector',
             plugins_url('/assets/js/settings.js', __DIR__),
@@ -192,10 +194,23 @@ class Settings
         $plugin = agb_connector();
         $shortcodes = array_keys($plugin->shortCodes()->settings());
         $documentFinder = new DocumentPageFinder($shortcodes);
-        $table = new DocumentsTable($documentRepository, $documentFinder);
+        $table = new DocumentsTable(
+            $documentRepository,
+            $documentFinder,
+            [
+                'singular' => __('Document', 'agb-connector'),
+                'plural' => __('Documents', 'agb-connector'),
+                'ajax' => true
+            ]
+        );
 
+        //die('here');
         $table->prepare_items();
+        echo '<form method="post">';
         $table->display();
+        echo '</form>';
+
+        $table->inlineEditFields($table->get_column_count());
 
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
@@ -464,7 +479,7 @@ class Settings
                         echo '<td><select name="text_allocation[' .
                              esc_attr($type) . '][' . esc_attr($i) . '][language]" size="1">';
                         foreach ($this->supportedLanguages as $languageCode => $languageText) {
-                            echo '<option value="' . esc_attr($languageCode) . '"' .
+                            echo '<option value="' . esc_attr($languageCode) . '" ' .
                                  selected($allocation['language'], $languageCode, false) .
                                  '>' . esc_attr($languageText) . '</option>';
                         }
@@ -475,13 +490,13 @@ class Settings
                         echo '</select></td>';
                         if (esc_attr($type) !== 'impressum') {
                             echo '<td><input type="checkbox" class="pdfOption" value="1" name="text_allocation[' .
-                                esc_attr($type) . '][' . esc_attr($i) . '][savePdfFile]"' .
+                                esc_attr($type) . '][' . esc_attr($i) . '][savePdfFile]" ' .
                                 checked($allocation['savePdfFile'], true, false) .
                                 ' /></td>';
                         }
                         if ($wcEmail && $allocation['savePdfFile']) {
                             echo '<td><input type="checkbox" value="1" name="text_allocation[' .
-                                 esc_attr($type) . '][' . esc_attr($i) . '][wc_email]"' .
+                                 esc_attr($type) . '][' . esc_attr($i) . '][wc_email]" ' .
                                  checked($allocation['wcOrderEmailAttachment'], true, false) .
                                  ' /></td>';
                         } else {//phpcs:ignore

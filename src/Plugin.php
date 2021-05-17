@@ -131,7 +131,7 @@ class Plugin
         }
 
         $requestUri = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL); //phpcs:ignore
-        if (false === strpos($requestUri, '/it-recht-kanzlei')) {
+        if (false === strpos($requestUri, 'it-recht-kanzlei')) {
             return;
         }
 
