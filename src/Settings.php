@@ -118,6 +118,11 @@ class Settings
             true
         );
 
+        wp_localize_script('agb-connector', 'agbConnectorSettings', [
+            'nonce' => wp_create_nonce('agb-update-document-settings')
+            ]
+        );
+
         $getRegen = filter_input(INPUT_GET, 'regen', FILTER_SANITIZE_NUMBER_INT);
         if (null !== $getRegen) {
             check_admin_referer('agb-connector-settings-page-regen');
