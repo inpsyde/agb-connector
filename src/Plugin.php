@@ -2,6 +2,10 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use WC_Order;
 
 /**
@@ -47,11 +51,20 @@ class Plugin
     private $settings;
 
     /**
+     * @var DocumentRepositoryInterface
+     */
+    private $documentRepository;
+
+    /**
      * The shortcodes object
      *
      * @var ShortCodes
      */
     private $shortCodes;
+    /**
+     * @var WpPostBasedDocumentFactory
+     */
+    private $postBasedDocumentFactory;
 
     /**
      * Init all actions and filters
@@ -165,11 +178,40 @@ class Plugin
             $this->settings = new Settings(
                 $supportedConfig->supportedCountries(),
                 $supportedConfig->supportedLanguages(),
-                $supportedConfig->supportedTextTypes()
+                $supportedConfig->supportedTextTypes(),
+                $this->documentRepository()
             );
+
+            $this->settings->init();
         }
 
         return $this->settings;
+    }
+
+    /**
+     * Get document repository.
+     *
+     * @return DocumentRepositoryInterface
+     */
+    public function documentRepository(): DocumentRepositoryInterface {
+        if(null === $this->documentRepository){
+            $this->documentRepository = new DocumentRepository($this->postBasedDocumentFactory());
+        }
+
+        return $this->documentRepository;
+    }
+
+    /**
+     * Return Post-based document factory.
+     *
+     * @return WpPostBasedDocumentFactoryInterface
+     */
+    public function postBasedDocumentFactory(): WpPostBasedDocumentFactoryInterface {
+        if(null === $this->postBasedDocumentFactory) {
+            $this->postBasedDocumentFactory = new WpPostBasedDocumentFactory();
+        }
+
+        return $this->postBasedDocumentFactory;
     }
 
     /**
