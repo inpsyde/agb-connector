@@ -26,6 +26,8 @@ class DocumentSettings implements DocumentSettingsInterface
 
     protected $pdfUrl = '';
 
+    protected $hideTitle = false;
+
     /**
      * @inheritDoc
      */
@@ -88,5 +90,21 @@ class DocumentSettings implements DocumentSettingsInterface
     public function setPdfUrl(string $pdfUrl): void
     {
         $this->pdfUrl = $pdfUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHideTitle(): bool
+    {
+        return $this->hideTitle;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setHideTitle(bool $hideTitle): void
+    {
+        $this->hideTitle = $hideTitle;
     }
 }

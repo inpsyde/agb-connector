@@ -70,4 +70,18 @@ interface DocumentSettingsInterface
      * @param string $pdfUrl
      */
     public function setPdfUrl(string $pdfUrl): void;
+
+    /**
+     * Get the 'Hide title' option.
+     *
+     * @return bool
+     */
+    public function getHideTitle(): bool;
+
+    /**
+     * Set the 'Hide title' option.
+     *
+     * @param bool $hideTitle
+     */
+    public function setHideTitle(bool $hideTitle): void;
 }
