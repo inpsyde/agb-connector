@@ -204,7 +204,6 @@ class Settings
             ]
         );
 
-        //die('here');
         $table->prepare_items();
         echo '<form method="post">';
         $table->display();
