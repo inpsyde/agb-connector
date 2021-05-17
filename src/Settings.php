@@ -2,10 +2,12 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
+use InvalidArgumentException;
 use Walker_PageDropdown;
 
 use function array_key_exists;
@@ -19,6 +21,10 @@ class Settings
 {
 
     const AJAX_ACTION = 'agb-update-document-settings';
+    /**
+     * @var DocumentRepository
+     */
+    protected $repository;
 
     /**
      * The save message.
@@ -49,19 +55,49 @@ class Settings
     public function __construct(
         array $supportedCountries,
         array $supportedLanguages,
-        array $supportedTextTypes
+        array $supportedTextTypes,
+        DocumentRepository $repository
     ) {
 
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
         $this->supportedTextTypes = $supportedTextTypes;
+        $this->repository = $repository;
     }
 
     public function init()
     {
-        add_action('wp_ajax_' . self::AJAX_ACTION, function (){
-            wp_send_json(['nonce' => wp_create_nonce(self::AJAX_ACTION)]);
-        });
+        add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleAjaxRequest']);
+    }
+
+    /**
+     * Update document settings on AJAX request.
+     */
+    public function handleAjaxRequest(): void
+    {
+        check_admin_referer(self::AJAX_ACTION, 'nonce');
+
+        $documentId = filter_input(INPUT_POST, 'documentId', FILTER_SANITIZE_NUMBER_INT);
+        $document = $this->repository->getDocumentById($documentId);
+
+        if($document === null) {
+            wp_send_json_error(
+                [
+                    'message' => __('Document not found.', 'agb-connector'),
+                ]
+            );
+        }
+
+        $fieldName = filter_input(INPUT_POST, 'fieldName', FILTER_SANITIZE_STRING);
+        $fieldValue = filter_input(INPUT_POST, 'fieldValue', FILTER_VALIDATE_BOOLEAN);
+
+        try {
+            $this->updateDocumentSettings($document, $fieldName, $fieldValue);
+        } catch (InvalidArgumentException $exception) {
+            wp_send_json_error(['message' => $exception->getMessage()]);
+        }
+
+        wp_send_json_success(['nonce' => wp_create_nonce(self::AJAX_ACTION)]);
     }
 
     /**
@@ -629,5 +665,33 @@ class Settings
         }
 
         return $output;
+    }
+
+    /**
+     * Update document settings.
+     *
+     * @param DocumentInterface $document
+     * @param string $fieldName
+     * @param bool $fieldValue
+     *
+     * @throws InvalidArgumentException If document settings field not found.
+     */
+    protected function updateDocumentSettings(DocumentInterface $document, string $fieldName, bool $fieldValue): void
+    {
+        switch ($fieldName) {
+            case 'store_pdf':
+                $document->getSettings()->setSavePdf($fieldValue);
+                break;
+            case 'attach_pdf_to_wc':
+                $document->getSettings()->setAttachToWcEmail($fieldValue);
+                break;
+            case 'hide_title':
+                $document->getSettings()->setHideTitle($fieldValue);
+                break;
+            default:
+                throw new InvalidArgumentException(
+                    __('Failed to update document: no such field found.', 'agb-connector')
+                );
+        }
     }
 }
