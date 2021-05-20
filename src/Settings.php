@@ -181,56 +181,8 @@ class Settings
             return;
         }
 
-        $postTextAllocation = filter_input(
-            INPUT_POST,
-            'text_allocation',
-            FILTER_DEFAULT,
-            FILTER_REQUIRE_ARRAY
-        );
-        if (!$postTextAllocation && ! is_array($postTextAllocation)) {
-            return;
-        }
-
         check_admin_referer('agb-connector-settings-page');
-        $supportedTextTypes = $this->supportedTextTypes;
-        $textAllocations = [];
-        foreach ($postTextAllocation as $type => $allocations) {
-            if (! array_key_exists($type, $supportedTextTypes)) {
-                continue;
-            }
-            foreach ($allocations as $allocation) {
-                if (! array_key_exists($allocation['country'], $this->supportedCountries)) {
-                    continue;
-                }
-                if (! array_key_exists($allocation['language'], $this->supportedLanguages)) {
-                    continue;
-                }
-                if ('create' === $allocation['page_id']) {
-                    $postArray = [
-                        'post_type' => 'page',
-                        'post_title' => $supportedTextTypes[$type] . ' (' .
-                                        $allocation['language'] . '_' .
-                                        $allocation['country'] . ')',
-                        'post_content' => '',
-                        'comment_status' => 'closed',
-                        'ping_status' => 'closed',
-                    ];
-                    $allocation['page_id'] = wp_insert_post($postArray);
-                }
-                if ($allocation['page_id'] <= 0 || ! get_post(absint($allocation['page_id']))) {
-                    continue;
-                }
-                $textAllocations[$type][] = [
-                    'country' => $allocation['country'],
-                    'language' => $allocation['language'],
-                    'pageId' => absint($allocation['page_id']),
-                    'wcOrderEmailAttachment' => ! empty($allocation['wc_email']),
-                    'savePdfFile' => $allocation['savePdfFile'],
-                ];
-            }
-        }
 
-        update_option(Plugin::OPTION_TEXT_ALLOCATIONS, $textAllocations);
         $this->message = __('settings updated.', 'agb-connector');
     }
 
