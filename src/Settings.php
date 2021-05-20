@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inpsyde\AGBConnector;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
