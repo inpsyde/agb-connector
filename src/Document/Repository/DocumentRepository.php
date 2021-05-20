@@ -109,13 +109,15 @@ class DocumentRepository implements DocumentRepositoryInterface
      */
     public function saveDocument(DocumentInterface $document): int
     {
-        $documentPostId = $this->getDocumentPostIdByTypeCountryAndLanguage(
+        $documentSettings = $document->getSettings();
+
+
+        $documentPostId = $documentSettings->getDocumentId() ?: $this->getDocumentPostIdByTypeCountryAndLanguage(
             $document->getType(),
             $document->getCountry(),
             $document->getLanguage()
         );
 
-        $documentSettings = $document->getSettings();
 
         $args = [
             'ID' => $documentPostId,
