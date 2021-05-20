@@ -266,13 +266,6 @@ class Settings
                     echo '<div id="message" class="updated"><p>' . esc_html($this->message) . '</p></div>';
                 }
                 ?>
-
-                <form method="post"
-                      action="<?php echo esc_url(add_query_arg(
-                          ['page' => 'agb_connector_settings'],
-                          admin_url('options-general.php')
-                      )); ?>">
-                    <?php wp_nonce_field('agb-connector-settings-page'); ?>
                     <table class="form-table">
                         <tr valign="top">
                             <th scope="row">
@@ -392,10 +385,6 @@ class Settings
                         </tr>
 
                     </table>
-
-                    <?php submit_button(__('Save changes', 'agb-connector'), 'primary', 'save'); ?>
-
-                </form>
             </div>
         </div>
         <?php
