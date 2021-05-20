@@ -40,7 +40,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         );
         $documentSettings->setDocumentId($post->ID);
         $documentSettings->setSavePdf(
-            (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_DONT_SAVE_PDF)
+            (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF)
         );
 
 

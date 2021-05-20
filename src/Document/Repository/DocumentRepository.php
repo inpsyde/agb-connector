@@ -129,7 +129,7 @@ class DocumentRepository implements DocumentRepositoryInterface
                 WpPostMetaFields::WP_POST_DOCUMENT_TYPE => $document->getType(),
                 WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE => $document->getLanguage(),
                 WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY => $document->getCountry(),
-                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_DONT_SAVE_PDF => ! $documentSettings->getSavePdf(),
+                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF => $documentSettings->getSavePdf(),
                 WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL => $documentSettings->getAttachToWcEmail(),
                 WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE => $documentSettings->getHideTitle()
             ]
