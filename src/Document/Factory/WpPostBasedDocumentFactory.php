@@ -42,6 +42,9 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         $documentSettings->setSavePdf(
             (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF)
         );
+        $documentSettings->setHideTitle(
+            (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE)
+        );
 
 
         return new Document(
