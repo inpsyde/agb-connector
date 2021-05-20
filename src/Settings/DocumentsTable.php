@@ -21,6 +21,13 @@ class DocumentsTable extends WP_List_Table
     protected $documentFinder;
 
     /**
+     * Documents view, 'all' by default.
+     *
+     * @var string
+     */
+    protected $requestedDocumentsView;
+
+    /**
      * DocumentsTable constructor.
      *
      * @param DocumentRepositoryInterface $documentRepository
@@ -37,6 +44,7 @@ class DocumentsTable extends WP_List_Table
 
         parent::__construct($args);
         $this->documentFinder = $documentFinder;
+        $this->requestedDocumentsView = filter_input(INPUT_GET, 'post_status', FILTER_SANITIZE_STRING) ?: 'all';
     }
 
     /**
@@ -68,7 +76,27 @@ class DocumentsTable extends WP_List_Table
             $sortable
         ];
 
-        $this->items = $this->documentRepository->getAllDocuments();
+        $this->items = $this->requestedDocumentsView === 'trash' ?
+            $this->documentRepository->getAllDocumentsInTrash() :
+            $this->documentRepository->getAllDocuments();
+    }
+
+    public function get_views(): array
+    {
+        return [
+          'all' => sprintf(
+              '<a href="%1$s" %2$s>%3$s</a>',
+              'options-general.php?page=agb_connector_settings',
+              $this->requestedDocumentsView === 'all' ? 'class="current"' : '',
+              __('All', 'agb-connector')
+          ),
+            'trash' => sprintf(
+                '<a href="%1$s" %2$s>%3$s</a>',
+                'options-general.php?page=agb_connector_settings&post_status=trash',
+                $this->requestedDocumentsView === 'trash' ? 'class="current"' : '',
+                __('Trash', 'agb-connector')
+            )
+        ];
     }
 
     /**
