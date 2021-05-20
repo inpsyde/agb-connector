@@ -320,69 +320,6 @@ class Settings
                                 </p>
                             </td>
                         </tr>
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="page_agb">
-                                    <?php esc_html_e('Terms and Conditions', 'agb-connector'); ?>
-                                </label>
-                            </th>
-                            <td>
-                                <?php
-                                if (empty($textAllocations['agb'])) {
-                                    $textAllocations['agb'] = [];
-                                }
-                                $this->getAllocationHtml($textAllocations['agb'], 'agb');
-                                ?>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="page_datenschutz">
-                                    <?php esc_html_e('Privacy', 'agb-connector'); ?>
-                                </label>
-                            </th>
-                            <td>
-                                <?php
-                                if (empty($textAllocations['datenschutz'])) {
-                                    $textAllocations['datenschutz'] = [];
-                                }
-                                $this->getAllocationHtml($textAllocations['datenschutz'], 'datenschutz');
-                                ?>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="page_widerruf">
-                                    <?php esc_html_e('Revocation', 'agb-connector'); ?>
-                                </label>
-                            </th>
-                            <td>
-                                <?php
-                                if (empty($textAllocations['widerruf'])) {
-                                    $textAllocations['widerruf'] = [];
-                                }
-                                $this->getAllocationHtml($textAllocations['widerruf'], 'widerruf');
-                                ?>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="page_impressum">
-                                    <?php esc_html_e('Imprint', 'agb-connector'); ?>
-                                </label>
-                            </th>
-                            <td>
-                                <?php
-                                if (empty($textAllocations['impressum'])) {
-                                    $textAllocations['impressum'] = [];
-                                }
-                                $this->getAllocationHtml($textAllocations['impressum'], 'impressum', false);
-                                ?>
-                            </td>
-                        </tr>
 
                     </table>
             </div>
