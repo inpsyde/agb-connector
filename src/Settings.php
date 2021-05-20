@@ -157,8 +157,6 @@ class Settings
             'all'
         );
 
-        wp_enqueue_script('inline-edit-post');
-
         wp_enqueue_script(
             'agb-connector',
             plugins_url('/assets/js/settings.js', __DIR__),
