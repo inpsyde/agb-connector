@@ -207,7 +207,6 @@ class Settings
             ]
         );
 
-        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">
             <h2>
