@@ -98,7 +98,7 @@ class DocumentsTable extends WP_List_Table
             case 'hide_title':
                 return $this->renderCheckbox(
                     'hide_title',
-                    false
+                    $item->getSettings()->getHideTitle()
                 );
             default:
                 return '';
