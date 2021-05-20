@@ -24,6 +24,13 @@ interface DocumentRepositoryInterface
      */
     public function getAllDocuments(): array;
 
+    /**
+     * Return all documents with status trash
+     *
+     * @return array
+     */
+    public function getAllDocumentsInTrash(): array;
+
 
     /**
      * Return all the documents of given type.
