@@ -33,7 +33,7 @@ class Settings
      */
     private $message = '';
     /**
-     * @var array $supportedCountries
+     * @var array
      */
     protected $supportedCountries;
     /**
