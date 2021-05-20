@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document;
 
-
+/**
+ * Represents legal document.
+ */
 class Document implements DocumentInterface
 {
 
@@ -34,6 +36,16 @@ class Document implements DocumentInterface
      */
     protected $settings;
 
+    /**
+     * @param DocumentSettingsInterface $settings Plugin settings.
+     * @param string $title Document title.
+     * @param string $htmlContent Content of the document formatted as HTML.
+     * @param string $country Country the document belongs to.
+     * @param string $language Language the document belongs to.
+     * @param string $type Type of the document.
+     *
+     * @see DocumentInterface::getType() For possible document types.
+     */
     public function __construct(
         DocumentSettingsInterface $settings,
         string $title,
@@ -91,6 +103,9 @@ class Document implements DocumentInterface
         return $this->content;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getSettings(): DocumentSettingsInterface
     {
         return $this->settings;
