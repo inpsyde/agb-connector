@@ -181,8 +181,6 @@ class Settings
             return;
         }
 
-        check_admin_referer('agb-connector-settings-page');
-
         $this->message = __('settings updated.', 'agb-connector');
     }
 
