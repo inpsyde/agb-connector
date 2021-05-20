@@ -115,7 +115,11 @@ class Settings
                 'page',
             ]
         );
-        add_action('load-' . $hook, [$this, 'load']);
+
+        if( $hook !== false) {
+            add_action('load-' . $hook, [$this, 'load']);
+        }
+
     }
 
     /**
