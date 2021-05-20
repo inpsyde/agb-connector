@@ -27,36 +27,13 @@ class Settings
      * @var string
      */
     private $message = '';
-    /**
-     * @var array
-     */
-    protected $supportedCountries;
-    /**
-     * @var array
-     */
-    protected $supportedLanguages;
-    /**
-     * @var array
-     */
-    protected $supportedTextTypes;
 
     /**
-     * Settings constructor.
-     *
-     * @param array $supportedCountries
-     * @param array $supportedLanguages
-     * @param array $supportedTextTypes
+     * @param DocumentRepository $repository
      */
     public function __construct(
-        array $supportedCountries,
-        array $supportedLanguages,
-        array $supportedTextTypes,
         DocumentRepository $repository
     ) {
-
-        $this->supportedCountries = $supportedCountries;
-        $this->supportedLanguages = $supportedLanguages;
-        $this->supportedTextTypes = $supportedTextTypes;
         $this->repository = $repository;
     }
 
