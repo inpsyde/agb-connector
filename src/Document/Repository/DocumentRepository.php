@@ -81,6 +81,7 @@ class DocumentRepository implements DocumentRepositoryInterface
         $foundPostId = get_posts(
             [
                 'numberposts' => 1,
+                'fields' => 'ids',
                 'post_type' => 'wp_block',
                 'meta_query' => [
                     'relation' => 'AND',
