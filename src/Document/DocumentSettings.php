@@ -22,7 +22,7 @@ class DocumentSettings implements DocumentSettingsInterface
 
     protected $attachToWcEmail = false;
 
-    protected $savePdf = false;
+    protected $savePdf = true;
 
     protected $pdfUrl = '';
 
