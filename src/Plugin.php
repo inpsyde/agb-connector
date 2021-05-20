@@ -118,7 +118,7 @@ class Plugin
         }
 
         $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
-        foreach ($textAllocations as $type => $allocations) {
+        foreach ($textAllocations as $allocations) {
             foreach ($allocations as $allocation) {
                 if (empty($allocation['wcOrderEmailAttachment'])) {
                     continue;
