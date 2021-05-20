@@ -53,25 +53,6 @@ class DocumentRepository implements DocumentRepositoryInterface
         return array_map([$this->documentFactory, 'createDocument'], $posts);
     }
 
-    public function getAllDocumentsInTrash(): array
-    {
-        $posts = get_posts(
-            [
-                'numberposts' => -1,
-                'post_type' => 'wp_block',
-                'post_status' => 'trash',
-                'meta_query' => [
-                    [
-                        'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                        'compare' => 'EXISTS'
-                    ]
-                ]
-            ]
-        );
-
-        return array_map([$this->documentFactory, 'createDocument'], $posts);
-    }
-
     /**
      * @inheritDoc
      */

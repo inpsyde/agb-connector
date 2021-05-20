@@ -21,13 +21,6 @@ class DocumentsTable extends WP_List_Table
     protected $documentFinder;
 
     /**
-     * Documents view, 'all' by default.
-     *
-     * @var string
-     */
-    protected $requestedDocumentsView;
-
-    /**
      * DocumentsTable constructor.
      *
      * @param DocumentRepositoryInterface $documentRepository
@@ -44,7 +37,6 @@ class DocumentsTable extends WP_List_Table
 
         parent::__construct($args);
         $this->documentFinder = $documentFinder;
-        $this->requestedDocumentsView = filter_input(INPUT_GET, 'post_status', FILTER_SANITIZE_STRING) ?: 'all';
     }
 
     /**
@@ -76,27 +68,7 @@ class DocumentsTable extends WP_List_Table
             $sortable
         ];
 
-        $this->items = $this->requestedDocumentsView === 'trash' ?
-            $this->documentRepository->getAllDocumentsInTrash() :
-            $this->documentRepository->getAllDocuments();
-    }
-
-    public function get_views(): array
-    {
-        return [
-          'all' => sprintf(
-              '<a href="%1$s" %2$s>%3$s</a>',
-              'options-general.php?page=agb_connector_settings',
-              $this->requestedDocumentsView === 'all' ? 'class="current"' : '',
-              __('All', 'agb-connector')
-          ),
-            'trash' => sprintf(
-                '<a href="%1$s" %2$s>%3$s</a>',
-                'options-general.php?page=agb_connector_settings&post_status=trash',
-                $this->requestedDocumentsView === 'trash' ? 'class="current"' : '',
-                __('Trash', 'agb-connector')
-            )
-        ];
+        $this->items = $this->documentRepository->getAllDocuments();
     }
 
     /**
@@ -211,9 +183,9 @@ class DocumentsTable extends WP_List_Table
         if($primary !== $columnName){
             return '';
         }
-        $deleteLink = get_delete_post_link($item->getSettings()->getDocumentId());
+        $deleteLink = get_delete_post_link($item->getSettings()->getDocumentId(), '', true);
         $actions =  [
-            'delete' => "<a href=$deleteLink>" . __('Trash', 'agb-connector') . '</a>',
+            'delete' => "<a href=$deleteLink>" . __('Delete permanently', 'agb-connector') . '</a>',
         ];
 
         return $this->row_actions($actions);

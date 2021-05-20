@@ -257,7 +257,6 @@ class Settings
 
         $table->prepare_items();
 
-        $table->views();
         echo '<form method="post">';
         $table->display();
         echo '</form>';
