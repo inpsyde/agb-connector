@@ -51,7 +51,7 @@ class Settings
     {
         check_admin_referer(self::AJAX_ACTION, 'nonce');
 
-        $documentId = filter_input(INPUT_POST, 'documentId', FILTER_SANITIZE_NUMBER_INT);
+        $documentId = (int) filter_input(INPUT_POST, 'documentId', FILTER_SANITIZE_NUMBER_INT);
         $document = $this->repository->getDocumentById($documentId);
 
         if($document === null) {
