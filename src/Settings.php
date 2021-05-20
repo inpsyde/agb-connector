@@ -207,12 +207,6 @@ class Settings
             ]
         );
 
-        $table->prepare_items();
-
-        echo '<form method="post">';
-        $table->display();
-        echo '</form>';
-
         $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
         ?>
         <div class="wrap" id="agb-connector-settings">
@@ -320,9 +314,15 @@ class Settings
                                 </p>
                             </td>
                         </tr>
-
                     </table>
             </div>
+            <?php
+                $table->prepare_items();
+
+                echo '<form method="post">';
+                $table->display();
+                echo '</form>';
+            ?>
         </div>
         <?php
     }
