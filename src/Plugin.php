@@ -174,11 +174,7 @@ class Plugin
     public function settings()
     {
         if (null === $this->settings) {
-            $supportedConfig = new XmlApiSupportedService();
             $this->settings = new Settings(
-                $supportedConfig->supportedCountries(),
-                $supportedConfig->supportedLanguages(),
-                $supportedConfig->supportedTextTypes(),
                 $this->documentRepository()
             );
 
