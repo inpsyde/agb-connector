@@ -114,6 +114,8 @@ class DocumentRepository implements DocumentRepositoryInterface
             $document->getLanguage()
         );
 
+        $documentSettings = $document->getSettings();
+
         $args = [
             'ID' => $documentPostId,
             'post_type' => 'wp_block',
@@ -124,6 +126,9 @@ class DocumentRepository implements DocumentRepositoryInterface
                 WpPostMetaFields::WP_POST_DOCUMENT_TYPE => $document->getType(),
                 WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE => $document->getLanguage(),
                 WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY => $document->getCountry(),
+                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_DONT_SAVE_PDF => ! $documentSettings->getSavePdf(),
+                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL => $documentSettings->getAttachToWcEmail(),
+                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE => $documentSettings->getHideTitle()
             ]
         ];
         remove_filter('content_save_pre', 'wp_filter_post_kses');
