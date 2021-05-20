@@ -52,7 +52,7 @@ class DocumentsTable extends WP_List_Table
             'page' => __('Page', 'agb-connector'),
             'store_pdf' => __('Store PDF File', 'agb-connector'),
             'attach_pdf_to_wc' => __('Attach PDF on WooCommerce emails', 'agb-connector'),
-            'hide_title' => __('Hide title')
+            'hide_title' => __('Hide title', 'agb-connector')
         ];
     }
 
