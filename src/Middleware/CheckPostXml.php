@@ -39,16 +39,13 @@ class CheckPostXml extends Middleware
     /**
      * CheckPostXml constructor.
      *
-     * @param $textAllocations
      * @param DocumentRepositoryInterface $documentRepository
      * @param XmlBasedDocumentFactory $documentFactory
      */
     public function __construct(
-        $textAllocations,
         DocumentRepositoryInterface $documentRepository,
         XmlBasedDocumentFactory $documentFactory
     ){
-        $this->textAllocations = $textAllocations;
         $this->documentRepository = $documentRepository;
         $this->documentFactory = $documentFactory;
     }

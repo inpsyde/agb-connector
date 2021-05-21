@@ -17,21 +17,15 @@ class CheckConfiguration extends Middleware
      * @var string $userAuth
      */
     protected $userAuthToken;
-    /**
-     * @var array $textAllocations
-     */
-    protected $textAllocations;
 
     /**
      * CheckConfiguration constructor.
      *
      * @param $userAuthToken
-     * @param $textAllocations
      */
-    public function __construct($userAuthToken, $textAllocations)
+    public function __construct($userAuthToken)
     {
         $this->userAuthToken = $userAuthToken;
-        $this->textAllocations = $textAllocations;
     }
 
     /**

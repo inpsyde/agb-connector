@@ -42,25 +42,13 @@ class XmlApi
     protected $userAuthToken;
 
     /**
-     * Text allocations
-     *
-     * @var array
-     */
-    protected $textAllocations;
-    const FTPHOSTNAME = 'hostname';
-    const FTPUSERNAME = 'username';
-    const FTPPASSWORD = 'password';
-
-    /**
      * Define some values.
      *
      * @param string $userAuthToken User Auth Token.
-     * @param array $textAllocations allocations for Texts.
      */
-    public function __construct($userAuthToken, array $textAllocations = null)
+    public function __construct($userAuthToken)
     {
         $this->userAuthToken = $userAuthToken;
-        $this->textAllocations = $textAllocations;
     }
 
     /**
@@ -87,7 +75,6 @@ class XmlApi
 
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
-            $this->textAllocations,
             new XmlApiSupportedService(),
             new DocumentRepository($documentFactory),
             new XmlBasedDocumentFactory()

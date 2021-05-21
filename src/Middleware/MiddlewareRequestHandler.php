@@ -54,20 +54,17 @@ class MiddlewareRequestHandler
      * MiddlewareRequestHandler constructor.
      *
      * @param $userAuthToken
-     * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
      * @param DocumentRepositoryInterface $documentRepository
      * @param XmlBasedDocumentFactoryInterface $documentFactory
      */
     public function __construct(
         $userAuthToken,
-        $allocations,
         XmlApiSupportedService $apiSupportedService,
         DocumentRepositoryInterface $documentRepository,
         XmlBasedDocumentFactoryInterface $documentFactory
     ) {
         $this->userAuthToken = $userAuthToken;
-        $this->allocations = $allocations;
         $this->supportedCountries = $apiSupportedService->supportedCountries();
         $this->supportedLanguages = $apiSupportedService->supportedLanguages();
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
@@ -95,9 +92,8 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckPdfFilenameXml())
             ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
-            ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations))
+            ->linkWith(new CheckConfiguration($this->userAuthToken))
             ->linkWith(new CheckPostXml(
-                $this->allocations,
                 $this->documentRepository,
                 $this->documentFactory
             ));

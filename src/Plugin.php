@@ -158,8 +158,7 @@ class Plugin
         $xml = wp_unslash($xml);
 
         $apiKey = get_option(self::OPTION_USER_AUTH_TOKEN, '');
-        $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
-        $api = new XmlApi($apiKey, $textAllocations);
+        $api = new XmlApi($apiKey);
 
         nocache_headers();
         header('Content-type: application/xml; charset=utf-8', true, 200);
