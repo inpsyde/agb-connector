@@ -12,7 +12,7 @@ xml=<?xml version="1.0" encoding="UTF-8" ?>
     <rechtstext_type>agb</rechtstext_type>
     <rechtstext_title>Title</rechtstext_title>
     <rechtstext_text>123456789012345678901234567890123456789012345678901</rechtstext_text>
-    <rechtstext_html><div><p>123456789012345678901234567890123456789012345678901</div></p></rechtstext_html>
+    <rechtstext_html><div><p>123456789012345678901234567890123456789012345678901</p></div></rechtstext_html>
     <rechtstext_pdf_url>assets/test.pdf</rechtstext_pdf_url>
     <rechtstext_pdf_md5hash>assets/test.pdf</rechtstext_pdf_md5hash>
     <rechtstext_pdf_filename_suggestion>AGB_DE.pdf</rechtstext_pdf_filename_suggestion>
