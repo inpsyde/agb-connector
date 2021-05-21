@@ -26,7 +26,7 @@ class CheckHtmlXml extends Middleware
                 "No html tag provided"
             );
         }
-        if (mb_strlen((string)$xml->rechtstext_html) < 50) {
+        if (mb_strlen((string)$xml->rechtstext_html->asXML()) < 50) {
             throw new HtmlTagException(
                 "Html tag length must be greater than 50"
             );

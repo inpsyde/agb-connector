@@ -94,9 +94,7 @@ class CheckPostXml extends Middleware
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
 
         if (!$pdf) {
-            throw new PdfUrlException(
-                'Pdf not found'
-            );
+           return 0;
         }
         if (strpos($pdf, '%PDF') !== 0) {
             throw new PdfUrlException(
