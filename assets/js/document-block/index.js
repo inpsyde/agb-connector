@@ -24,7 +24,7 @@
 		 * This is the display title for your block, which can be translated with `i18n` functions.
 		 * The block inserter will show this name.
 		 */
-		title: __( 'Document', 'agb-connector' ),
+		title: __( 'AGB Document', 'agb-connector' ),
 
 		/**
 		 * Blocks are grouped into categories to help users browse and discover them.
