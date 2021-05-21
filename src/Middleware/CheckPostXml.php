@@ -237,9 +237,9 @@ class CheckPostXml extends Middleware
             ];
         }
 
-        $initilized = WP_Filesystem($args);
+        $initialized = WP_Filesystem($args);
 
-        if (!$initilized || !$wp_filesystem instanceof WP_Filesystem_Base) {
+        if (!$initialized || !$wp_filesystem instanceof WP_Filesystem_Base) {
             throw new UnexpectedValueException('Wp_FileSystem cannot be initialized');
         }
 
