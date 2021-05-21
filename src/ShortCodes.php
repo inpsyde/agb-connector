@@ -116,6 +116,10 @@ class ShortCodes
      */
     public function vcMaps()
     {
+        if(! function_exists('vc_map')){
+            return;
+        }
+
         $locale = get_bloginfo('language');
         list($language, $country) = explode('-', $locale, 2);
 
