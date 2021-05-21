@@ -219,7 +219,8 @@ class Plugin
             $supportedConfig = new XmlApiSupportedService();
             $this->shortCodes = new ShortCodes(
                 $supportedConfig->supportedCountries(),
-                $supportedConfig->supportedLanguages()
+                $supportedConfig->supportedLanguages(),
+                $this->documentRepository()
             );
         }
 

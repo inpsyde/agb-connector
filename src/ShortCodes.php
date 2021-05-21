@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 /**
  * Class ShortCodes
  */
@@ -16,6 +17,10 @@ class ShortCodes
      */
     protected $supportedLanguages;
     /**
+     * @var DocumentRepository
+     */
+    protected $documentRepository;
+    /**
      * @var array
      */
     private $registeredShortCodes = [];
@@ -25,13 +30,15 @@ class ShortCodes
      *
      * @param array $supportedCountries
      * @param array $supportedLanguages
+     * @param DocumentRepository $documentRepository
      */
-    public function __construct(array $supportedCountries, array $supportedLanguages)
+    public function __construct(array $supportedCountries, array $supportedLanguages, DocumentRepository $documentRepository)
     {
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
+        $this->documentRepository = $documentRepository;
     }
-    
+
     /**
      * settings for All AGB shortcodes.
      *
@@ -220,31 +227,22 @@ class ShortCodes
             $attr->language = $language;
         }
 
-        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
-        $foundAllocation = [];
-        if (isset($textAllocations[$setting['setting_key']])) {
-            foreach ($textAllocations[$setting['setting_key']] as $allocation) {
-                if (strtoupper($attr->country) === $allocation['country'] &&
-                    strtolower($attr->language) === $allocation['language']
-                ) {
-                    $foundAllocation = $allocation;
-                    break;
-                }
-            }
-        }
+        $documentType = $setting['setting_key'] ?? '';
 
-        if (! $foundAllocation) {
+        $documentId = $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+            $documentType,
+            $attr->country,
+            $attr->language
+        );
+
+        $document = $this->documentRepository->getDocumentById($documentId);
+
+        if (! $document) {
             /* translators: %s is the AGB shortcode name. */
             return sprintf(esc_html__('No valid page found for %s.', 'agb-connector'), $setting['name']);
         }
 
-        // Get the Page Content.
-        $pageObject = get_post($foundAllocation['pageId']);
-        $pageContent = '';
-
-        if (! is_wp_error($pageObject)) {
-            $pageContent = $this->callbackContent($pageObject->post_content);
-        }
+        $pageContent = $document->getContent();
 
         if (!$pageContent) {
             /* translators: %s is the AGB shortcode name. */
@@ -264,5 +262,29 @@ class ShortCodes
             esc_attr($classes),
             $pageContent
         );
+    }
+
+
+    /**
+     * Get document type for shortcode.
+     *
+     * @param string $shortcode Shortcode to find document type for.
+     *
+     * @return string Found document type.
+     */
+    protected function shortcodeToDocumentType(string $shortcode): string
+    {
+        switch ($shortcode) {
+            case 'agb_terms':
+                return 'agb';
+            case 'agb_privacy':
+                return 'datenschutz';
+            case 'agb_revocation':
+                return 'widerruf';
+            case 'agb_imprint':
+                return 'impressum';
+            default:
+               return '';
+        }
     }
 }
