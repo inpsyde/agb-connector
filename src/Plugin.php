@@ -42,6 +42,10 @@ class Plugin
      * Format: string
      */
     const OPTION_USER_AUTH_TOKEN = 'agb_connector_user_auth_token';
+    /**
+     * @var string
+     */
+    protected $pluginFilePath;
 
     /**
      * The settings object
@@ -65,6 +69,12 @@ class Plugin
      * @var WpPostBasedDocumentFactory
      */
     private $postBasedDocumentFactory;
+
+    public function __construct(string $pluginFilePath)
+    {
+
+        $this->pluginFilePath = $pluginFilePath;
+    }
 
     /**
      * Init all actions and filters
@@ -224,5 +234,15 @@ class Plugin
         }
 
         return $this->shortCodes;
+    }
+
+    /**
+     * Return full path to the main plugin file.
+     *
+     * @return string
+     */
+    public function pluginFilePath(): string
+    {
+        return $this->pluginFilePath;
     }
 }

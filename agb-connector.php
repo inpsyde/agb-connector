@@ -14,6 +14,8 @@
  * License: GPLv2+
  */
 
+use Inpsyde\AGBConnector\Plugin;
+
 /**
  * Function for getting plugin class
  *
@@ -33,16 +35,14 @@ function agb_connector()
         return null;
     }
 
-    $pluginClassName = 'Inpsyde\AGBConnector\Plugin';
-    /** @var Inpsyde\AGBConnector\Plugin $plugin */
 
     $autoload = __DIR__.'/vendor/autoload.php';
 
-    if (! class_exists($pluginClassName) && file_exists($autoload)) {
+    if (! class_exists(Plugin::class) && file_exists($autoload)) {
         require_once $autoload;
     }
 
-    $plugin = new $pluginClassName();
+    $plugin = new Plugin(__FILE__);
     $plugin->init();
 
     return $plugin;
