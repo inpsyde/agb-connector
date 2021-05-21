@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Block\RegisterBlock;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
@@ -42,6 +43,11 @@ class Plugin
      * Format: string
      */
     const OPTION_USER_AUTH_TOKEN = 'agb_connector_user_auth_token';
+
+    /**
+     * Type of the Gutenberg block containing Documents.
+     */
+    const DOCUMENT_BLOCK_TYPE = 'agb-connector/agb-document';
     /**
      * @var string
      */
@@ -101,6 +107,10 @@ class Plugin
             'plugin_action_links_' . plugin_basename(dirname(__DIR__) . '/agb-connector.php'),
             [$settings, 'addActionLinks']
         );
+
+        add_action('init', function (){
+            (new RegisterBlock())();
+        });
     }
 
     /**
