@@ -57,9 +57,9 @@ class Document implements DocumentInterface
 
         $this->title = $title;
         $this->content = $htmlContent;
-        $this->country = $country;
-        $this->language = $language;
-        $this->type = $type;
+        $this->country = strtolower($country);
+        $this->language = strtolower($language);
+        $this->type = strtolower($type);
         $this->settings = $settings;
     }
 
