@@ -263,28 +263,4 @@ class ShortCodes
             $pageContent
         );
     }
-
-
-    /**
-     * Get document type for shortcode.
-     *
-     * @param string $shortcode Shortcode to find document type for.
-     *
-     * @return string Found document type.
-     */
-    protected function shortcodeToDocumentType(string $shortcode): string
-    {
-        switch ($shortcode) {
-            case 'agb_terms':
-                return 'agb';
-            case 'agb_privacy':
-                return 'datenschutz';
-            case 'agb_revocation':
-                return 'widerruf';
-            case 'agb_imprint':
-                return 'impressum';
-            default:
-               return '';
-        }
-    }
 }
