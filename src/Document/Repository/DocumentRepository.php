@@ -27,6 +27,9 @@ class DocumentRepository implements DocumentRepositoryInterface
      */
     public function getDocumentById(int $id): ?DocumentInterface
     {
+        if (! $id){
+            return null;
+        }
         //todo: handle exceptions
         $post = get_post($id);
         return $this->documentFactory->createDocument($post);
