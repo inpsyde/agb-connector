@@ -1,0 +1,24 @@
+POST agb-connector.loc?/it-recht-kanzlei HTTP/1.1
+Content-type: application/x-www-form-urlencoded
+Host: agb-connector.loc
+Set-Cookie: XDEBUG_SESSION=PHPSTORM; Domain=agb-connector.loc
+
+xml=<?xml version="1.0" encoding="UTF-8" ?>
+<api>
+    <api_version>1.0</api_version>
+    <api_username>inpsyde</api_username>
+    <api_password>oIN9pBGPp98g</api_password>
+    <user_auth_token>b08f878a10b29d400fa826823807aa20</user_auth_token>
+    <rechtstext_type>agb</rechtstext_type>
+    <rechtstext_title>Title</rechtstext_title>
+    <rechtstext_text>123456789012345678901234567890123456789012345678901</rechtstext_text>
+    <rechtstext_html><div><p>123456789012345678901234567890123456789012345678901</div></p></rechtstext_html>
+    <rechtstext_pdf_url>assets/test.pdf</rechtstext_pdf_url>
+    <rechtstext_pdf_md5hash>assets/test.pdf</rechtstext_pdf_md5hash>
+    <rechtstext_pdf_filename_suggestion>AGB_DE.pdf</rechtstext_pdf_filename_suggestion>
+    <rechtstext_pdf_filenamebase_suggestion>AGB</rechtstext_pdf_filenamebase_suggestion>
+    <rechtstext_language>de</rechtstext_language>
+    <rechtstext_country>DE</rechtstext_country>
+    <rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
+    <action>push</action>
+</api>
