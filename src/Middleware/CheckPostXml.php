@@ -7,6 +7,7 @@ use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
@@ -35,19 +36,26 @@ class CheckPostXml extends Middleware
      * @var XmlBasedDocumentFactory
      */
     protected $documentFactory;
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentFinder;
 
     /**
      * CheckPostXml constructor.
      *
      * @param DocumentRepositoryInterface $documentRepository
      * @param XmlBasedDocumentFactory $documentFactory
+     * @param DocumentFinderInterface $documentFinder
      */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        XmlBasedDocumentFactory $documentFactory
+        XmlBasedDocumentFactory $documentFactory,
+        DocumentFinderInterface $documentFinder
     ){
         $this->documentRepository = $documentRepository;
         $this->documentFactory = $documentFactory;
+        $this->documentFinder = $documentFinder;
     }
 
     /**
@@ -61,7 +69,7 @@ class CheckPostXml extends Middleware
         $document = $this->documentFactory->createDocument($xml);
         $savedDocumentId = $this->documentRepository->saveDocument($document);
         $this->pushPdfFile($xml, $savedDocumentId);
-        $targetUrl = $this->processPermalink($savedDocumentId);
+        $targetUrl = $this->getPageDocumentIsDisplayedOn($savedDocumentId);
 
         return parent::process($targetUrl);
     }
@@ -248,14 +256,18 @@ class CheckPostXml extends Middleware
     /**
      * @param int The id of the saving document.
      *
-     * @return false|string
+     * @return string
      */
-    protected function processPermalink(int $savedDocumentId)
+    protected function getPageDocumentIsDisplayedOn(int $savedDocumentId): string
     {
-        $targetUrl = '';
-        if ('publish' === get_post_status($savedDocumentId)) {
-            $targetUrl = get_permalink($savedDocumentId);
+        $pagesDisplayingDocumentIds = $this->documentFinder->findPagesDisplayingDocument($savedDocumentId);
+
+        if(! $pagesDisplayingDocumentIds){
+            return '';
         }
-        return $targetUrl;
+
+        $targetUrl = get_permalink(reset($pagesDisplayingDocumentIds));
+
+        return is_string($targetUrl) ? $targetUrl : '';
     }
 }
