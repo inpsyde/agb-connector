@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
@@ -73,11 +74,15 @@ class XmlApi
 
         $documentFactory = new WpPostBasedDocumentFactory();
 
+        $plugin = agb_connector();
+        $shortcodes = array_keys($plugin->shortCodes()->settings());
+
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
             new XmlApiSupportedService(),
             new DocumentRepository($documentFactory),
-            new XmlBasedDocumentFactory()
+            new XmlBasedDocumentFactory(),
+            new DocumentPageFinder($shortcodes)
         );
 
         return $handler->handle($xml);

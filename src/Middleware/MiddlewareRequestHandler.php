@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
@@ -49,6 +50,10 @@ class MiddlewareRequestHandler
      * @var XmlBasedDocumentFactoryInterface
      */
     protected $documentFactory;
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentFinder;
 
     /**
      * MiddlewareRequestHandler constructor.
@@ -57,12 +62,14 @@ class MiddlewareRequestHandler
      * @param XmlApiSupportedService $apiSupportedService
      * @param DocumentRepositoryInterface $documentRepository
      * @param XmlBasedDocumentFactoryInterface $documentFactory
+     * @param DocumentFinderInterface $documentFinder
      */
     public function __construct(
         $userAuthToken,
         XmlApiSupportedService $apiSupportedService,
         DocumentRepositoryInterface $documentRepository,
-        XmlBasedDocumentFactoryInterface $documentFactory
+        XmlBasedDocumentFactoryInterface $documentFactory,
+        DocumentFinderInterface $documentFinder
     ) {
         $this->userAuthToken = $userAuthToken;
         $this->supportedCountries = $apiSupportedService->supportedCountries();
@@ -70,6 +77,7 @@ class MiddlewareRequestHandler
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
         $this->documentRepository = $documentRepository;
         $this->documentFactory = $documentFactory;
+        $this->documentFinder = $documentFinder;
 
         $this->middleware = $this->checkErrorMiddlewareRoute();
     }
@@ -94,7 +102,8 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckConfiguration($this->userAuthToken))
             ->linkWith(new CheckPostXml(
                 $this->documentRepository,
-                $this->documentFactory
+                $this->documentFactory,
+                $this->documentFinder
             ));
         return $middleware;
     }
