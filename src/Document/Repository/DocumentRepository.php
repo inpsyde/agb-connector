@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector\Document\Repository;
 
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
+use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
+use WP_Post;
 
 class DocumentRepository implements DocumentRepositoryInterface
 {
@@ -30,9 +32,17 @@ class DocumentRepository implements DocumentRepositoryInterface
         if (! $id){
             return null;
         }
-        //todo: handle exceptions
         $post = get_post($id);
-        return $this->documentFactory->createDocument($post);
+
+        if( ! $post instanceof WP_Post || ! get_post_meta($id, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)){
+            return null;
+        }
+
+        try {
+            return $this->documentFactory->createDocument($post);
+        } catch (XmlApiException $exception) {
+            return null;
+        }
     }
 
     /**
