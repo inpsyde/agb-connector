@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Document\DocumentPageFinder;
 
-
+/**
+ * Service able to find pages displaying documents
+ */
 interface DocumentFinderInterface
 {
     /**
