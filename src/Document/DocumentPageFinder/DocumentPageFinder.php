@@ -5,6 +5,9 @@ namespace Inpsyde\AGBConnector\Document\DocumentPageFinder;
 
 use Inpsyde\AGBConnector\Plugin;
 
+/**
+ * Service for finding pages displaying documents.
+ */
 class DocumentPageFinder implements DocumentFinderInterface
 {
 
