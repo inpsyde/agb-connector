@@ -13,7 +13,7 @@ interface DocumentFinderInterface
      *
      * @param int $documentId
      *
-     * @return int[]
+     * @return int[] Found pages ids
      */
     function findPagesDisplayingDocument(int $documentId): array;
 }
