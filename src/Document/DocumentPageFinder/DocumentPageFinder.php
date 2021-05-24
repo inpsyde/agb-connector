@@ -28,10 +28,25 @@ class DocumentPageFinder implements DocumentFinderInterface
      */
     public function findPagesDisplayingDocument(int $documentId): array
     {
-        return array_merge(
-            $this->findTextUsageInPosts($documentId),
-            $this->findTextUsageInPostsLegacy($documentId)
+        $foundPostsWithDocuments = get_posts(
+            [
+                'numberposts' => -1, //todo: think about optimization or limits
+                'meta_key' => 'agb_page_contain_documents',
+                'fields' => 'ids'
+            ]
         );
+
+        $foundPostIds = [];
+
+        foreach ($foundPostsWithDocuments as $postId) {
+            $documents = get_post_meta($postId, 'abg_page_contain_documents', true);
+            $documents = array_map( 'intval', $documents);
+            if(in_array($documentId, $documents, true)){
+                $foundPostIds[] = $postId;
+            }
+        }
+
+        return $foundPostIds;
     }
 
     /**
@@ -44,7 +59,7 @@ class DocumentPageFinder implements DocumentFinderInterface
     protected function findTextUsageInPostsLegacy(int $documentId): array
     {
         $byAllocation = $this->findTextUsagesInPostsByAllocation($documentId);
-        $byShortcode = $this->findTextUsagesWithShortcodes($documentId);
+        $byShortcode = $this->findTextUsagesWithShortcodes();
         return array_unique(array_merge($byAllocation, $byShortcode));
     }
 
@@ -72,7 +87,7 @@ class DocumentPageFinder implements DocumentFinderInterface
         return $found;
     }
 
-    protected function findTextUsagesWithShortcodes(int $documentId): array
+    protected function findTextUsagesWithShortcodes(): array
     {
         $foundPosts = [];
         $args = [
@@ -96,28 +111,5 @@ class DocumentPageFinder implements DocumentFinderInterface
         }
 
         return $foundPosts;
-    }
-
-    protected function findTextUsageInPosts(int $documentId): array
-    {
-        $foundPostsWithDocuments = get_posts(
-            [
-                'numberposts' => -1, //todo: think about optimization or limits
-                'meta_key' => 'agb_page_contain_documents',
-                'fields' => 'ids'
-            ]
-        );
-
-        $posts = [];
-
-        foreach ($foundPostsWithDocuments as $postId) {
-            $documents = get_post_meta($postId, 'abg_page_contain_documents', true);
-            $documents = array_map( 'intval', $documents);
-            if(in_array($documentId, $documents, true)){
-                $posts[] = get_post($postId);
-            }
-        }
-
-        return $posts;
     }
 }
