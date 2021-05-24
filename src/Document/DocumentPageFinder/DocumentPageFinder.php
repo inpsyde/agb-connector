@@ -31,7 +31,7 @@ class DocumentPageFinder implements DocumentFinderInterface
     {
         $foundPostsWithDocuments = get_posts(
             [
-                'numberposts' => -1, //todo: think about optimization or limits
+                'numberposts' => -1,
                 'meta_key' => 'agb_page_contain_documents',
                 'fields' => 'ids'
             ]
