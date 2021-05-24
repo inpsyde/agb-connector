@@ -43,6 +43,20 @@ class DocumentPageFinder implements DocumentFinderInterface
      */
     protected function findTextUsageInPostsLegacy(int $documentId): array
     {
+        $byAllocation = $this->findTextUsagesInPostsByAllocation($documentId);
+        $byShortcode = $this->findTextUsagesWithShortcodes($documentId);
+        return array_unique(array_merge($byAllocation, $byShortcode));
+    }
+
+    /**
+     * Find the pages displaying documents selected from the old plugin settings.
+     *
+     * @param int $documentId
+     *
+     * @return int[]
+     */
+    protected function findTextUsagesInPostsByAllocation(int $documentId): array
+    {
         $allocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
 
         $found = [];
@@ -50,12 +64,38 @@ class DocumentPageFinder implements DocumentFinderInterface
         foreach ($allocations as $allocationsOfType){
             foreach ($allocationsOfType as $allocation){
                 if(isset($allocation['pageId']) && (int) $allocation['pageId'] === $documentId) {
-                    $found[] = get_post($allocation['pageId']);
+                    $found[] = (int) $allocation['pageId'];
                 }
             }
         }
 
         return $found;
+    }
+
+    protected function findTextUsagesWithShortcodes(int $documentId): array
+    {
+        $foundPosts = [];
+        $args = [
+            'numberposts' => '-1',
+            'fields' => 'ids',
+            'post_status' => 'publish'
+        ];
+
+        foreach($this->shortcodes as $shortcode){
+            $args['s'] = $shortcode;
+
+            $postsWithShortcodeText = get_posts($args);
+
+            $postsWithShortcode = array_filter($postsWithShortcodeText, function ($postId) use ($shortcode){
+                $postContent = get_post_field('post_content', $postId);
+                return has_shortcode($postContent, $shortcode);
+            });
+
+
+            $foundPosts = array_merge($foundPosts, $postsWithShortcode);
+        }
+
+        return $foundPosts;
     }
 
     protected function findTextUsageInPosts(int $documentId): array
