@@ -16,4 +16,15 @@ interface DocumentFinderInterface
      * @return int[] Found pages ids
      */
     function findPagesDisplayingDocument(int $documentId): array;
+
+    /**
+     * Find all the posts displaying any AGB document in any way (shortcode, wp_block,
+     *  allocations from previous plugin versions).
+     *
+     * May take more time for processing than usual requests and shouldn't be used for them. It's recommended
+     * to run this with background processing or WP_CLI commands.
+     *
+     * @return int[] Found pages ids
+     */
+    public function findAllPostsDisplayingDocuments(): array;
 }

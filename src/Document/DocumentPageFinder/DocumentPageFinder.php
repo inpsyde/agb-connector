@@ -50,44 +50,35 @@ class DocumentPageFinder implements DocumentFinderInterface
     }
 
     /**
-     * Return ids of the posts having at least one of the plugin shortcodes in the content.
-     *
-     * @param int $documentId
-     *
-     * @return array
+     * @inheritDoc
      */
-    protected function findTextUsageInPostsLegacy(int $documentId): array
+    public function findAllPostsDisplayingDocuments(): array
     {
-        $byAllocation = $this->findTextUsagesInPostsByAllocation($documentId);
-        $byShortcode = $this->findTextUsagesWithShortcodes();
+        $byAllocation = $this->findAllPostsDisplayingDocumentsByAllocation();
+        $byShortcode = $this->findAllPostsDisplayingDocumentsByShortcode();
         return array_unique(array_merge($byAllocation, $byShortcode));
     }
 
     /**
      * Find the pages displaying documents selected from the old plugin settings.
      *
-     * @param int $documentId
-     *
      * @return int[]
      */
-    protected function findTextUsagesInPostsByAllocation(int $documentId): array
+    protected function findAllPostsDisplayingDocumentsByAllocation(): array
     {
         $allocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
 
         $found = [];
 
         foreach ($allocations as $allocationsOfType){
-            foreach ($allocationsOfType as $allocation){
-                if(isset($allocation['pageId']) && (int) $allocation['pageId'] === $documentId) {
-                    $found[] = (int) $allocation['pageId'];
-                }
-            }
+            $foundPortion = array_column($allocationsOfType, 'pageId');
+            $found = array_merge($found, $foundPortion);
         }
 
         return $found;
     }
 
-    protected function findTextUsagesWithShortcodes(): array
+    protected function findAllPostsDisplayingDocumentsByShortcode(): array
     {
         $foundPosts = [];
         $args = [
