@@ -71,8 +71,8 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         $documentSettings = new DocumentSettings();
         $documentSettings->setSavePdf(! empty($allocations['savePdfFile']) );
         $documentSettings->setAttachToWcEmail(! empty($allocations['wcOrderEmailAttachment']));
-        $documentSettings->setPdfUrl(
-            $this->getAttachedPdfUrl($post)
+        $documentSettings->setPdfAttachmentId(
+            $this->getAttachedPdfId($post)
         );
 
         return new Document(
@@ -99,13 +99,13 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     }
 
     /**
-     * Get the url of document post pdf attachment, empty string if not found.
+     * Get the id of document post pdf attachment, 0 if not found.
      *
      * @param WP_Post $post
      *
-     * @return string
+     * @return int
      */
-    protected function getAttachedPdfUrl(WP_Post $post): string
+    protected function getAttachedPdfId(WP_Post $post): int
     {
         $args =  [
             'fields' => 'ids',
@@ -124,7 +124,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
 
         $attachment = get_posts($args);
 
-        return $attachment ? wp_get_attachment_url((int) $attachment) : '';
+        return (int)$attachment ?? 0;
     }
 
     /**

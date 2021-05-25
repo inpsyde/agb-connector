@@ -24,7 +24,7 @@ class DocumentSettings implements DocumentSettingsInterface
 
     protected $savePdf = true;
 
-    protected $pdfUrl = '';
+    protected $pdfAttachmentId = 0;
 
     protected $hideTitle = false;
 
@@ -79,17 +79,17 @@ class DocumentSettings implements DocumentSettingsInterface
     /**
      * @inheritDoc
      */
-    public function getPdfUrl(): string
+    public function getPdfAttachmentId(): int
     {
-        return $this->pdfUrl;
+        return $this->pdfAttachmentId;
     }
 
     /**
      * @inheritDoc
      */
-    public function setPdfUrl(string $pdfUrl): void
+    public function setPdfAttachmentId(int $pdfAttachmentId): void
     {
-        $this->pdfUrl = $pdfUrl;
+        $this->pdfAttachmentId = $pdfAttachmentId;
     }
 
     /**

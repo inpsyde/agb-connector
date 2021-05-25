@@ -58,18 +58,18 @@ interface DocumentSettingsInterface
     public function setSavePdf(bool $shouldSavePdf): void;
 
     /**
-     * Get the URL of the locally stored version of the document, empty string if no pdf.
+     * Get the id of the locally stored version of the document, 0 if no pdf.
      *
-     * @return string
+     * @return int
      */
-    public function getPdfUrl(): string;
+    public function getPdfAttachmentId(): int;
 
     /**
-     * Set the URL of the locally stored version of the document.
+     * Set the id of the locally stored version of the document.
      *
-     * @param string $pdfUrl
+     * @param int $pdfUrl
      */
-    public function setPdfUrl(string $pdfUrl): void;
+    public function setPdfAttachmentId(int $pdfUrl): void;
 
     /**
      * Get the 'Hide title' option.
