@@ -21,11 +21,21 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
 
         return new Document(
             $documentSettings,
-            (string) $xml->{XmlMetaFields::XML_FIELD_TITLE},
+            $this->buildTitle($xml),
             (string) $xml->{XmlMetaFields::XML_FIELD_HTML_CONTENT},
             (string) $xml->{XmlMetaFields::XML_FIELD_COUNTRY},
             (string) $xml->{XmlMetaFields::XML_FIELD_LANGUAGE},
             (string) $xml->{XmlMetaFields::XML_FIELD_TYPE}
+        );
+    }
+
+    protected function buildTitle(SimpleXMLElement $documentXml): string
+    {
+        return sprintf(
+            '%1$s (%2$s_%3$s)',
+            $documentXml->{XmlMetaFields::XML_FIELD_TITLE},
+            $documentXml->{XmlMetaFields::XML_FIELD_LANGUAGE},
+            $documentXml->{XmlMetaFields::XML_FIELD_COUNTRY}
         );
     }
 }
