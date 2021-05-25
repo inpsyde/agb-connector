@@ -86,6 +86,23 @@ class DocumentRepository implements DocumentRepositoryInterface
     /**
      * @inheritDoc
      */
+    public function getDocumentsForWcEmail(): array
+    {
+        $foundPosts = get_posts(
+            [
+                'numberposts' => -1,
+                'post_type' => 'wp_block',
+                'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF,
+                'meta_value' => '1'
+            ]
+        );
+
+        return array_map([$this->documentFactory, 'createDocument'], $foundPosts);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getDocumentPostIdByTypeCountryAndLanguage(
         string $type,
         string $country,

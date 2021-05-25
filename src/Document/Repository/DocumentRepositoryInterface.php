@@ -33,6 +33,13 @@ interface DocumentRepositoryInterface
     public function getAllOfType(string $type): array;
 
     /**
+     * Return all documents with enabled setting 'Attach PDF to WC email'.
+     *
+     * @return DocumentInterface[]
+     */
+    public function getDocumentsForWcEmail(): array;
+
+    /**
      * Find document by it's type, country and language.
      *
      * @param string $type The document type.
