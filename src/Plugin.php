@@ -3,10 +3,13 @@
 namespace Inpsyde\AGBConnector;
 
 use Inpsyde\AGBConnector\Block\RegisterBlock;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\Updater\Updater;
 use WC_Order;
 
 /**
@@ -76,6 +79,11 @@ class Plugin
      */
     private $postBasedDocumentFactory;
 
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentPageFinder;
+
     public function __construct(string $pluginFilePath)
     {
 
@@ -111,6 +119,10 @@ class Plugin
         add_action('init', function (){
             (new RegisterBlock())();
         });
+
+        if(! wp_doing_ajax()){
+            add_action('admin_init', [$this, 'update']);
+        }
     }
 
     /**
@@ -229,6 +241,15 @@ class Plugin
         return $this->postBasedDocumentFactory;
     }
 
+    public function documentPageFinder(): DocumentFinderInterface
+    {
+        if(null === $this->documentPageFinder){
+            $this->documentPageFinder = new DocumentPageFinder(array_keys($this->shortCodes()->settings()));
+        }
+
+        return $this->documentPageFinder;
+    }
+
     /**
      * @return ShortCodes
      */
@@ -254,5 +275,27 @@ class Plugin
     public function pluginFilePath(): string
     {
         return $this->pluginFilePath;
+    }
+
+    /**
+     * Update DB to the latest version.
+     */
+    public function update(): void
+    {
+        $allocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
+
+        if(! is_array($allocations)){
+            return;
+        }
+
+
+        $updater = new Updater(
+            $this->documentPageFinder(),
+            $this->documentRepository(),
+            $this->postBasedDocumentFactory(),
+            $allocations
+        );
+
+        $updater->update();
     }
 }
