@@ -20,7 +20,7 @@ class WpPostMetaFields
 
     const WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL = 'agbc_flag_attach_to_wc_email';
 
-    const WP_POST_DOCUMENT_FLAG_SAVE_PDF = 'agbc_flag_dont_save_pdf';
+    const WP_POST_DOCUMENT_FLAG_SAVE_PDF = 'agbc_flag_save_pdf';
 
     const WP_POST_DOCUMENT_FLAG_HIDE_TITLE = 'agbc_flag_hide_title';
 }
