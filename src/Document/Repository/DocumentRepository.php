@@ -166,7 +166,9 @@ class DocumentRepository implements DocumentRepositoryInterface
         ];
         remove_filter('content_save_pre', 'wp_filter_post_kses');
 
-        $result = wp_insert_post( $args, true);
+        $result = $document->getSettings()->getDocumentId() ?
+            wp_update_post($args, true) : //we need wp_update_post instead of wp_insert_post to preserve original post_date.
+            wp_insert_post( $args, true);
 
         add_filter('content_save_pre', 'wp_filter_post_kses');
 
