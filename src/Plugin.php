@@ -136,7 +136,7 @@ class Plugin
      *
      * @return array
      */
-    public function attachPdfToEmail($attachments, $status, $order)
+    public function attachPdfToEmail($attachments, $status, $order): array
     {
         $validStatuses = [
             'customer_on_hold_order',
@@ -149,19 +149,20 @@ class Plugin
             return $attachments;
         }
 
-        $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
-        foreach ($textAllocations as $allocations) {
-            foreach ($allocations as $allocation) {
-                if (empty($allocation['wcOrderEmailAttachment'])) {
-                    continue;
-                }
-                $attachmentId = XmlApi::attachmentIdByPostParent($allocation['pageId']);
-                $pdfAttachment = get_attached_file($attachmentId);
-                if ($pdfAttachment) {
-                    $attachments[] = $pdfAttachment;
-                }
+        $documentsToAttach = $this->documentRepository->getDocumentsForWcEmail();
+
+        foreach ($documentsToAttach as $document){
+            $pdfAttachmentId = $document->getSettings()->getPdfAttachmentId();
+            if (! $pdfAttachmentId) {
+                continue;
+            }
+
+            $pdfAttachment = get_attached_file($pdfAttachmentId);
+            if ($pdfAttachment) {
+                $attachments[] = $pdfAttachment;
             }
         }
+
 
         return $attachments;
     }
