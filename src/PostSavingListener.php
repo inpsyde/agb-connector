@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector;
 
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use WP_Post;
 
 /**
@@ -13,16 +14,22 @@ use WP_Post;
 class PostSavingListener
 {
     /**
-     * @var array
+     * @var ShortCodes
      */
     protected $shortcodes;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
 
     /**
-     * @param string[] $shortcodes
+     * @param DocumentRepositoryInterface $documentRepository
+     * @param ShortCodes $shortCodes
      */
-    public function __construct(array $shortcodes)
+    public function __construct(DocumentRepositoryInterface $documentRepository, ShortCodes $shortCodes)
     {
-        $this->shortcodes = $shortcodes;
+        $this->shortcodes = $shortCodes;
+        $this->documentRepository = $documentRepository;
     }
 
     public function init(): void
@@ -36,14 +43,16 @@ class PostSavingListener
      * @param int $postId
      * @param WP_Post$post
      */
-    protected function handlePostSaving($postId, $post): void
+    public function handlePostSaving($postId, $post): void
     {
         if(get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)){
             //it's a document itself, so it cannot be displaying page
             return;
         }
 
-        $postDisplaysAgbDocument = $this->textHasAgbShortcodes($post->post_content) ||
+        $documentIdsFromShortcodes = $this->findDocumentsIdsUsedInShortcodes($post->post_content);
+
+        $postDisplaysAgbDocument = $this->findDocumentsIdsUsedInShortcodes($post->post_content) ||
             $this->postHasDocumentBlocks($post);
 
         $this->updateAgbMetaField($postId, $postDisplaysAgbDocument);
@@ -55,17 +64,31 @@ class PostSavingListener
      *
      * @param string $text
      *
-     * @return bool
+     * @return int[]
      */
-    protected function textHasAgbShortcodes(string $text): bool
+    protected function findDocumentsIdsUsedInShortcodes(string $text): array
     {
-        foreach ($this->shortcodes as $shortcode){
-            if(has_shortcode($text, $shortcode)){
-                return true;
-            }
+        $foundDocumentIds = [];
+
+        $shortcodeRegex = get_shortcode_regex($this->shortcodes->getShortcodeTags());
+
+        preg_match_all('/' . $shortcodeRegex . '/', $text , $matches);
+
+        $foundShortcodes = $matches[0] ?? [];
+        $foundShortcodeTags = $matches[2] ?? [];
+        $foundCount = count($foundShortcodes);
+
+        for ($i = 0; $i < $foundCount; $i++){
+            $atts = shortcode_parse_atts($foundShortcodes[$i]);
+            $id = (int) $atts['id'] ?? 0;
+            $country = $atts['country'] ?? '';
+            $language = $atts['language'] ?? '';
+            $documentType = $this->shortcodes->getDocumentTypeByShortcodeTag($foundShortcodeTags[$i]);
+
+            $foundDocumentIds[] = $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage($documentType, $country, $language);
         }
 
-        return false;
+        return $foundDocumentIds;
     }
 
     /**

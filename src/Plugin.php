@@ -105,8 +105,17 @@ class Plugin
         add_action('init', [$shortCodes, 'setup']);
         add_action('vc_before_init', [$shortCodes, 'vcMaps']);
 
+        add_action('init', function () use ($shortCodes){
+            (new RegisterBlock())();
+            (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
+        });
+
         if (! is_admin()) {
             return;
+        }
+
+        if(! wp_doing_ajax()){
+            add_action('admin_init', [$this, 'update']);
         }
 
         $settings = $this->settings();
@@ -115,14 +124,6 @@ class Plugin
             'plugin_action_links_' . plugin_basename(dirname(__DIR__) . '/agb-connector.php'),
             [$settings, 'addActionLinks']
         );
-
-        add_action('init', function (){
-            (new RegisterBlock())();
-        });
-
-        if(! wp_doing_ajax()){
-            add_action('admin_init', [$this, 'update']);
-        }
     }
 
     /**
