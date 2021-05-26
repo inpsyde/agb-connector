@@ -44,7 +44,7 @@ async function validatePackageVersion (done)
   await 1
 
   if (!'packageVersion' in options || '' === options.packageVersion) {
-    done()
+      throw new Error('No package version provided');
   }
 
   if (semver.valid(options.packageVersion) === null) {
