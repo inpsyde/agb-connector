@@ -42,7 +42,7 @@ class DocumentPageFinder implements DocumentFinderInterface
         $foundPostIds = [];
 
         foreach ($foundPostsWithDocuments as $postId) {
-            $documentsList = get_post_meta($postId, 'abg_page_contain_documents', true);
+            $documentsList = get_post_meta($postId, 'agb_page_contain_documents', true);
 
             if(! is_array($documentsList)){
                 continue;
