@@ -45,7 +45,7 @@ class PostSavingListener
      */
     public function handlePostSaving($postId, $post): void
     {
-        if(get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)){
+        if(get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE, true)){
             //it's a document itself, so it cannot be displaying page
             return;
         }
