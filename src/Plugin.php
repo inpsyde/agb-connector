@@ -2,7 +2,6 @@
 
 namespace Inpsyde\AGBConnector;
 
-use Inpsyde\AGBConnector\Block\RegisterBlock;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
@@ -106,7 +105,6 @@ class Plugin
         add_action('vc_before_init', [$shortCodes, 'vcMaps']);
 
         add_action('init', function () use ($shortCodes){
-            (new RegisterBlock())();
             (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
         });
 
