@@ -68,6 +68,8 @@ class DocumentsTable extends WP_List_Table
             $sortable
         ];
 
+        $this->handleBulkAction();
+
         $this->items = $this->documentRepository->getAllDocuments();
     }
 
@@ -209,9 +211,22 @@ class DocumentsTable extends WP_List_Table
 
     protected function handleBulkAction(): void
     {
-
         if('bulk-delete' === $this->current_action()){
-            //todo: handle bulk delete here
+            check_admin_referer('bulk-' . $this->_args['plural']);
+            $postIdsToDelete = filter_input(INPUT_POST, 'bulk-delete', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY);
+
+            foreach ($postIdsToDelete as $postId)
+            {
+                $attachments = get_posts([
+                    'post_parent' => $postId,
+                    'post_type' => 'attachment',
+                    'fields' => 'ids'
+                ]);
+                wp_delete_post((int) $postId, true);
+                foreach ($attachments as $attachment){
+                    wp_delete_attachment($attachment, true);
+                }
+            }
         }
     }
 
