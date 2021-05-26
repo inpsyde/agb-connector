@@ -8,6 +8,7 @@ use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use Inpsyde\AGBConnector\Updater\Updater;
 use WC_Order;
 
@@ -82,6 +83,11 @@ class Plugin
      * @var DocumentFinderInterface
      */
     protected $documentPageFinder;
+
+    /**
+     * @var DocumentsTable
+     */
+    protected $documentsTable;
 
     public function __construct(string $pluginFilePath)
     {
@@ -202,11 +208,12 @@ class Plugin
      *
      * @return Settings
      */
-    public function settings()
+    public function settings(): Settings
     {
         if (null === $this->settings) {
             $this->settings = new Settings(
-                $this->documentRepository()
+                $this->documentRepository(),
+                $this->documentPageFinder()
             );
 
             $this->settings->init();

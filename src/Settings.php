@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inpsyde\AGBConnector;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
-use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
@@ -24,6 +24,11 @@ class Settings
     protected $repository;
 
     /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentPageFinder;
+
+    /**
      * The save message.
      *
      * @var string
@@ -32,11 +37,14 @@ class Settings
 
     /**
      * @param DocumentRepository $repository
+     * @param DocumentFinderInterface $documentPageFinder
      */
     public function __construct(
-        DocumentRepository $repository
+        DocumentRepository $repository,
+        DocumentFinderInterface $documentPageFinder
     ) {
         $this->repository = $repository;
+        $this->documentPageFinder = $documentPageFinder;
     }
 
     public function init()
@@ -168,11 +176,9 @@ class Settings
 
         $documentFactory = new WpPostBasedDocumentFactory();
         $documentRepository = new DocumentRepository($documentFactory);
-        $plugin = agb_connector();
-        $documentFinder = new DocumentPageFinder($plugin->shortCodes()->getShortcodeTags());
         $table = new DocumentsTable(
             $documentRepository,
-            $documentFinder,
+            $this->documentPageFinder,
             [
                 'singular' => __('Document', 'agb-connector'),
                 'plural' => __('Documents', 'agb-connector'),
