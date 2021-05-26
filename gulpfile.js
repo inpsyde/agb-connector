@@ -150,7 +150,6 @@ async function cleanupDist ()
     [
       `${PACKAGE_PATH}/composer.json`,
       `${PACKAGE_PATH}/composer.lock`,
-      `${PACKAGE_PATH}/vendor`,
     ],
   )
 }
