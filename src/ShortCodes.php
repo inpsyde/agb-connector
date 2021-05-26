@@ -67,6 +67,30 @@ class ShortCodes
     }
 
     /**
+     * Return list of shortcodes registered by plugin
+     *
+     * @return string[]
+     */
+    public function getShortcodeTags(): array
+    {
+        return array_keys($this->settings());
+    }
+
+    /**
+     * Get document type by plugin shortcode.
+     *
+     * @param string $shortcode
+     *
+     * @return string Document type or empty string on error.
+     */
+    public function getDocumentTypeByShortcodeTag(string $shortcode): string
+    {
+        $shortcodeSettings = $this->settings();
+
+        return isset($shortcodeSettings[$shortcode]) ? $shortcodeSettings[$shortcode]['setting_key'] : '';
+    }
+
+    /**
      * Helper function to cleanup and do_shortcode on content.
      *
      * @see do_shortcode()
