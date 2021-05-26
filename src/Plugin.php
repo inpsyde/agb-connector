@@ -267,15 +267,6 @@ class Plugin
         return $this->shortCodes;
     }
 
-    /**
-     * Return full path to the main plugin file.
-     *
-     * @return string
-     */
-    public function pluginFilePath(): string
-    {
-        return $this->pluginFilePath;
-    }
 
     /**
      * Update DB to the latest version.
