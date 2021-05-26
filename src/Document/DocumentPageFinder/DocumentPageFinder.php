@@ -33,15 +33,22 @@ class DocumentPageFinder implements DocumentFinderInterface
             [
                 'numberposts' => -1,
                 'meta_key' => 'agb_page_contain_documents',
-                'fields' => 'ids'
+                'fields' => 'ids',
+                'post_type' =>  'any'
+
             ]
         );
 
         $foundPostIds = [];
 
         foreach ($foundPostsWithDocuments as $postId) {
-            $documents = get_post_meta($postId, 'abg_page_contain_documents', true);
-            $documents = array_map( 'intval', $documents);
+            $documentsList = get_post_meta($postId, 'abg_page_contain_documents', true);
+
+            if(! is_array($documentsList)){
+                continue;
+            }
+
+            $documents = array_map( 'intval', $documentsList);
             if(in_array($documentId, $documents, true)){
                 $foundPostIds[] = $postId;
             }

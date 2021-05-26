@@ -45,16 +45,15 @@ class PostSavingListener
      */
     public function handlePostSaving($postId, $post): void
     {
-        if(get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE, true)){
+        if($this->checkIfPostIsDocument((int) $postId)){
             //it's a document itself, so it cannot be displaying page
             return;
         }
 
         $documentIdsFromShortcodes = $this->findDocumentsIdsUsedInShortcodes($post->post_content);
+        $documentIdsFromBlocks = $this->findDocumentsIdsUsedInBlocks($post);
 
-        $postDisplaysAgbDocument = $this->findDocumentsIdsUsedInShortcodes($post->post_content) ||
-            $this->postHasDocumentBlocks($post);
-
+        $postDisplaysAgbDocument = array_unique(array_merge($documentIdsFromShortcodes, $documentIdsFromBlocks));
         $this->updateAgbMetaField($postId, $postDisplaysAgbDocument);
 
     }
@@ -92,29 +91,48 @@ class PostSavingListener
     }
 
     /**
-     * Check if provided post contains at least one Document in form of Gutenberg block.
+     * Check if provided post contain at least one Document in form of Gutenberg block.
      *
      * @param WP_Post $post
      *
-     * @return bool
+     * @return array
      */
-    protected function postHasDocumentBlocks(WP_Post $post): bool
+    protected function findDocumentsIdsUsedInBlocks(WP_Post $post): array
     {
-        return has_block('agb-document', $post);
+        $blocks = parse_blocks($post->post_content);
+
+        $foundDocumentIds = [];
+
+        foreach ($blocks as $block) {
+            if($block['blockName'] === 'core/block'){
+                $refId = (int) $block['attrs']['ref'] ?? 0;
+
+                if($this->checkIfPostIsDocument($refId)){
+                    $foundDocumentIds[] = $refId;
+                }
+            }
+        }
+
+        return $foundDocumentIds;
+    }
+
+    protected function checkIfPostIsDocument(int $postId): bool
+    {
+        return metadata_exists('post', $postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
     }
 
     /**
      * Add meta field if post displays Document, remove this meta field otherwise.
      *
      * @param int $postId
-     * @param bool $hasAgb
+     * @param int[] $documentIds
      *
      * @return void
      */
-    protected function updateAgbMetaField(int $postId, bool $hasAgb): void
+    protected function updateAgbMetaField(int $postId, array $documentIds): void
     {
-        if($hasAgb) {
-            update_post_meta($postId, 'agb_page_contain_documents', true);
+        if($documentIds) {
+            update_post_meta($postId, 'agb_page_contain_documents', $documentIds);
 
             return;
         }
