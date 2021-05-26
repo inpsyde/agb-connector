@@ -75,14 +75,13 @@ class XmlApi
         $documentFactory = new WpPostBasedDocumentFactory();
 
         $plugin = agb_connector();
-        $shortcodes = array_keys($plugin->shortCodes()->settings());
 
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
             new XmlApiSupportedService(),
             new DocumentRepository($documentFactory),
             new XmlBasedDocumentFactory(),
-            new DocumentPageFinder($shortcodes)
+            new DocumentPageFinder($plugin->shortCodes()->getShortcodeTags())
         );
 
         return $handler->handle($xml);

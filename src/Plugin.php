@@ -244,7 +244,7 @@ class Plugin
     public function documentPageFinder(): DocumentFinderInterface
     {
         if(null === $this->documentPageFinder){
-            $this->documentPageFinder = new DocumentPageFinder(array_keys($this->shortCodes()->settings()));
+            $this->documentPageFinder = new DocumentPageFinder($this->shortCodes()->getShortcodeTags());
         }
 
         return $this->documentPageFinder;

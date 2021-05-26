@@ -169,8 +169,7 @@ class Settings
         $documentFactory = new WpPostBasedDocumentFactory();
         $documentRepository = new DocumentRepository($documentFactory);
         $plugin = agb_connector();
-        $shortcodes = array_keys($plugin->shortCodes()->settings());
-        $documentFinder = new DocumentPageFinder($shortcodes);
+        $documentFinder = new DocumentPageFinder($plugin->shortCodes()->getShortcodeTags());
         $table = new DocumentsTable(
             $documentRepository,
             $documentFinder,
