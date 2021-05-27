@@ -8,6 +8,7 @@ use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
+use Inpsyde\AGBConnector\Settings;
 
 class Updater implements UpdaterInterface
 {
@@ -65,7 +66,8 @@ class Updater implements UpdaterInterface
                         $this->documentRepository->saveDocument($document);
                     } catch (XmlApiException $exception){
                         //todo: log here
-                        return; //todo: add message about migration was failed.
+                        update_option(Settings::MIGRATION_FAILED_FLAG_OPTION_NAME, true);
+                        return;
                     }
 
                 }
@@ -73,5 +75,6 @@ class Updater implements UpdaterInterface
         }
 
         delete_option(Plugin::OPTION_TEXT_ALLOCATIONS);
+        delete_option(Settings::MIGRATION_FAILED_FLAG_OPTION_NAME);
     }
 }

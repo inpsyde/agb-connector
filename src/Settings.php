@@ -18,6 +18,9 @@ class Settings
 {
 
     const AJAX_ACTION = 'agb-update-document-settings';
+
+    const MIGRATION_FAILED_FLAG_OPTION_NAME = 'agbc_flag_migration_failed';
+
     /**
      * @var DocumentRepository
      */
@@ -35,6 +38,8 @@ class Settings
      */
     private $message = '';
 
+    protected $migrationFailedMessage = '';
+
     /**
      * @param DocumentRepository $repository
      * @param DocumentFinderInterface $documentPageFinder
@@ -45,6 +50,14 @@ class Settings
     ) {
         $this->repository = $repository;
         $this->documentPageFinder = $documentPageFinder;
+        $this->migrationFailedMessage = sprintf(
+            __(
+                'AGB Connector couldn\'t migrate your documents from the old plugin version. Please, contact %1$sInpsyde support%2$s for help',
+                'agb-connector'
+            ),
+            '<a href="mailto:agb-connector@inpsyde.com" target="_blank">',
+            '</a>'
+        );
     }
 
     public function init()
@@ -236,6 +249,9 @@ class Settings
                 <?php
                 if ($this->message) {
                     echo '<div id="message" class="updated"><p>' . esc_html($this->message) . '</p></div>';
+                }
+                if( get_option(self::MIGRATION_FAILED_FLAG_OPTION_NAME, false)){
+                    echo  '<div id="agbc-migration-failed" class="notice notice-warning"><p>' . wp_kses_post($this->migrationFailedMessage) . '</p></div>';
                 }
                 ?>
                     <table class="form-table">
