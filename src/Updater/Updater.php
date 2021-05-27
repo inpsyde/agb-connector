@@ -80,7 +80,7 @@ class Updater implements UpdaterInterface
                             );
                         }
                     } catch (XmlApiException | RuntimeException $exception){
-                        //todo: log here
+                        $this->log($exception->getMessage());
                         update_option(Settings::MIGRATION_FAILED_FLAG_OPTION_NAME, true);
                         return;
                     }
@@ -106,5 +106,23 @@ class Updater implements UpdaterInterface
             '<!-- wp:block {"ref":%1$d} /-->',
             $documentId
         );
+    }
+
+    /**
+     * Add message to the log.
+     *
+     * @param string $message
+     */
+    protected function log(string $message): void
+    {
+        if(function_exists('wc_get_logger')){
+            $logger = wc_get_logger();
+
+            if($logger){
+                $logger->warning($message);
+            }
+        }
+
+        error_log($message);
     }
 }
