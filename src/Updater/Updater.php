@@ -7,6 +7,7 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\Plugin;
 
 class Updater implements UpdaterInterface
 {
@@ -64,10 +65,13 @@ class Updater implements UpdaterInterface
                         $this->documentRepository->saveDocument($document);
                     } catch (XmlApiException $exception){
                         //todo: log here
+                        return; //todo: add message about migration was failed.
                     }
 
                 }
             }
         }
+
+        delete_option(Plugin::OPTION_TEXT_ALLOCATIONS);
     }
 }
