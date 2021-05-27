@@ -9,6 +9,7 @@ use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\Settings;
+use RuntimeException;
 
 class Updater implements UpdaterInterface
 {
@@ -66,8 +67,19 @@ class Updater implements UpdaterInterface
 
                     try{
                         $document = $this->documentFactory->createDocument($post);
-                        $this->documentRepository->saveDocument($document);
-                    } catch (XmlApiException $exception){
+                        $savedDocumentId = $this->documentRepository->saveDocument($document);
+                        $post->post_content = $this->getBlockCodeForDocumentId($savedDocumentId);
+                        $displayingPageUpdateResult = wp_update_post($post, true);
+
+                        if(is_wp_error($displayingPageUpdateResult)){
+                            throw new RuntimeException(
+                                sprintf(
+                                    'Failed to update document page content, got an error: %1$s',
+                                    $displayingPageUpdateResult->get_error_message()
+                                )
+                            );
+                        }
+                    } catch (XmlApiException | RuntimeException $exception){
                         //todo: log here
                         update_option(Settings::MIGRATION_FAILED_FLAG_OPTION_NAME, true);
                         return;
@@ -79,5 +91,20 @@ class Updater implements UpdaterInterface
 
         delete_option(Plugin::OPTION_TEXT_ALLOCATIONS);
         delete_option(Settings::MIGRATION_FAILED_FLAG_OPTION_NAME);
+    }
+
+    /**
+     * Return code for document block to be saved in the displaying page content.
+     *
+     * @param int $documentId
+     *
+     * @return string
+     */
+    protected function getBlockCodeForDocumentId(int $documentId): string
+    {
+        return sprintf(
+            '<!-- wp:block {"ref":%1$d} /-->',
+            $documentId
+        );
     }
 }
