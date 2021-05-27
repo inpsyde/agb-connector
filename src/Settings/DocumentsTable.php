@@ -106,11 +106,12 @@ class DocumentsTable extends WP_List_Table
                 return $item->getType() === 'impressum' ? '&mdash;' :
                     $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
             case 'attach_pdf_to_wc':
-                return $this->renderCheckbox(
-                    'attach_pdf_to_wc',
-                    $item->getSettings()->getAttachToWcEmail(),
-                    ! $item->getSettings()->getSavePdf() // Disable attaching PDF option if it's not stored.
-                );
+                return $item->getType() === 'impressum' ? '&mdash;' :
+                    $this->renderCheckbox(
+                        'attach_pdf_to_wc',
+                        $item->getSettings()->getAttachToWcEmail(),
+                        ! $item->getSettings()->getSavePdf() // Disable attaching PDF option if it's not stored.
+                    );
             case 'hide_title':
                 return $this->renderCheckbox(
                     'hide_title',
