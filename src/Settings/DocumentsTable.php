@@ -167,11 +167,9 @@ class DocumentsTable extends WP_List_Table
      */
     public function get_bulk_actions(): array
     {
-        $actions = [
+        return [
             'bulk-delete' => 'Delete'
         ];
-
-        return $actions;
     }
 
     public function row_actions($actions, $always_visible = false)
