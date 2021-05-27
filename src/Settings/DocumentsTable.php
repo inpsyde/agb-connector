@@ -6,6 +6,7 @@ namespace Inpsyde\AGBConnector\Settings;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\ShortCodes;
 use WP_List_Table;
 use WP_Post;
 
@@ -19,17 +20,23 @@ class DocumentsTable extends WP_List_Table
      * @var DocumentFinderInterface
      */
     protected $documentFinder;
+    /**
+     * @var ShortCodes
+     */
+    protected $shortCodes;
 
     /**
      * DocumentsTable constructor.
      *
      * @param DocumentRepositoryInterface $documentRepository
      * @param DocumentFinderInterface $documentFinder
+     * @param ShortCodes $shortCodes
      * @param array $args
      */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
         DocumentFinderInterface $documentFinder,
+        ShortCodes $shortCodes,
         array $args = array()
     ){
 
@@ -37,6 +44,7 @@ class DocumentsTable extends WP_List_Table
 
         parent::__construct($args);
         $this->documentFinder = $documentFinder;
+        $this->shortCodes = $shortCodes;
     }
 
     /**
@@ -51,6 +59,7 @@ class DocumentsTable extends WP_List_Table
             'country' => __('Country', 'agb-connector'),
             'language' => __('Language', 'agb-connector'),
             'page' => __('Page', 'agb-connector'),
+            'shortcode' => __('Shortcode', 'agb-connector'),
             'store_pdf' => __('Store PDF File', 'agb-connector'),
             'attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
             'hide_title' => __('Hide title', 'agb-connector')
@@ -93,6 +102,8 @@ class DocumentsTable extends WP_List_Table
                 $postIds = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
+            case 'shortcode':
+                return '<code>' . $this->shortCodes->generateShortcodeForDocument($item) . '</code>';
             case 'store_pdf':
                 return $item->getType() === 'impressum' ? '&mdash;' :
                     $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());

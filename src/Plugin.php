@@ -213,7 +213,8 @@ class Plugin
         if (null === $this->settings) {
             $this->settings = new Settings(
                 $this->documentRepository(),
-                $this->documentPageFinder()
+                $this->documentPageFinder(),
+                $this->shortCodes()
             );
 
             $this->settings->init();

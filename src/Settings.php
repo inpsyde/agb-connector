@@ -30,6 +30,10 @@ class Settings
      * @var DocumentFinderInterface
      */
     protected $documentPageFinder;
+    /**
+     * @var ShortCodes
+     */
+    protected $shortCodes;
 
     /**
      * The save message.
@@ -43,10 +47,12 @@ class Settings
     /**
      * @param DocumentRepository $repository
      * @param DocumentFinderInterface $documentPageFinder
+     * @param ShortCodes $shortCodes
      */
     public function __construct(
         DocumentRepository $repository,
-        DocumentFinderInterface $documentPageFinder
+        DocumentFinderInterface $documentPageFinder,
+        ShortCodes $shortCodes
     ) {
         $this->repository = $repository;
         $this->documentPageFinder = $documentPageFinder;
@@ -58,6 +64,7 @@ class Settings
             '<a href="mailto:agb-connector@inpsyde.com" target="_blank">',
             '</a>'
         );
+        $this->shortCodes = $shortCodes;
     }
 
     public function init()
@@ -192,6 +199,7 @@ class Settings
         $table = new DocumentsTable(
             $documentRepository,
             $this->documentPageFinder,
+            $this->shortCodes,
             [
                 'singular' => __('Document', 'agb-connector'),
                 'plural' => __('Documents', 'agb-connector'),

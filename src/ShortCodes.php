@@ -2,6 +2,7 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 /**
  * Class ShortCodes
@@ -88,6 +89,41 @@ class ShortCodes
         $shortcodeSettings = $this->settings();
 
         return isset($shortcodeSettings[$shortcode]) ? $shortcodeSettings[$shortcode]['setting_key'] : '';
+    }
+
+    /**
+     * Generate a shortcode for the document.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return string
+     */
+    public function generateShortcodeForDocument(DocumentInterface $document): string
+    {
+        return sprintf(
+            '[%1$s country="%2$s" language="%3$s" id="" class=""]',
+            $this->getShortcodeTagByDocumentType($document->getType()),
+            $document->getCountry(),
+            $document->getLanguage()
+        );
+    }
+
+    /**
+     * Return shortcode tag for given document type.
+     *
+     * @param string $documentType
+     *
+     * @return string
+     */
+    public function getShortcodeTagByDocumentType(string $documentType): string
+    {
+        foreach($this->settings() as $shortcodeTag => $shortcodeConfig){
+            if($documentType === $shortcodeConfig['setting_key']){
+                return $shortcodeTag;
+            }
+        }
+
+        return '';
     }
 
     /**
