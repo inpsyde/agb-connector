@@ -48,10 +48,13 @@ class Updater implements UpdaterInterface
      */
     public function update(): void
     {
-        $this->update200to300();
+        $this->update200to220();
     }
 
-    protected function update200to300(): void
+    /**
+     *
+     */
+    protected function update200to220(): void
     {
         foreach ($this->allocations as $allocationsOfType){
             foreach($allocationsOfType as $allocation){
