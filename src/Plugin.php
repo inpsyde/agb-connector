@@ -51,10 +51,6 @@ class Plugin
      * Type of the Gutenberg block containing Documents.
      */
     const DOCUMENT_BLOCK_TYPE = 'agb-connector/agb-document';
-    /**
-     * @var string
-     */
-    protected $pluginFilePath;
 
     /**
      * The settings object
@@ -88,12 +84,6 @@ class Plugin
      * @var DocumentsTable
      */
     protected $documentsTable;
-
-    public function __construct(string $pluginFilePath)
-    {
-
-        $this->pluginFilePath = $pluginFilePath;
-    }
 
     /**
      * Init all actions and filters

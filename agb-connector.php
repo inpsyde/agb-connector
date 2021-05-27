@@ -42,7 +42,7 @@ function agb_connector()
         require_once $autoload;
     }
 
-    $plugin = new Plugin(__FILE__);
+    $plugin = new Plugin();
     $plugin->init();
 
     return $plugin;
