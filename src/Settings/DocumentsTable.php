@@ -199,9 +199,16 @@ class DocumentsTable extends WP_List_Table
         if($primary !== $columnName){
             return '';
         }
-        $deleteLink = get_delete_post_link($item->getSettings()->getDocumentId(), '', true);
+        $documentId = $item->getSettings()->getDocumentId();
         $actions =  [
-            'delete' => "<a href=$deleteLink>" . __('Delete permanently', 'agb-connector') . '</a>',
+            'edit' => '<a href="' . get_edit_post_link($documentId) .  '">' .
+                __('Edit', 'agb-connector') .
+                '</a>',
+
+            'delete' => '<a href="' .
+                get_delete_post_link($documentId,'', true) . '">' .
+                __('Delete permanently', 'agb-connector') .
+                '</a>',
         ];
 
         return $this->row_actions($actions);
