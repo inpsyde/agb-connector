@@ -320,6 +320,9 @@ class Settings
         switch ($fieldName) {
             case 'store_pdf':
                 $document->getSettings()->setSavePdf($fieldValue);
+                if(! $fieldValue){
+                    $document->getSettings()->setAttachToWcEmail(false);
+                }
                 break;
             case 'attach_pdf_to_wc':
                 $document->getSettings()->setAttachToWcEmail($fieldValue);

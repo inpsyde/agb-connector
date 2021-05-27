@@ -99,7 +99,8 @@ class DocumentsTable extends WP_List_Table
             case 'attach_pdf_to_wc':
                 return $this->renderCheckbox(
                     'attach_pdf_to_wc',
-                    $item->getSettings()->getAttachToWcEmail()
+                    $item->getSettings()->getAttachToWcEmail(),
+                    ! $item->getSettings()->getSavePdf() // Disable attaching PDF option if it's not stored.
                 );
             case 'hide_title':
                 return $this->renderCheckbox(
@@ -202,14 +203,16 @@ class DocumentsTable extends WP_List_Table
      *
      * @param string $name
      * @param bool $checked
+     * @param bool $disabled
      *
      * @return string
      */
-    protected function renderCheckbox(string $name, bool $checked): string {
+    protected function renderCheckbox(string $name, bool $checked, bool $disabled = false): string {
         return sprintf(
-            '<input type="checkbox" name="%1$s" class="agb-document-settings" %2$s>',
+            '<input type="checkbox" name="%1$s" class="agb-document-settings" %2$s %3$s>',
             esc_attr($name),
-            checked(true, $checked, false)
+            checked(true, $checked, false),
+            disabled(true, $disabled, false)
         );
     }
 

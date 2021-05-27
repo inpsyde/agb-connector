@@ -4,6 +4,17 @@ jQuery(document).ready(function($){
         let fieldName = $(e.target).attr('name');
         let fieldValue = $(e.target).is(':checked') ? '1' : '0';
 
+        if(fieldName === 'store_pdf')
+        {
+            let $attachPdfCheckbox = $(e.target).closest('tr').find('input[name="attach_pdf_to_wc"]');
+            if(fieldValue === '1'){
+                $attachPdfCheckbox.removeAttr('disabled');
+            }
+            else{
+                $attachPdfCheckbox.attr('disabled', 'disabled').prop('checked', false);
+            }
+        }
+
         $.post(
             {
                 url: ajaxurl,
