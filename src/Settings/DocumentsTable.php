@@ -94,7 +94,8 @@ class DocumentsTable extends WP_List_Table
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
             case 'store_pdf':
-                return $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
+                return $item->getType() === 'impressum' ? '&mdash;' :
+                    $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
             case 'attach_pdf_to_wc':
                 return $this->renderCheckbox(
                     'attach_pdf_to_wc',

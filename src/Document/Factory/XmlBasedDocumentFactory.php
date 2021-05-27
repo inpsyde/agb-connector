@@ -17,7 +17,13 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
      */
     public function createDocument(SimpleXMLElement $xml): DocumentInterface
     {
+        $documentType = (string) $xml->{XmlMetaFields::XML_FIELD_TYPE};
         $documentSettings = new DocumentSettings();
+
+        if($documentType === 'impressum'){
+            $documentSettings->setSavePdf(false);
+            $documentSettings->setAttachToWcEmail(false);
+        }
 
         return new Document(
             $documentSettings,
@@ -25,7 +31,7 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
             (string) $xml->{XmlMetaFields::XML_FIELD_HTML_CONTENT},
             (string) $xml->{XmlMetaFields::XML_FIELD_COUNTRY},
             (string) $xml->{XmlMetaFields::XML_FIELD_LANGUAGE},
-            (string) $xml->{XmlMetaFields::XML_FIELD_TYPE}
+            $documentType
         );
     }
 

@@ -34,14 +34,17 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
      */
     protected function createFromWpBlock(WP_Post $post): DocumentInterface
     {
+        $documentType = $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
+        $savePdf = $documentType !== 'impressum' &&
+            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF);
+
         $documentSettings = new DocumentSettings();
         $documentSettings->setAttachToWcEmail(
-            (bool)$this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL)
+            $savePdf &&
+            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL)
         );
         $documentSettings->setDocumentId($post->ID);
-        $documentSettings->setSavePdf(
-            (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF)
-        );
+        $documentSettings->setSavePdf($savePdf);
         $documentSettings->setHideTitle(
             (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE)
         );
@@ -53,7 +56,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
             $post->post_content,
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY),
             $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE),
-            $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)
+            $documentType
         );
     }
 
