@@ -47,6 +47,7 @@ class DocumentsTable extends WP_List_Table
         return [
             'cb' => '<input type="checkbox" />',
             'title' => __('Title', 'agb-connector'),
+            'type' => __('Type', 'agb-connector'),
             'country' => __('Country', 'agb-connector'),
             'language' => __('Language', 'agb-connector'),
             'page' => __('Page', 'agb-connector'),
@@ -82,6 +83,8 @@ class DocumentsTable extends WP_List_Table
         switch ($column_name) {
             case 'title':
                 return $item->getTitle();
+            case 'type':
+                return $this->getDocumentTypeForDisplay($item->getType());
             case 'country':
                 return $item->getCountry();
             case 'language':
@@ -228,6 +231,25 @@ class DocumentsTable extends WP_List_Table
                 }
             }
         }
+    }
+
+    /**
+     * Return a document type prepared for display.
+     *
+     * @param string $internalType
+     *
+     * @return string
+     */
+    protected function getDocumentTypeForDisplay(string $internalType): string
+    {
+        $types = [
+            'agb' => esc_html__('AGB Terms', 'agb-connector'),
+            'datenschutz' => esc_html__('AGB Privacy', 'agb-connector'),
+            'widerruf' => esc_html__('AGB Revocation', 'agb-connector'),
+            'impressum' => esc_html__('AGB Imprint', 'agb-connector')
+        ];
+
+        return $types[$internalType] ?? '';
     }
 
 }
