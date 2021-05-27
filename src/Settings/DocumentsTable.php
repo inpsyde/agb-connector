@@ -59,10 +59,10 @@ class DocumentsTable extends WP_List_Table
             'country' => __('Country', 'agb-connector'),
             'language' => __('Language', 'agb-connector'),
             'page' => __('Page', 'agb-connector'),
-            'shortcode' => __('Shortcode', 'agb-connector'),
             'store_pdf' => __('Store PDF File', 'agb-connector'),
             'attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
-            'hide_title' => __('Hide title', 'agb-connector')
+            'hide_title' => __('Hide title', 'agb-connector'),
+            'shortcode' => __('Shortcode', 'agb-connector')
         ];
     }
 
@@ -102,8 +102,6 @@ class DocumentsTable extends WP_List_Table
                 $postIds = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
-            case 'shortcode':
-                return '<code>' . $this->shortCodes->generateShortcodeForDocument($item) . '</code>';
             case 'store_pdf':
                 return $item->getType() === 'impressum' ? '&mdash;' :
                     $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
@@ -118,6 +116,8 @@ class DocumentsTable extends WP_List_Table
                     'hide_title',
                     $item->getSettings()->getHideTitle()
                 );
+            case 'shortcode':
+                return '<code>' . $this->shortCodes->generateShortcodeForDocument($item) . '</code>';
             default:
                 return '';
         }
