@@ -127,30 +127,6 @@ class ShortCodes
     }
 
     /**
-     * Helper function to cleanup and do_shortcode on content.
-     *
-     * @see do_shortcode()
-     *
-     * @param $content
-     *
-     * @return string
-     */
-    public function callbackContent($content)
-    {
-        $array = [
-            '<p>[' => '[',
-            ']</p>' => ']',
-            '<br /></p>' => '</p>',
-            ']<br />' => ']',
-        ];
-
-        $content = shortcode_unautop(balanceTags(trim($content), true));
-        $content = strtr($content, $array);
-
-        return do_shortcode($content);
-    }
-
-    /**
      * Register AGB shortcodes.
      */
     public function setup()
