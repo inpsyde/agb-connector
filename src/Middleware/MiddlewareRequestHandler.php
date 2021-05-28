@@ -96,7 +96,6 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckTitleXml())
             ->linkWith(new CheckTextXml())
             ->linkWith(new CheckHtmlXml())
-            ->linkWith(new CheckPdfFilenameXml())
             ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
             ->linkWith(new CheckConfiguration($this->userAuthToken))

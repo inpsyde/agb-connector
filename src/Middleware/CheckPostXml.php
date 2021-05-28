@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Inpsyde\AGBConnector\CustomExceptions\PdfFilenameException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
@@ -68,10 +70,40 @@ class CheckPostXml extends Middleware
     {
         $document = $this->documentFactory->createDocument($xml);
         $savedDocumentId = $this->documentRepository->saveDocument($document);
-        $this->pushPdfFile($xml, $savedDocumentId);
+        $document = $this->documentRepository->getDocumentById($savedDocumentId);
         $targetUrl = $this->getPageDocumentIsDisplayedOn($savedDocumentId);
 
+        if ('impressum' !== $document->getType() && $document->getSettings()->getSavePdf()) {
+            $this->checkPdfFilename($xml);
+            $this->pushPdfFile($xml, $document);
+        }
+
         return parent::process($targetUrl);
+    }
+
+    protected function checkPdfFilename(SimpleXMLElement $xml): void
+    {
+
+        if ($xml->rechtstext_pdf_filename_suggestion === null) {
+            throw new PdfFilenameException(
+                "No pdf filename provided"
+            );
+        }
+        if ((string)$xml->rechtstext_pdf_filename_suggestion === '') {
+            throw new PdfFilenameException(
+                "The pdf filename is empty"
+            );
+        }
+        if ($xml->rechtstext_pdf_filenamebase_suggestion === null) {
+            throw new PdfFilenameException(
+                "No pdf base filename provided"
+            );
+        }
+        if ((string)$xml->rechtstext_pdf_filenamebase_suggestion === '') {
+            throw new PdfFilenameException(
+                "The pdf base filename is empty"
+            );
+        }
     }
 
     /**
@@ -85,15 +117,8 @@ class CheckPostXml extends Middleware
      * @throws XmlApiException
      *
      */
-    protected function pushPdfFile(SimpleXMLElement $xml, int $documentId)
+    protected function pushPdfFile(SimpleXMLElement $xml, DocumentInterface $document): int
     {
-        $document = $this->documentRepository->getDocumentById($documentId);
-
-        if (! $document->getSettings()->getSavePdf()) {
-            return 0;
-        }
-
-
         $uploads = wp_upload_dir();
 
         $file = trailingslashit($uploads['basedir']) .
@@ -132,6 +157,7 @@ class CheckPostXml extends Middleware
             require_once ABSPATH . 'wp-admin/includes/image.php';
         }
 
+        $documentId = $document->getSettings()->getDocumentId();
         $attachmentId = self::attachmentIdByPostParent($documentId);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
