@@ -38,3 +38,7 @@
     white-space: nowrap;
 	padding: 10px;
 }
+
+#agb-column-country, #agb-column-language, #agb-column-hide_title, #agb-column-type, #agb-column-store_pdf {
+    width: 8%;
+}
