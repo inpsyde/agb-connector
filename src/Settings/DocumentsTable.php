@@ -54,15 +54,15 @@ class DocumentsTable extends WP_List_Table
     {
         return [
             'cb' => '<input type="checkbox" />',
-            'title' => __('Title', 'agb-connector'),
-            'type' => __('Type', 'agb-connector'),
-            'country' => __('Country', 'agb-connector'),
-            'language' => __('Language', 'agb-connector'),
-            'page' => __('Page', 'agb-connector'),
-            'store_pdf' => __('Store PDF File', 'agb-connector'),
-            'attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
-            'hide_title' => __('Hide title', 'agb-connector'),
-            'shortcode' => __('Shortcode', 'agb-connector')
+            'agb-column-title' => __('Title', 'agb-connector'),
+            'agb-column-type' => __('Type', 'agb-connector'),
+            'agb-column-country' => __('Country', 'agb-connector'),
+            'agb-column-language' => __('Language', 'agb-connector'),
+            'agb-column-page' => __('Page', 'agb-connector'),
+            'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
+            'agb-column-attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
+            'agb-column-hide_title' => __('Hide title', 'agb-connector'),
+            'agb-column-shortcode' => __('Shortcode', 'agb-connector')
         ];
     }
 
@@ -90,34 +90,34 @@ class DocumentsTable extends WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
-            case 'title':
+            case 'agb-column-title':
                 return $item->getTitle();
-            case 'type':
+            case 'agb-column-type':
                 return $this->getDocumentTypeForDisplay($item->getType());
-            case 'country':
+            case 'agb-column-country':
                 return $item->getCountry();
-            case 'language':
+            case 'agb-column-language':
                 return $item->getLanguage();
-            case 'page':
+            case 'agb-column-page':
                 $postIds = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
-            case 'store_pdf':
+            case 'agb-column-store_pdf':
                 return $item->getType() === 'impressum' ? '&mdash;' :
                     $this->renderCheckbox('store_pdf', $item->getSettings()->getSavePdf());
-            case 'attach_pdf_to_wc':
+            case 'agb-column-attach_pdf_to_wc':
                 return $item->getType() === 'impressum' ? '&mdash;' :
                     $this->renderCheckbox(
                         'attach_pdf_to_wc',
                         $item->getSettings()->getAttachToWcEmail(),
                         ! $item->getSettings()->getSavePdf() // Disable attaching PDF option if it's not stored.
                     );
-            case 'hide_title':
+            case 'agb-column-hide_title':
                 return $this->renderCheckbox(
                     'hide_title',
                     $item->getSettings()->getHideTitle()
                 );
-            case 'shortcode':
+            case 'agb-column-shortcode':
                 return '<code>' . $this->shortCodes->generateShortcodeForDocument($item) . '</code>';
             default:
                 return '';
