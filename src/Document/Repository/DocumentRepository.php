@@ -205,6 +205,7 @@ class DocumentRepository implements DocumentRepositoryInterface
         if(! $this->attributesAdded($document)){ //check if already processed to avoid endless loop
 
             $this->processedDocuments[] = $documentId;
+            $document->getSettings()->setDocumentId($documentId);
             $document = $this->attributesAdder->addAttributes($document);
             $this->saveDocument($document);
         }

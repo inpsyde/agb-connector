@@ -101,10 +101,13 @@ class AttributesAdder implements AttributesAdderInterface
     protected function setElementAttributes(DOMElement $domElement, int $documentId, bool $hideTitle): void
     {
         $classes = $domElement->getAttribute('class');
-        $classes .= ' agbc-document-title';
+        $classes = explode(' ', $classes);
+        array_push($classes, 'agbc-document-title');
         if($hideTitle){
-            $classes .= ' agbc-hidden';
+            array_push($classes, 'agbc-hidden');
         }
+        $classes = implode(' ', array_unique($classes));
+
         $domElement->setAttribute('class', $classes);
         $domElement->setAttribute('data-agbc-document-id', (string) $documentId);
     }
