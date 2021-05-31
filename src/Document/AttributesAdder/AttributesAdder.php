@@ -51,7 +51,10 @@ class AttributesAdder implements AttributesAdderInterface
             return $document;
         }
 
-        foreach($this->getDocumentHeaders($domDocument) as $header) {
+        foreach($domDocument->getElementsByTagName('h1') as $header) {
+            if(! $header instanceof DOMElement) {
+                continue;
+            }
             $documentId = $document->getSettings()->getDocumentId();
             $hideTitle = $document->getSettings()->getHideTitle();
             $this->setElementAttributes($header, $documentId, $hideTitle);
@@ -86,29 +89,6 @@ class AttributesAdder implements AttributesAdderInterface
         }
 
         return $domDocument;
-    }
-
-    /**
-     * Parse DomDocument instance and return all h1 headers.
-     *
-     * We have no guarantee document content follows standards and uses only one h1,
-     * so there can be multiple.
-     *
-     * @return DOMElement[]
-     */
-    protected function getDocumentHeaders(DOMDocument $domDocument): array
-    {
-        $headers = $domDocument->getElementsByTagName('h1');
-
-        $domElements = [];
-
-        foreach ($headers as $header){
-            if ($header instanceof DOMElement){
-                $domElements[] = $header;
-            }
-        }
-
-        return $domElements;
     }
 
     /**
