@@ -6,7 +6,6 @@ namespace Inpsyde\AGBConnector;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
-use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use InvalidArgumentException;
@@ -193,11 +192,8 @@ class Settings
      */
     public function page()
     {
-
-        $documentFactory = new WpPostBasedDocumentFactory();
-        $documentRepository = new DocumentRepository($documentFactory);
         $table = new DocumentsTable(
-            $documentRepository,
+            $this->repository,
             $this->documentPageFinder,
             $this->shortCodes,
             [
