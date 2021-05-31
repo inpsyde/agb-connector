@@ -103,6 +103,7 @@ class AttributesAdder implements AttributesAdderInterface
         $classes = $domElement->getAttribute('class');
         $classes = explode(' ', $classes);
         array_push($classes, 'agbc-document-title');
+        unset($classes['agbc-hidden']);
         if($hideTitle){
             array_push($classes, 'agbc-hidden');
         }
