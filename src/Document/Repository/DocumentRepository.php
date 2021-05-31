@@ -197,13 +197,14 @@ class DocumentRepository implements DocumentRepositoryInterface
                     $result->get_error_message())
             );
         }
+        $documentId = $result; //Just for clarity. If it's not a WP_Error, then it's inserted post id.
 
         //Add HTML attributes to document.
         //These attributes needed to hide document title if this feature is enabled in settings.
         //We need to do it after document saving, because new documents has no document id yet which we need to add as attribute value.
         if(! $this->attributesAdded($document)){ //check if already processed to avoid endless loop
             $document = $this->attributesAdder->addAttributes($document);
-            $this->processedDocuments[] = $document->getSettings()->getDocumentId();
+            $this->processedDocuments[] = $documentId;
             $this->saveDocument($document);
         }
 
