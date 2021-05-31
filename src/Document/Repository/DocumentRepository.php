@@ -224,7 +224,6 @@ class DocumentRepository implements DocumentRepositoryInterface
     {
         $documentId = $document->getSettings()->getDocumentId();
 
-        return in_array($documentId, $this->processedDocuments, true) ||
-            $this->attributesAdder->hasAttributes($document);
+        return in_array($documentId, $this->processedDocuments, true);
     }
 }
