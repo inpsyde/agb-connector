@@ -203,8 +203,9 @@ class DocumentRepository implements DocumentRepositoryInterface
         //These attributes needed to hide document title if this feature is enabled in settings.
         //We need to do it after document saving, because new documents has no document id yet which we need to add as attribute value.
         if(! $this->attributesAdded($document)){ //check if already processed to avoid endless loop
-            $document = $this->attributesAdder->addAttributes($document);
+
             $this->processedDocuments[] = $documentId;
+            $document = $this->attributesAdder->addAttributes($document);
             $this->saveDocument($document);
         }
 
