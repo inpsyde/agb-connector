@@ -193,7 +193,7 @@ class Plugin
         $xml = wp_unslash($xml);
 
         $apiKey = get_option(self::OPTION_USER_AUTH_TOKEN, '');
-        $api = new XmlApi($apiKey);
+        $api = new XmlApi($apiKey, $this->documentRepository);
 
         nocache_headers();
         header('Content-type: application/xml; charset=utf-8', true, 200);

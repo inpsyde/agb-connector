@@ -3,9 +3,8 @@
 namespace Inpsyde\AGBConnector;
 
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
-use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
-use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 
 /**
@@ -41,15 +40,20 @@ class XmlApi
      * @var string
      */
     protected $userAuthToken;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
 
     /**
      * Define some values.
      *
      * @param string $userAuthToken User Auth Token.
      */
-    public function __construct($userAuthToken)
+    public function __construct($userAuthToken, DocumentRepositoryInterface $documentRepository)
     {
         $this->userAuthToken = $userAuthToken;
+        $this->documentRepository = $documentRepository;
     }
 
     /**
@@ -72,14 +76,12 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
-        $documentFactory = new WpPostBasedDocumentFactory();
-
         $plugin = agb_connector();
 
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
             new XmlApiSupportedService(),
-            new DocumentRepository($documentFactory),
+            $this->documentRepository,
             new XmlBasedDocumentFactory(),
             new DocumentPageFinder($plugin->shortCodes()->getShortcodeTags())
         );
