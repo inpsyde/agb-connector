@@ -5,6 +5,7 @@ namespace Inpsyde\AGBConnector\Document\Repository;
 
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdderInterface;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
@@ -17,11 +18,29 @@ class DocumentRepository implements DocumentRepositoryInterface
      * @var WpPostBasedDocumentFactory
      */
     protected $documentFactory;
+    /**
+     * @var AttributesAdderInterface
+     */
+    protected $attributesAdder;
 
-    public function __construct(WpPostBasedDocumentFactory $documentFactory)
-    {
+    /**
+     * List of documents already processed by AttributesAdded.
+     *
+     * @var int[]
+     */
+    protected $processedDocuments = [];
+
+    /**
+     * @param WpPostBasedDocumentFactory $documentFactory
+     * @param AttributesAdderInterface $attributesAdder
+     */
+    public function __construct(
+        WpPostBasedDocumentFactory $documentFactory,
+        AttributesAdderInterface $attributesAdder
+    ){
 
         $this->documentFactory = $documentFactory;
+        $this->attributesAdder = $attributesAdder;
     }
 
     /**
@@ -179,6 +198,30 @@ class DocumentRepository implements DocumentRepositoryInterface
             );
         }
 
+        //Add HTML attributes to document.
+        //These attributes needed to hide document title if this feature is enabled in settings.
+        //We need to do it after document saving, because new documents has no document id yet which we need to add as attribute value.
+        if(! $this->attributesAdded($document)){ //check if already processed to avoid endless loop
+            $document = $this->attributesAdder->addAttributes($document);
+            $this->processedDocuments[] = $document->getSettings()->getDocumentId();
+            $this->saveDocument($document);
+        }
+
         return $result;
+    }
+
+    /**
+     * Check if HTML attributes already was added during current document saving.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return bool
+     */
+    protected function attributesAdded(DocumentInterface $document): bool
+    {
+        $documentId = $document->getSettings()->getDocumentId();
+
+        return ! in_array($documentId, $this->processedDocuments, true) ||
+            ! $this->attributesAdder->hasAttributes($document);
     }
 }
