@@ -100,16 +100,23 @@ class AttributesAdder implements AttributesAdderInterface
      */
     protected function setElementAttributes(DOMElement $domElement, int $documentId, bool $hideTitle): void
     {
-        $classes = $domElement->getAttribute('class');
-        $classes = explode(' ', $classes);
-        array_push($classes, 'agbc-document-title');
-        unset($classes['agbc-hidden']);
-        if($hideTitle){
-            array_push($classes, 'agbc-hidden');
-        }
+        $classes = $this->prepareClassesList($domElement, $hideTitle);
         $classes = implode(' ', array_unique($classes));
 
         $domElement->setAttribute('class', $classes);
         $domElement->setAttribute('data-agbc-document-id', (string) $documentId);
+    }
+
+    protected function prepareClassesList(DOMElement $domElement, bool $hideTitle): array
+    {
+        $classes = $domElement->getAttribute('class');
+        $classes = explode(' ', $classes);
+        array_push($classes, 'agbc-document-title', 'agbc-hidden');
+
+        if(! $hideTitle){
+            $classes = array_diff($classes, ['agbc-hidden']);
+        }
+
+        return $classes;
     }
 }
