@@ -106,6 +106,6 @@ class AttributesAdder implements AttributesAdderInterface
             $classes .= ' agbc-hidden';
         }
         $domElement->setAttribute('class', $classes);
-        $domElement->setAttribute('data-agbc-document-id', $documentId);
+        $domElement->setAttribute('data-agbc-document-id', (string) $documentId);
     }
 }
