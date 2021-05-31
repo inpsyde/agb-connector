@@ -227,7 +227,10 @@ class Plugin
      */
     public function documentRepository(): DocumentRepositoryInterface {
         if(null === $this->documentRepository){
-            $this->documentRepository = new DocumentRepository($this->postBasedDocumentFactory());
+            $this->documentRepository = new DocumentRepository(
+                $this->postBasedDocumentFactory(),
+                $this->attributesAdder()
+            );
         }
 
         return $this->documentRepository;
