@@ -106,6 +106,14 @@ class Document implements DocumentInterface
     /**
      * @inheritDoc
      */
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getSettings(): DocumentSettingsInterface
     {
         return $this->settings;

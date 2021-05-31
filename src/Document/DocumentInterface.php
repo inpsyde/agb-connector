@@ -25,6 +25,15 @@ interface DocumentInterface
     public function getContent(): string;
 
     /**
+     * Set document content.
+     *
+     * @param string $content
+     *
+     * @return void
+     */
+    public function setContent(string $content): void;
+
+    /**
      * Get document country.
      *
      * @return string
