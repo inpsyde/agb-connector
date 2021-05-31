@@ -52,7 +52,9 @@ class AttributesAdder implements AttributesAdderInterface
         }
 
         foreach($this->getDocumentHeaders($domDocument) as $header) {
-            $this->setElementAttributes($header, $document->getSettings()->getDocumentId());
+            $documentId = $document->getSettings()->getDocumentId();
+            $hideTitle = $document->getSettings()->getHideTitle();
+            $this->setElementAttributes($header, $documentId, $hideTitle);
         }
 
         $updatedDocumentContent = $domDocument->saveHTML();
@@ -114,11 +116,15 @@ class AttributesAdder implements AttributesAdderInterface
      *
      * @param DOMElement $domElement
      * @param int $documentId
+     * @param bool $hideTitle
      */
-    protected function setElementAttributes(DOMElement $domElement, int $documentId): void
+    protected function setElementAttributes(DOMElement $domElement, int $documentId, bool $hideTitle): void
     {
         $classes = $domElement->getAttribute('class');
         $classes .= ' agbc-document-title';
+        if($hideTitle){
+            $classes .= ' agbc-hidden';
+        }
         $domElement->setAttribute('class', $classes);
         $domElement->setAttribute('data-agbc-document-id', $documentId);
     }
