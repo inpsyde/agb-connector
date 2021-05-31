@@ -2,6 +2,8 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdder;
+use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdderInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
@@ -84,6 +86,11 @@ class Plugin
      * @var DocumentsTable
      */
     protected $documentsTable;
+
+    /**
+     * @var AttributesAdderInterface
+     */
+    protected $attributesAdder;
 
     /**
      * Init all actions and filters
@@ -224,6 +231,20 @@ class Plugin
         }
 
         return $this->documentRepository;
+    }
+
+    /**
+     * Get Attributes Adder.
+     *
+     * @return AttributesAdderInterface
+     */
+    public function attributesAdder(): AttributesAdderInterface
+    {
+        if(null === $this->attributesAdder){
+            $this->attributesAdder = new AttributesAdder();
+        }
+
+        return $this->attributesAdder;
     }
 
     /**
