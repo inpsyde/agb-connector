@@ -10,6 +10,7 @@ use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\Document\View\RegisterDocumentStyles;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use Inpsyde\AGBConnector\Updater\Updater;
 use WC_Order;
@@ -125,6 +126,8 @@ class Plugin
         add_action('init', function () use ($shortCodes){
             (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
         });
+
+        (new RegisterDocumentStyles($this->pluginFilePath()))();
 
         if (! is_admin()) {
             return;
