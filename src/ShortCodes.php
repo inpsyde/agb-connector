@@ -101,7 +101,7 @@ class ShortCodes
     public function generateShortcodeForDocument(DocumentInterface $document): string
     {
         return sprintf(
-            '[%1$s country="%2$s" language="%3$s" id="" class=""]',
+            '[%1$s country="%2$s" language="%3$s"]',
             $this->getShortcodeTagByDocumentType($document->getType()),
             $document->getCountry(),
             $document->getLanguage()
