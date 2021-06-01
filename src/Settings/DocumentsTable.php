@@ -93,7 +93,7 @@ class DocumentsTable extends WP_List_Table
             case 'agb-column-title':
                 return $item->getTitle();
             case 'agb-column-type':
-                return $this->getDocumentTypeForDisplay($item->getType());
+                return $this->shortCodes->getDocumentTypeNameByType($item->getType());
             case 'agb-column-country':
                 return $item->getCountry();
             case 'agb-column-language':
@@ -252,25 +252,6 @@ class DocumentsTable extends WP_List_Table
                 }
             }
         }
-    }
-
-    /**
-     * Return a document type prepared for display.
-     *
-     * @param string $internalType
-     *
-     * @return string
-     */
-    protected function getDocumentTypeForDisplay(string $internalType): string
-    {
-        $types = [
-            'agb' => esc_html__('AGB Terms', 'agb-connector'),
-            'datenschutz' => esc_html__('AGB Privacy', 'agb-connector'),
-            'widerruf' => esc_html__('AGB Revocation', 'agb-connector'),
-            'impressum' => esc_html__('AGB Imprint', 'agb-connector')
-        ];
-
-        return $types[$internalType] ?? '';
     }
 
 }

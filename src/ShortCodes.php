@@ -49,19 +49,19 @@ class ShortCodes
     {
         return (array)apply_filters('agb_shortcodes', [
             'agb_terms' => [
-                'name' => esc_html__('AGB Terms', 'agb-connector'),
+                'name' => esc_html__('Terms', 'agb-connector'),
                 'setting_key' => 'agb',
             ],
             'agb_privacy' => [
-                'name' => esc_html__('AGB Privacy', 'agb-connector'),
+                'name' => esc_html__('Privacy', 'agb-connector'),
                 'setting_key' => 'datenschutz',
             ],
             'agb_revocation' => [
-                'name' => esc_html__('AGB Revocation', 'agb-connector'),
+                'name' => esc_html__('Revocation', 'agb-connector'),
                 'setting_key' => 'widerruf',
             ],
             'agb_imprint' => [
-                'name' => esc_html__('AGB Imprint', 'agb-connector'),
+                'name' => esc_html__('Imprint', 'agb-connector'),
                 'setting_key' => 'impressum',
             ],
         ]);
@@ -120,6 +120,17 @@ class ShortCodes
         foreach($this->settings() as $shortcodeTag => $shortcodeConfig){
             if($documentType === $shortcodeConfig['setting_key']){
                 return $shortcodeTag;
+            }
+        }
+
+        return '';
+    }
+
+    public function getDocumentTypeNameByType(string $documentType): string
+    {
+        foreach($this->settings() as $shortcodeConfig){
+            if($documentType === $shortcodeConfig['setting_key']){
+                return $shortcodeConfig['name'];
             }
         }
 
