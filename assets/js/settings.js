@@ -4,6 +4,7 @@ jQuery(document).ready(function($){
         let fieldName = $(e.target).attr('name');
         let fieldValue = $(e.target).is(':checked') ? '1' : '0';
         let $spinner = $(e.target).parent('div').siblings('.agbc-loading');
+        let $checkMark = $(e.target).parent('div').siblings('.agbc-loaded');
 
         if(fieldName === 'store_pdf')
         {
@@ -33,6 +34,8 @@ jQuery(document).ready(function($){
                 success: function (response) {
                     agbConnectorSettings.nonce = response.data.nonce;
                     $spinner.css('display', 'none');
+                    $checkMark.css('display', 'block');
+                    $checkMark.fadeOut(3000);
                 }
             }
         );
