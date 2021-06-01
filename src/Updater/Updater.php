@@ -49,13 +49,13 @@ class Updater implements UpdaterInterface
      */
     public function update(): void
     {
-        $this->update200to220();
+        $this->update210to300();
     }
 
     /**
-     *
+     * Update plugin to the 3.0.0 version
      */
-    protected function update200to220(): void
+    protected function update210to300(): void
     {
         foreach ($this->allocations as $allocationsOfType){
             foreach($allocationsOfType as $allocation){
