@@ -210,7 +210,17 @@ class DocumentRepository implements DocumentRepositoryInterface
             $this->saveDocument($document);
         }
 
-        return $result;
+        $attachmentId = $documentSettings->getPdfAttachmentId();
+
+        if ($attachmentId) {
+            wp_insert_attachment(
+                [
+                    'ID' => $attachmentId,
+                    'post_parent' => $documentId
+                ]
+            );
+        }
+        return $documentId;
     }
 
     /**
