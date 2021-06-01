@@ -3,6 +3,7 @@ jQuery(document).ready(function($){
         let documentId = parseInt( $( $(e.target).closest('tr')).attr('id').substr(5) );
         let fieldName = $(e.target).attr('name');
         let fieldValue = $(e.target).is(':checked') ? '1' : '0';
+        let $spinner = $(e.target).parent('div').siblings('.agbc-loading');
 
         if(fieldName === 'store_pdf')
         {
@@ -26,8 +27,12 @@ jQuery(document).ready(function($){
                     fieldValue: fieldValue
                 },
                 dataType: 'json',
-                onSuccess: function (response) {
-                    agbConnectorSettings.nonce = response.nonce;
+                beforeSend: function(){
+                    $spinner.css('display', 'inline-block');
+                },
+                success: function (response) {
+                    agbConnectorSettings.nonce = response.data.nonce;
+                    $spinner.css('display', 'none');
                 }
             }
         );
