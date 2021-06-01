@@ -178,11 +178,7 @@ class Settings
             $userAuthToken = md5(wp_generate_password(32, true, true));
             update_option(Plugin::OPTION_USER_AUTH_TOKEN, $userAuthToken);
             $this->message = __('New APT-Token generated.', 'agb-connector');
-
-            return;
         }
-
-        $this->message = __('settings updated.', 'agb-connector');
     }
 
     /**
