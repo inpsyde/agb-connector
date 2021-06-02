@@ -78,7 +78,6 @@ class PostSavingListener
 
         for ($i = 0; $i < $foundCount; $i++) {
             $atts = shortcode_parse_atts($foundShortcodes[$i]);
-            $id = (int) $atts['id'] ?? 0;
             $country = $atts['country'] ?? '';
             $language = $atts['language'] ?? '';
             $documentType = $this->shortcodes->getDocumentTypeByShortcodeTag($foundShortcodeTags[$i]);
