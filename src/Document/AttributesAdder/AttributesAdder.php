@@ -82,7 +82,7 @@ class AttributesAdder implements AttributesAdderInterface
     protected function documentToDomDocument(DocumentInterface $document): DOMDocument
     {
         $domDocument = new DOMDocument();
-        if(! $domDocument->loadHTML($document->getContent())){
+        if(! $domDocument->loadHTML($document->getContent(), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD)){
             throw new RuntimeException(
                 "Couldn't parse document as HTML."
             );
