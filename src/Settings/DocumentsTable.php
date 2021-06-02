@@ -52,7 +52,7 @@ class DocumentsTable extends WP_List_Table
      */
     public function get_columns()
     {
-        return [
+        $columns = [
             'cb' => '<input type="checkbox" />',
             'agb-column-title' => __('Title', 'agb-connector'),
             'agb-column-type' => __('Type', 'agb-connector'),
@@ -64,6 +64,12 @@ class DocumentsTable extends WP_List_Table
             'agb-column-hide_title' => __('Hide title', 'agb-connector'),
             'agb-column-shortcode' => __('Shortcode', 'agb-connector')
         ];
+
+        if (! $this->wcActive()){
+            unset ($columns['agb-column-attach_pdf_to_wc']);
+        }
+
+        return $columns;
     }
 
     public function prepare_items()
@@ -260,6 +266,20 @@ class DocumentsTable extends WP_List_Table
                 }
             }
         }
+    }
+
+    /**
+     * Check whether WooCommerce active
+     *
+     *
+     * @return bool
+     */
+    protected function wcActive(): bool
+    {
+        return in_array(
+            'woocommerce/woocommerce.php',
+            apply_filters('active_plugins', get_option('active_plugins'))
+        );
     }
 
 }
