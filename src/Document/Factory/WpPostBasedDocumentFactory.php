@@ -122,7 +122,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
 
         $attachment = get_posts($args);
 
-        return (int)$attachment[0] ?? 0;
+        return isset($attachment[0]) ? (int) $attachment[0] : 0;
     }
 
     /**
