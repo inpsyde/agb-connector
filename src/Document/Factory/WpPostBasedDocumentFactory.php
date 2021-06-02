@@ -117,7 +117,6 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
             'post_mime_type' => 'application/pdf',
             'post_parent' => $post->ID,
             'post_type' => 'attachment',
-            'post_status' => 'publish',
             'posts_per_page' => 1, //Get only the latest post. By default, WP uses 'date' for sorting by and 'DESC' for order.
         ];
 
