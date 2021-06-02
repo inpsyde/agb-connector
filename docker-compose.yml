@@ -21,6 +21,7 @@ services:
             WORDPRESS_DB_NAME: $DB_NAME
             WORDPRESS_DB_USER: $DB_USER_NAME
             WORDPRESS_DB_PASSWORD: $DB_USER_PASSWORD
+            WORDPRESS_TABLE_PREFIX: ${DB_TABLE_PREFIX}
             WORDPRESS_DEBUG: 1
             DOCROOT_PATH: ${DOCROOT_PATH}
             PLUGIN_NAME: ${PLUGIN_NAME}
@@ -33,6 +34,7 @@ services:
             - wordpress:${DOCROOT_PATH}
             - ${BASE_PATH}:${PROJECT_MOUNT_PATH}
             - ${BASE_PATH}/docker/40-custom.php.ini:/usr/local/etc/php/conf.d/40-custom.php.ini
+            - ${BASE_PATH}/docker/.htaccess:${DOCROOT_PATH}/.htaccess
         ports:
             - 80:80
 
@@ -89,6 +91,26 @@ services:
         volumes:
             -  ${BASE_PATH}:${BUILD_ROOT_PATH}
             -  ${BASE_PATH}/docker/40-custom.php.ini:/usr/local/etc/php/conf.d/40-custom.php.ini
+            - ${BASE_PATH}/docker/.htaccess:${DOCROOT_PATH}/.htaccess
+
+    wp:
+        image: library/wordpress:cli-2.5-php7.4
+        container_name: "${PROJECT_NAME}_wp_cli"
+        environment:
+            WORDPRESS_DB_HOST: db:3306
+            WORDPRESS_DB_NAME: $DB_NAME
+            WORDPRESS_DB_USER: $DB_USER_NAME
+            WORDPRESS_DB_PASSWORD: $DB_USER_PASSWORD
+            WORDPRESS_TABLE_PREFIX: $DB_TABLE_PREFIX
+            WORDPRESS_DEBUG: 1
+        volumes:
+            - wordpress:${DOCROOT_PATH}
+            - ${BASE_PATH}:${PROJECT_MOUNT_PATH}
+            - ${BASE_PATH}/docker/40-custom.php.ini:/usr/local/etc/php/conf.d/40-custom.php.ini
+            - ${BASE_PATH}/docker/.htaccess:${DOCROOT_PATH}/.htaccess
+        depends_on:
+            - db
+        user: 1000:1000
 
 
 volumes:
