@@ -24,7 +24,6 @@ interface DocumentRepositoryInterface
      */
     public function getAllDocuments(): array;
 
-
     /**
      * Return all the documents of given type.
      *
@@ -64,7 +63,4 @@ interface DocumentRepositoryInterface
      * @throws GeneralException If failed to save document.
      */
     public function saveDocument(DocumentInterface $document): int;
-
 }
-
-

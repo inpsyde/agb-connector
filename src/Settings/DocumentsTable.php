@@ -37,8 +37,8 @@ class DocumentsTable extends WP_List_Table
         DocumentRepositoryInterface $documentRepository,
         DocumentFinderInterface $documentFinder,
         ShortCodes $shortCodes,
-        array $args = array()
-    ){
+        array $args = []
+    ) {
 
         $this->documentRepository = $documentRepository;
 
@@ -62,11 +62,11 @@ class DocumentsTable extends WP_List_Table
             'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
             'agb-column-attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
             'agb-column-hide_title' => __('Hide title', 'agb-connector'),
-            'agb-column-shortcode' => __('Shortcode', 'agb-connector')
+            'agb-column-shortcode' => __('Shortcode', 'agb-connector'),
         ];
 
-        if (! $this->wcActive()){
-            unset ($columns['agb-column-attach_pdf_to_wc']);
+        if (! $this->wcActive()) {
+            unset($columns['agb-column-attach_pdf_to_wc']);
         }
 
         return $columns;
@@ -81,7 +81,7 @@ class DocumentsTable extends WP_List_Table
         $this->_column_headers = [
             $columns,
             $hidden,
-            $sortable
+            $sortable,
         ];
 
         $this->handleBulkAction();
@@ -137,7 +137,7 @@ class DocumentsTable extends WP_List_Table
      */
     protected function buildPagesList(array $posts): string
     {
-        return implode(' ', array_map(function(WP_Post $post): string {
+        return implode(' ', array_map(function (WP_Post $post): string {
             return sprintf(
                 '<p><a href="%1$s" target="_blank">%2$s</a></p>',
                 get_permalink($post),
@@ -158,12 +158,13 @@ class DocumentsTable extends WP_List_Table
      *
      * @return string
      */
-    function column_cb( $item ): string {
-
+    function column_cb($item): string
+    {
         assert($item instanceof DocumentInterface);
 
         return sprintf(
-            '<input type="checkbox" name="bulk-delete[]" value="%s" />', $item->getSettings()->getDocumentId()
+            '<input type="checkbox" name="bulk-delete[]" value="%s" />',
+            $item->getSettings()->getDocumentId()
         );
     }
 
@@ -175,7 +176,7 @@ class DocumentsTable extends WP_List_Table
     public function get_bulk_actions(): array
     {
         return [
-            'bulk-delete' => 'Delete'
+            'bulk-delete' => 'Delete',
         ];
     }
 
@@ -190,7 +191,7 @@ class DocumentsTable extends WP_List_Table
     public function single_row($item)
     {
         echo sprintf('<tr id="post-%1$d">', $item->getSettings()->getDocumentId());
-        $this->single_row_columns( $item );
+        $this->single_row_columns($item);
         echo '</tr>';
     }
 
@@ -203,7 +204,7 @@ class DocumentsTable extends WP_List_Table
      */
     public function handle_row_actions($item, $columnName, $primary): string
     {
-        if($primary !== $columnName){
+        if ($primary !== $columnName) {
             return '';
         }
         $documentId = $item->getSettings()->getDocumentId();
@@ -213,7 +214,7 @@ class DocumentsTable extends WP_List_Table
                 '</a>',
 
             'delete' => '<a href="' .
-                get_delete_post_link($documentId,'', true) . '">' .
+                get_delete_post_link($documentId, '', true) . '">' .
                 __('Delete permanently', 'agb-connector') .
                 '</a>',
         ];
@@ -230,7 +231,8 @@ class DocumentsTable extends WP_List_Table
      *
      * @return string
      */
-    protected function renderCheckbox(string $name, bool $checked, bool $disabled = false): string {
+    protected function renderCheckbox(string $name, bool $checked, bool $disabled = false): string
+    {
         $pluginDirUrl = plugin_dir_url(agb_connector()->pluginFilePath());
         $loadedImgUrl = $pluginDirUrl . 'assets/images/tick.png';
 
@@ -249,19 +251,18 @@ class DocumentsTable extends WP_List_Table
 
     protected function handleBulkAction(): void
     {
-        if('bulk-delete' === $this->current_action()){
+        if ('bulk-delete' === $this->current_action()) {
             check_admin_referer('bulk-' . $this->_args['plural']);
             $postIdsToDelete = filter_input(INPUT_POST, 'bulk-delete', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY);
 
-            foreach ($postIdsToDelete as $postId)
-            {
+            foreach ($postIdsToDelete as $postId) {
                 $attachments = get_posts([
                     'post_parent' => $postId,
                     'post_type' => 'attachment',
-                    'fields' => 'ids'
+                    'fields' => 'ids',
                 ]);
                 wp_delete_post((int) $postId, true);
-                foreach ($attachments as $attachment){
+                foreach ($attachments as $attachment) {
                     wp_delete_attachment($attachment, true);
                 }
             }
@@ -281,5 +282,4 @@ class DocumentsTable extends WP_List_Table
             apply_filters('active_plugins', get_option('active_plugins'))
         );
     }
-
 }

@@ -45,7 +45,7 @@ class PostSavingListener
      */
     public function handlePostSaving($postId, $post): void
     {
-        if($this->checkIfPostIsDocument((int) $postId)){
+        if ($this->checkIfPostIsDocument((int) $postId)) {
             //it's a document itself, so it cannot be displaying page
             return;
         }
@@ -55,7 +55,6 @@ class PostSavingListener
 
         $postDisplaysAgbDocument = array_unique(array_merge($documentIdsFromShortcodes, $documentIdsFromBlocks));
         $this->updateAgbMetaField($postId, $postDisplaysAgbDocument);
-
     }
 
     /**
@@ -71,13 +70,13 @@ class PostSavingListener
 
         $shortcodeRegex = get_shortcode_regex($this->shortcodes->getShortcodeTags());
 
-        preg_match_all('/' . $shortcodeRegex . '/', $text , $matches);
+        preg_match_all('/' . $shortcodeRegex . '/', $text, $matches);
 
         $foundShortcodes = $matches[0] ?? [];
         $foundShortcodeTags = $matches[2] ?? [];
         $foundCount = count($foundShortcodes);
 
-        for ($i = 0; $i < $foundCount; $i++){
+        for ($i = 0; $i < $foundCount; $i++) {
             $atts = shortcode_parse_atts($foundShortcodes[$i]);
             $id = (int) $atts['id'] ?? 0;
             $country = $atts['country'] ?? '';
@@ -104,10 +103,10 @@ class PostSavingListener
         $foundDocumentIds = [];
 
         foreach ($blocks as $block) {
-            if($block['blockName'] === 'core/block'){
+            if ($block['blockName'] === 'core/block') {
                 $refId = (int) $block['attrs']['ref'] ?? 0;
 
-                if($this->checkIfPostIsDocument($refId)){
+                if ($this->checkIfPostIsDocument($refId)) {
                     $foundDocumentIds[] = $refId;
                 }
             }
@@ -131,7 +130,7 @@ class PostSavingListener
      */
     protected function updateAgbMetaField(int $postId, array $documentIds): void
     {
-        if($documentIds) {
+        if ($documentIds) {
             update_post_meta($postId, 'agb_page_contain_documents', $documentIds);
 
             return;

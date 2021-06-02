@@ -18,7 +18,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
      */
     public function createDocument(WP_Post $post): DocumentInterface
     {
-        if($post->post_type === 'wp_block'){
+        if ($post->post_type === 'wp_block') {
             return $this->createFromWpBlock($post);
         }
 
@@ -52,7 +52,6 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
             (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE)
         );
 
-
         return new Document(
             $documentSettings,
             $post->post_title,
@@ -75,7 +74,7 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         $allocations = $this->getDocumentDataFromOptions($post);
 
         $documentSettings = new DocumentSettings();
-        $documentSettings->setSavePdf(! empty($allocations['savePdfFile']) );
+        $documentSettings->setSavePdf(! empty($allocations['savePdfFile']));
         $documentSettings->setAttachToWcEmail(! empty($allocations['wcOrderEmailAttachment']));
         $documentSettings->setPdfAttachmentId(
             $this->getAttachedPdfId($post)
@@ -139,13 +138,13 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
     {
         $allAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS);
 
-        if(! is_array($allAllocations)){
+        if (! is_array($allAllocations)) {
             return [];
         }
 
         foreach ($allAllocations as $documentType => $allocationsOfType) {
             foreach ($allocationsOfType as $documentAllocation) {
-                if(isset($documentAllocation['pageId']) && (int) $documentAllocation['pageId'] === $post->ID) {
+                if (isset($documentAllocation['pageId']) && (int) $documentAllocation['pageId'] === $post->ID) {
                     $documentAllocation['type'] = $documentType;
                     return $documentAllocation;
                 }

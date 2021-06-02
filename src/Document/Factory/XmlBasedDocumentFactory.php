@@ -20,7 +20,7 @@ class XmlBasedDocumentFactory implements XmlBasedDocumentFactoryInterface
         $documentType = (string) $xml->{XmlMetaFields::XML_FIELD_TYPE};
         $documentSettings = new DocumentSettings();
 
-        if($documentType === 'impressum'){
+        if ($documentType === 'impressum') {
             $documentSettings->setSavePdf(false);
             $documentSettings->setAttachToWcEmail(false);
         }

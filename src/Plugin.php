@@ -104,7 +104,6 @@ class Plugin
      */
     public function __construct(string $pluginFilePath)
     {
-
         $this->pluginFilePath = $pluginFilePath;
     }
 
@@ -123,7 +122,7 @@ class Plugin
         add_action('init', [$shortCodes, 'setup']);
         add_action('vc_before_init', [$shortCodes, 'vcMaps']);
 
-        add_action('init', function () use ($shortCodes){
+        add_action('init', function () use ($shortCodes) {
             (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
         });
 
@@ -133,7 +132,7 @@ class Plugin
             return;
         }
 
-        if(! wp_doing_ajax()){
+        if (! wp_doing_ajax()) {
             add_action('admin_init', [$this, 'update']);
         }
 
@@ -171,7 +170,7 @@ class Plugin
 
         $documentsToAttach = $this->documentRepository->getDocumentsForWcEmail();
 
-        foreach ($documentsToAttach as $document){
+        foreach ($documentsToAttach as $document) {
             $pdfAttachmentId = $document->getSettings()->getPdfAttachmentId();
             if (! $pdfAttachmentId) {
                 continue;
@@ -182,7 +181,6 @@ class Plugin
                 $attachments[] = $pdfAttachment;
             }
         }
-
 
         return $attachments;
     }
@@ -243,8 +241,9 @@ class Plugin
      *
      * @return DocumentRepositoryInterface
      */
-    public function documentRepository(): DocumentRepositoryInterface {
-        if(null === $this->documentRepository){
+    public function documentRepository(): DocumentRepositoryInterface
+    {
+        if (null === $this->documentRepository) {
             $this->documentRepository = new DocumentRepository(
                 $this->postBasedDocumentFactory(),
                 $this->attributesAdder()
@@ -261,7 +260,7 @@ class Plugin
      */
     public function attributesAdder(): AttributesAdderInterface
     {
-        if(null === $this->attributesAdder){
+        if (null === $this->attributesAdder) {
             $this->attributesAdder = new AttributesAdder();
         }
 
@@ -273,8 +272,9 @@ class Plugin
      *
      * @return WpPostBasedDocumentFactoryInterface
      */
-    public function postBasedDocumentFactory(): WpPostBasedDocumentFactoryInterface {
-        if(null === $this->postBasedDocumentFactory) {
+    public function postBasedDocumentFactory(): WpPostBasedDocumentFactoryInterface
+    {
+        if (null === $this->postBasedDocumentFactory) {
             $this->postBasedDocumentFactory = new WpPostBasedDocumentFactory();
         }
 
@@ -283,7 +283,7 @@ class Plugin
 
     public function documentPageFinder(): DocumentFinderInterface
     {
-        if(null === $this->documentPageFinder){
+        if (null === $this->documentPageFinder) {
             $this->documentPageFinder = new DocumentPageFinder($this->shortCodes()->getShortcodeTags());
         }
 
@@ -307,7 +307,6 @@ class Plugin
         return $this->shortCodes;
     }
 
-
     /**
      * Update DB to the latest version.
      */
@@ -315,10 +314,9 @@ class Plugin
     {
         $allocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
 
-        if(! is_array($allocations)){
+        if (! is_array($allocations)) {
             return;
         }
-
 
         $updater = new Updater(
             $this->documentPageFinder(),

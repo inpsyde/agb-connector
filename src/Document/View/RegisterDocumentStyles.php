@@ -18,8 +18,8 @@ class RegisterDocumentStyles
     /**
      * @param string $mainPluginFilePath
      */
-    public function __construct(string $mainPluginFilePath){
-
+    public function __construct(string $mainPluginFilePath)
+    {
         $this->mainPluginFilePath = $mainPluginFilePath;
     }
 
@@ -28,7 +28,7 @@ class RegisterDocumentStyles
      */
     public function __invoke(): void
     {
-        add_action('wp_enqueue_scripts', function(): void{
+        add_action('wp_enqueue_scripts', function (): void {
             $cssLocalPath = 'assets/css/document-style.css';
             $pluginFileUrl = plugin_dir_url($this->mainPluginFilePath);
             $cssFullPath = plugin_dir_path($this->mainPluginFilePath) . $cssLocalPath;

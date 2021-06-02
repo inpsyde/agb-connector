@@ -71,6 +71,7 @@ class MiddlewareRequestHandler
         XmlBasedDocumentFactoryInterface $documentFactory,
         DocumentFinderInterface $documentFinder
     ) {
+
         $this->userAuthToken = $userAuthToken;
         $this->supportedCountries = $apiSupportedService->supportedCountries();
         $this->supportedLanguages = $apiSupportedService->supportedLanguages();

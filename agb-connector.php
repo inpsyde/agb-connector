@@ -35,7 +35,6 @@ function agb_connector()
         return null;
     }
 
-
     $autoload = __DIR__.'/vendor/autoload.php';
 
     if (! class_exists(Plugin::class) && file_exists($autoload)) {

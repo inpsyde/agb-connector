@@ -20,7 +20,7 @@ class XmlMetaFields
 
     const XML_FIELD_TEXT_CONTENT = 'rechtstext_text';
 
-    const XML_FIELD_COUNTRY  = 'rechtstext_country';
+    const XML_FIELD_COUNTRY = 'rechtstext_country';
 
     const XML_FIELD_LANGUAGE = 'rechtstext_language';
 

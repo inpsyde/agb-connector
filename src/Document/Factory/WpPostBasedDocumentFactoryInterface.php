@@ -26,5 +26,4 @@ interface WpPostBasedDocumentFactoryInterface
      * @throws XmlApiException If couldn't create a new instance.
      */
     public function createDocument(WP_Post $post): DocumentInterface;
-
 }

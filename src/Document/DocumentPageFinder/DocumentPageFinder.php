@@ -20,7 +20,8 @@ class DocumentPageFinder implements DocumentFinderInterface
 
     public function __construct(
         array $shortcodes
-    ){
+    ) {
+
         $this->shortcodes = $shortcodes;
     }
 
@@ -34,7 +35,7 @@ class DocumentPageFinder implements DocumentFinderInterface
                 'numberposts' => -1,
                 'meta_key' => 'agb_page_contain_documents',
                 'fields' => 'ids',
-                'post_type' =>  'any'
+                'post_type' =>  'any',
 
             ]
         );
@@ -44,12 +45,12 @@ class DocumentPageFinder implements DocumentFinderInterface
         foreach ($foundPostsWithDocuments as $postId) {
             $documentsList = get_post_meta($postId, 'agb_page_contain_documents', true);
 
-            if(! is_array($documentsList)){
+            if (! is_array($documentsList)) {
                 continue;
             }
 
-            $documents = array_map( 'intval', $documentsList);
-            if(in_array($documentId, $documents, true)){
+            $documents = array_map('intval', $documentsList);
+            if (in_array($documentId, $documents, true)) {
                 $foundPostIds[] = $postId;
             }
         }

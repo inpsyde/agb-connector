@@ -4,6 +4,7 @@ namespace Inpsyde\AGBConnector;
 
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+
 /**
  * Class ShortCodes
  */
@@ -117,8 +118,8 @@ class ShortCodes
      */
     public function getShortcodeTagByDocumentType(string $documentType): string
     {
-        foreach($this->settings() as $shortcodeTag => $shortcodeConfig){
-            if($documentType === $shortcodeConfig['setting_key']){
+        foreach ($this->settings() as $shortcodeTag => $shortcodeConfig) {
+            if ($documentType === $shortcodeConfig['setting_key']) {
                 return $shortcodeTag;
             }
         }
@@ -128,8 +129,8 @@ class ShortCodes
 
     public function getDocumentTypeNameByType(string $documentType): string
     {
-        foreach($this->settings() as $shortcodeConfig){
-            if($documentType === $shortcodeConfig['setting_key']){
+        foreach ($this->settings() as $shortcodeConfig) {
+            if ($documentType === $shortcodeConfig['setting_key']) {
                 return $shortcodeConfig['name'];
             }
         }
@@ -163,7 +164,7 @@ class ShortCodes
      */
     public function vcMaps()
     {
-        if(! function_exists('vc_map')){
+        if (! function_exists('vc_map')) {
             return;
         }
 

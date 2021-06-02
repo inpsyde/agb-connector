@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector;
+
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
@@ -53,6 +54,7 @@ class Settings
         DocumentFinderInterface $documentPageFinder,
         ShortCodes $shortCodes
     ) {
+
         $this->repository = $repository;
         $this->documentPageFinder = $documentPageFinder;
         $this->migrationFailedMessage = sprintf(
@@ -81,7 +83,7 @@ class Settings
         $documentId = (int) filter_input(INPUT_POST, 'documentId', FILTER_SANITIZE_NUMBER_INT);
         $document = $this->repository->getDocumentById($documentId);
 
-        if($document === null) {
+        if ($document === null) {
             wp_send_json_error(
                 [
                     'message' => __('Document not found.', 'agb-connector'),
@@ -117,10 +119,9 @@ class Settings
             ]
         );
 
-        if( $hook !== false) {
+        if ($hook !== false) {
             add_action('load-' . $hook, [$this, 'load']);
         }
-
     }
 
     /**
@@ -168,9 +169,8 @@ class Settings
 
         wp_localize_script('agb-connector', 'agbConnectorSettings', [
             'action' => self::AJAX_ACTION,
-            'nonce' => wp_create_nonce(self::AJAX_ACTION)
-            ]
-        );
+            'nonce' => wp_create_nonce(self::AJAX_ACTION),
+            ]);
 
         $getRegen = filter_input(INPUT_GET, 'regen', FILTER_SANITIZE_NUMBER_INT);
         if (null !== $getRegen) {
@@ -195,7 +195,7 @@ class Settings
             [
                 'singular' => __('Document', 'agb-connector'),
                 'plural' => __('Documents', 'agb-connector'),
-                'ajax' => true
+                'ajax' => true,
             ]
         );
 
@@ -250,7 +250,7 @@ class Settings
                 if ($this->message) {
                     echo '<div id="message" class="updated"><p>' . esc_html($this->message) . '</p></div>';
                 }
-                if( get_option(self::MIGRATION_FAILED_FLAG_OPTION_NAME, false)){
+                if (get_option(self::MIGRATION_FAILED_FLAG_OPTION_NAME, false)) {
                     echo  '<div id="agbc-migration-failed" class="notice notice-warning"><p>' . wp_kses_post($this->migrationFailedMessage) . '</p></div>';
                 }
                 ?>
@@ -336,7 +336,7 @@ class Settings
         switch ($fieldName) {
             case 'store_pdf':
                 $document->getSettings()->setSavePdf($fieldValue);
-                if(! $fieldValue){
+                if (! $fieldValue) {
                     $document->getSettings()->setAttachToWcEmail(false);
                 }
                 break;

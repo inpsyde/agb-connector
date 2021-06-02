@@ -37,7 +37,7 @@ class DocumentRepository implements DocumentRepositoryInterface
     public function __construct(
         WpPostBasedDocumentFactory $documentFactory,
         AttributesAdderInterface $attributesAdder
-    ){
+    ) {
 
         $this->documentFactory = $documentFactory;
         $this->attributesAdder = $attributesAdder;
@@ -48,12 +48,12 @@ class DocumentRepository implements DocumentRepositoryInterface
      */
     public function getDocumentById(int $id): ?DocumentInterface
     {
-        if (! $id){
+        if (! $id) {
             return null;
         }
         $post = get_post($id);
 
-        if( ! $post instanceof WP_Post || ! get_post_meta($id, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)){
+        if (! $post instanceof WP_Post || ! get_post_meta($id, WpPostMetaFields::WP_POST_DOCUMENT_TYPE)) {
             return null;
         }
 
@@ -76,9 +76,9 @@ class DocumentRepository implements DocumentRepositoryInterface
                 'meta_query' => [
                     [
                         'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                        'compare' => 'EXISTS'
-                    ]
-                ]
+                        'compare' => 'EXISTS',
+                    ],
+                ],
             ]
         );
 
@@ -95,7 +95,7 @@ class DocumentRepository implements DocumentRepositoryInterface
                 'numberposts' => -1,
                 'post_type' => 'wp_block',
                 'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
-                'meta_value' => $type
+                'meta_value' => $type,
             ]
         );
 
@@ -112,7 +112,7 @@ class DocumentRepository implements DocumentRepositoryInterface
                 'numberposts' => -1,
                 'post_type' => 'wp_block',
                 'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL,
-                'meta_value' => '1'
+                'meta_value' => '1',
             ]
         );
 
@@ -127,6 +127,7 @@ class DocumentRepository implements DocumentRepositoryInterface
         string $country,
         string $language
     ): int {
+
         $foundPostId = get_posts(
             [
                 'numberposts' => 1,
@@ -144,9 +145,9 @@ class DocumentRepository implements DocumentRepositoryInterface
                     ],
                     [
                         'key' => WpPostMetaFields::WP_POST_DOCUMENT_LANGUAGE,
-                        'value' => $language
-                    ]
-                ]
+                        'value' => $language,
+                    ],
+                ],
             ]
         );
 
@@ -160,13 +161,11 @@ class DocumentRepository implements DocumentRepositoryInterface
     {
         $documentSettings = $document->getSettings();
 
-
         $documentPostId = $documentSettings->getDocumentId() ?: $this->getDocumentPostIdByTypeCountryAndLanguage(
             $document->getType(),
             $document->getCountry(),
             $document->getLanguage()
         );
-
 
         $args = [
             'ID' => $documentPostId,
@@ -180,21 +179,23 @@ class DocumentRepository implements DocumentRepositoryInterface
                 WpPostMetaFields::WP_POST_DOCUMENT_COUNTRY => $document->getCountry(),
                 WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF => $documentSettings->getSavePdf(),
                 WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL => $documentSettings->getAttachToWcEmail(),
-                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE => $documentSettings->getHideTitle()
-            ]
+                WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE => $documentSettings->getHideTitle(),
+            ],
         ];
         remove_filter('content_save_pre', 'wp_filter_post_kses');
 
         $result = $document->getSettings()->getDocumentId() ?
             wp_update_post($args, true) : //we need wp_update_post instead of wp_insert_post to preserve original post_date.
-            wp_insert_post( $args, true);
+            wp_insert_post($args, true);
 
         add_filter('content_save_pre', 'wp_filter_post_kses');
 
         if (is_wp_error($result)) {
             throw new GeneralException(
-                sprintf('Failed to save the post, WP_Error received when tried: %1$s',
-                    $result->get_error_message())
+                sprintf(
+                    'Failed to save the post, WP_Error received when tried: %1$s',
+                    $result->get_error_message()
+                )
             );
         }
         $documentId = $result; //Just for clarity. If it's not a WP_Error, then it's inserted post id.
@@ -202,8 +203,7 @@ class DocumentRepository implements DocumentRepositoryInterface
         //Add HTML attributes to document.
         //These attributes needed to hide document title if this feature is enabled in settings.
         //We need to do it after document saving, because new documents has no document id yet which we need to add as attribute value.
-        if(! $this->attributesAdded($document)){ //check if already processed to avoid endless loop
-
+        if (! $this->attributesAdded($document)) { //check if already processed to avoid endless loop
             $this->processedDocuments[] = $documentId;
             $document->getSettings()->setDocumentId($documentId);
             $document = $this->attributesAdder->addAttributes($document);
@@ -215,14 +215,12 @@ class DocumentRepository implements DocumentRepositoryInterface
         if ($attachmentId) {
             $attachmentPost = get_post($attachmentId);
 
-            if($attachmentPost) {
+            if ($attachmentPost) {
                 $attachmentPostData = wp_slash(get_object_vars($attachmentPost));
                 $attachmentPostData['post_parent'] = $documentId;
 
                 wp_insert_attachment($attachmentPostData);
             }
-
-
         }
         return $documentId;
     }

@@ -53,7 +53,7 @@ class Document implements DocumentInterface
         string $country,
         string $language,
         string $type
-    ){
+    ) {
 
         $this->title = $title;
         $this->content = $htmlContent;

@@ -54,7 +54,8 @@ class CheckPostXml extends Middleware
         DocumentRepositoryInterface $documentRepository,
         XmlBasedDocumentFactory $documentFactory,
         DocumentFinderInterface $documentFinder
-    ){
+    ) {
+
         $this->documentRepository = $documentRepository;
         $this->documentFactory = $documentFactory;
         $this->documentFinder = $documentFinder;
@@ -83,7 +84,6 @@ class CheckPostXml extends Middleware
 
     protected function checkPdfFilename(SimpleXMLElement $xml): void
     {
-
         if ($xml->rechtstext_pdf_filename_suggestion === null) {
             throw new PdfFilenameException(
                 "No pdf filename provided"
@@ -127,7 +127,7 @@ class CheckPostXml extends Middleware
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
 
         if (!$pdf) {
-           return 0;
+            return 0;
         }
         if (strpos($pdf, '%PDF') !== 0) {
             throw new PdfUrlException(
@@ -153,7 +153,7 @@ class CheckPostXml extends Middleware
             );
         }
 
-        if(! function_exists('wp_generate_attachment_metadata')) {
+        if (! function_exists('wp_generate_attachment_metadata')) {
             require_once ABSPATH . 'wp-admin/includes/image.php';
         }
 
@@ -288,7 +288,7 @@ class CheckPostXml extends Middleware
     {
         $pagesDisplayingDocumentIds = $this->documentFinder->findPagesDisplayingDocument($savedDocumentId);
 
-        if(! $pagesDisplayingDocumentIds){
+        if (! $pagesDisplayingDocumentIds) {
             return '';
         }
 
