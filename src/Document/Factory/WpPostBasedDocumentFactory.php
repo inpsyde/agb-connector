@@ -45,6 +45,9 @@ class WpPostBasedDocumentFactory implements WpPostBasedDocumentFactoryInterface
         );
         $documentSettings->setDocumentId($post->ID);
         $documentSettings->setSavePdf($savePdf);
+        $documentSettings->setPdfAttachmentId(
+            $this->getAttachedPdfId($post)
+        );
         $documentSettings->setHideTitle(
             (bool) $this->getPostMeta($post, WpPostMetaFields::WP_POST_DOCUMENT_FLAG_HIDE_TITLE)
         );
