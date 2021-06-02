@@ -213,12 +213,16 @@ class DocumentRepository implements DocumentRepositoryInterface
         $attachmentId = $documentSettings->getPdfAttachmentId();
 
         if ($attachmentId) {
-            wp_insert_attachment(
-                [
-                    'ID' => $attachmentId,
-                    'post_parent' => $documentId
-                ]
-            );
+            $attachmentPost = get_post($attachmentId);
+
+            if($attachmentPost) {
+                $attachmentPostData = wp_slash(get_object_vars($attachmentPost));
+                $attachmentPostData['post_parent'] = $documentId;
+
+                wp_insert_attachment($attachmentPostData);
+            }
+
+
         }
         return $documentId;
     }
