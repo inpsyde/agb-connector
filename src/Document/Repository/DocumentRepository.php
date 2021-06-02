@@ -111,7 +111,7 @@ class DocumentRepository implements DocumentRepositoryInterface
             [
                 'numberposts' => -1,
                 'post_type' => 'wp_block',
-                'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_FLAG_SAVE_PDF,
+                'meta_key' => WpPostMetaFields::WP_POST_DOCUMENT_FLAG_ATTACH_TO_WC_EMAIL,
                 'meta_value' => '1'
             ]
         );
