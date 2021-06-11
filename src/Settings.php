@@ -7,6 +7,7 @@ namespace Inpsyde\AGBConnector;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use InvalidArgumentException;
@@ -77,6 +78,7 @@ class Settings
     public function init()
     {
         add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleAjaxRequest']);
+        add_action('after_delete_post', [$this, 'filterRedirectAfterDocumentDeleted']);
     }
 
     /**
@@ -359,5 +361,18 @@ class Settings
         }
 
         $this->repository->saveDocument($document);
+    }
+
+    public function filterRedirectAfterDocumentDeleted($postId): void
+    {
+        $isDocument = get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
+
+        if (! $isDocument) {
+            return;
+        }
+
+        add_filter('wp_redirect', function () {
+            return menu_page_url($this->menuPageSlug, false);
+        });
     }
 }
