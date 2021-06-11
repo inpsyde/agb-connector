@@ -1,7 +1,11 @@
 # Changelog
 
 ## Version 3.0.0
-
+* Added: Hide title option
+* Changed: Documents now saved as `wp_block` post type
+* Changed: All incoming documents saved, no preconfigured allocation needed.
+* Changed: Updated settings page appearance.
+* Changed: Document can be saved if PDF required but not attached.
 
 ## Version 2.0.2
 * Fixed: Fixed displaying of Shop URL when WPML is used
