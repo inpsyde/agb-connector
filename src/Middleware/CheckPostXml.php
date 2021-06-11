@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
+use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfFilenameException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
@@ -11,6 +12,7 @@ use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Map\XmlMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
@@ -69,8 +71,7 @@ class CheckPostXml extends Middleware
      */
     public function process($xml)
     {
-        $document = $this->documentFactory->createDocument($xml);
-        $savedDocumentId = $this->documentRepository->saveDocument($document);
+        $savedDocumentId = $this->saveDocument($xml);
         $document = $this->documentRepository->getDocumentById($savedDocumentId);
         $targetUrl = $this->getPageDocumentIsDisplayedOn($savedDocumentId);
 
@@ -80,6 +81,43 @@ class CheckPostXml extends Middleware
         }
 
         return parent::process($targetUrl);
+    }
+
+    /**
+     * Handle saving of the incoming document.
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return int
+     * @throws XmlApiException
+     * @throws GeneralException
+     */
+    protected function saveDocument(SimpleXMLElement $xml): int
+    {
+        $newDocument = $this->documentFactory->createDocument($xml);
+        $existingDocument = $this->getExistingDocument($xml);
+        if ($existingDocument !== null) {
+            $this->copySettingsFromExistingDocumentToNew($newDocument, $existingDocument);
+        }
+        return $this->documentRepository->saveDocument($newDocument);
+    }
+
+    /**
+     * Find and return document if it exists already.
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return DocumentInterface|null
+     */
+    protected function getExistingDocument(SimpleXMLElement $xml): ?DocumentInterface
+    {
+        $documentId = $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+            (string) $xml->{XmlMetaFields::XML_FIELD_TYPE},
+            (string) $xml->{XmlMetaFields::XML_FIELD_COUNTRY},
+            (string) $xml->{XmlMetaFields::XML_FIELD_LANGUAGE}
+        );
+
+        return $this->documentRepository->getDocumentById($documentId);
     }
 
     protected function checkPdfFilename(SimpleXMLElement $xml): void
@@ -295,5 +333,40 @@ class CheckPostXml extends Middleware
         $targetUrl = get_permalink(reset($pagesDisplayingDocumentIds));
 
         return is_string($targetUrl) ? $targetUrl : '';
+    }
+
+    /**
+     * Copy settings from the existing document to the new one.
+     *
+     * @param DocumentInterface $newDocument
+     * @param DocumentInterface $existingDocument
+     */
+    protected function copySettingsFromExistingDocumentToNew(
+        DocumentInterface $newDocument,
+        DocumentInterface $existingDocument
+    ): void {
+
+        $newDocumentSettings = $newDocument->getSettings();
+        $existingDocumentSettings = $existingDocument->getSettings();
+
+        $newDocumentSettings->setPdfAttachmentId(
+            $existingDocumentSettings->getPdfAttachmentId()
+        );
+
+        $newDocumentSettings->setDocumentId(
+            $existingDocumentSettings->getDocumentId()
+        );
+
+        $newDocumentSettings->setAttachToWcEmail(
+            $existingDocumentSettings->getAttachToWcEmail()
+        );
+
+        $newDocumentSettings->setSavePdf(
+            $existingDocumentSettings->getSavePdf()
+        );
+
+        $newDocumentSettings->setHideTitle(
+            $existingDocumentSettings->getHideTitle()
+        );
     }
 }
