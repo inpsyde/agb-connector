@@ -36,6 +36,11 @@ class Settings
     protected $shortCodes;
 
     /**
+     * @var string
+     */
+    protected $menuPageSlug;
+
+    /**
      * The save message.
      *
      * @var string
@@ -66,6 +71,7 @@ class Settings
             '</a>'
         );
         $this->shortCodes = $shortCodes;
+        $this->menuPageSlug = 'agb_connector_settings';
     }
 
     public function init()
@@ -112,7 +118,7 @@ class Settings
             __('Terms & Conditions Connector of IT-Recht Kanzlei', 'agb-connector'),
             'AGB Connector',
             'edit_pages',
-            'agb_connector_settings',
+            $this->menuPageSlug,
             [
                 $this,
                 'page',
