@@ -14,7 +14,7 @@ class XmlApiSupportedService
      *
      * @return array
      */
-    public function supportedLanguages()
+    public function supportedLanguages(): array
     {
         return (array) apply_filters('agbc_supported_languages', [
             'de' => __('German', 'agb-connector'),
@@ -37,7 +37,7 @@ class XmlApiSupportedService
      *
      * @return array
      */
-    public function supportedCountries()
+    public function supportedCountries(): array
     {
         return (array) apply_filters('agbc_supported_countries', [
             'DE' => __('Germany', 'agb-connector'),
@@ -67,7 +67,7 @@ class XmlApiSupportedService
      * Get supported text types
      * @return array
      */
-    public function supportedTextTypes()
+    public function supportedTextTypes(): array
     {
         return (array) apply_filters('agbc_supported_text_types', [
             'agb' => __('Terms and Conditions', 'agb-connector'),
