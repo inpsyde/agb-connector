@@ -14,7 +14,7 @@ class XmlApiSupportedService
      */
     public function supportedLanguages()
     {
-        return [
+        return (array) apply_filters('agbc_supported_languages', [
             'de' => __('German', 'agb-connector'),
             'fr' => __('French', 'agb-connector'),
             'en' => __('English', 'agb-connector'),
@@ -27,7 +27,7 @@ class XmlApiSupportedService
             'cs' => __('Czech', 'agb-connector'),
             'sl' => __('Slovenian', 'agb-connector'),
             'pt' => __('Portuguese', 'agb-connector'),
-        ];
+        ]);
     }
 
     /**
@@ -37,7 +37,7 @@ class XmlApiSupportedService
      */
     public function supportedCountries()
     {
-        return [
+        return (array) apply_filters('agbc_supported_countries', [
             'DE' => __('Germany', 'agb-connector'),
             'AT' => __('Austria', 'agb-connector'),
             'CH' => __('Switzerland', 'agb-connector'),
@@ -58,7 +58,7 @@ class XmlApiSupportedService
             'SI' => __('Slovenia', 'agb-connector'),
             'AU' => __('Australia', 'agb-connector'),
             'PT' => __('Portugal', 'agb-connector'),
-        ];
+        ]);
     }
 
     /**
@@ -67,11 +67,11 @@ class XmlApiSupportedService
      */
     public function supportedTextTypes()
     {
-        return [
+        return (array) apply_filters('agbc_supported_text_types', [
             'agb' => __('Terms and Conditions', 'agb-connector'),
             'datenschutz' => __('Privacy', 'agb-connector'),
             'widerruf' => __('Revocation', 'agb-connector'),
             'impressum' => __('Imprint', 'agb-connector'),
-        ];
+        ]);
     }
 }
