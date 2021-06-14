@@ -29,7 +29,7 @@ class Plugin
     const VERSION = '3.0.0';
 
     /**
-     * Option to store Text type allocation
+     * Option to store Text type allocation (used before version 3.0.0)
      * Format: [
      *      'agb' => [
      *          0 => [
