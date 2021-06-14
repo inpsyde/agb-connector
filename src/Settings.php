@@ -78,7 +78,7 @@ class Settings
     public function init()
     {
         add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleAjaxRequest']);
-        add_action('before_delete_post', [$this, 'filterRedirectAfterDocumentDeleted'], 10, 1);
+        add_action('before_delete_post', [$this, 'filterRedirectAfterDocumentDeleted']);
     }
 
     /**
