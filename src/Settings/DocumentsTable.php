@@ -59,9 +59,9 @@ class DocumentsTable extends WP_List_Table
             'agb-column-country' => __('Country', 'agb-connector'),
             'agb-column-language' => __('Language', 'agb-connector'),
             'agb-column-page' => __('Page', 'agb-connector'),
+            'agb-column-hide_title' => __('Hide page title', 'agb-connector'),
             'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
             'agb-column-attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
-            'agb-column-hide_title' => __('Hide title', 'agb-connector'),
             'agb-column-shortcode' => __('Shortcode', 'agb-connector'),
         ];
 
