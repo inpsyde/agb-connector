@@ -1,16 +1,13 @@
-<?php # -*- coding: utf-8 -*-
+<?php
 
 namespace Inpsyde\AGBConnector;
 
-use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdder;
-use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdderInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
-use Inpsyde\AGBConnector\Document\View\RegisterDocumentStyles;
 use Inpsyde\AGBConnector\Document\View\RemoveDocumentPageTitleIfEnabled;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use Inpsyde\AGBConnector\Updater\Updater;
@@ -94,11 +91,6 @@ class Plugin
     protected $documentsTable;
 
     /**
-     * @var AttributesAdderInterface
-     */
-    protected $attributesAdder;
-
-    /**
      * Path to the main plugin file.
      *
      * @param string $pluginFilePath
@@ -127,8 +119,6 @@ class Plugin
             (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
         });
 
-        (new RegisterDocumentStyles($this->pluginFilePath()))();
-        
         (new RemoveDocumentPageTitleIfEnabled($this->documentRepository()))();
 
         if (! is_admin()) {
@@ -248,26 +238,11 @@ class Plugin
     {
         if (null === $this->documentRepository) {
             $this->documentRepository = new DocumentRepository(
-                $this->postBasedDocumentFactory(),
-                $this->attributesAdder()
+                $this->postBasedDocumentFactory()
             );
         }
 
         return $this->documentRepository;
-    }
-
-    /**
-     * Get Attributes Adder.
-     *
-     * @return AttributesAdderInterface
-     */
-    public function attributesAdder(): AttributesAdderInterface
-    {
-        if (null === $this->attributesAdder) {
-            $this->attributesAdder = new AttributesAdder();
-        }
-
-        return $this->attributesAdder;
     }
 
     /**

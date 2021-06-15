@@ -5,7 +5,6 @@ namespace Inpsyde\AGBConnector\Document\Repository;
 
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
-use Inpsyde\AGBConnector\Document\AttributesAdder\AttributesAdderInterface;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
 use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
@@ -18,29 +17,15 @@ class DocumentRepository implements DocumentRepositoryInterface
      * @var WpPostBasedDocumentFactory
      */
     protected $documentFactory;
-    /**
-     * @var AttributesAdderInterface
-     */
-    protected $attributesAdder;
-
-    /**
-     * List of documents already processed by AttributesAdded.
-     *
-     * @var int[]
-     */
-    protected $processedDocuments = [];
 
     /**
      * @param WpPostBasedDocumentFactory $documentFactory
-     * @param AttributesAdderInterface $attributesAdder
      */
     public function __construct(
-        WpPostBasedDocumentFactory $documentFactory,
-        AttributesAdderInterface $attributesAdder
+        WpPostBasedDocumentFactory $documentFactory
     ) {
 
         $this->documentFactory = $documentFactory;
-        $this->attributesAdder = $attributesAdder;
     }
 
     /**
@@ -200,16 +185,6 @@ class DocumentRepository implements DocumentRepositoryInterface
         }
         $documentId = $result; //Just for clarity. If it's not a WP_Error, then it's inserted post id.
 
-        //Add HTML attributes to document.
-        //These attributes needed to hide document title if this feature is enabled in settings.
-        //We need to do it after document saving, because new documents has no document id yet which we need to add as attribute value.
-        if (! $this->attributesAdded($document)) { //check if already processed to avoid endless loop
-            $this->processedDocuments[] = $documentId;
-            $document->getSettings()->setDocumentId($documentId);
-            $document = $this->attributesAdder->addAttributes($document);
-            $this->saveDocument($document);
-        }
-
         $attachmentId = $documentSettings->getPdfAttachmentId();
 
         if ($attachmentId) {
@@ -223,19 +198,5 @@ class DocumentRepository implements DocumentRepositoryInterface
             }
         }
         return $documentId;
-    }
-
-    /**
-     * Check if HTML attributes already was added during current document saving.
-     *
-     * @param DocumentInterface $document
-     *
-     * @return bool
-     */
-    protected function attributesAdded(DocumentInterface $document): bool
-    {
-        $documentId = $document->getSettings()->getDocumentId();
-
-        return in_array($documentId, $this->processedDocuments, true);
     }
 }
