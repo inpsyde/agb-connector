@@ -209,10 +209,6 @@ class DocumentsTable extends WP_List_Table
         }
         $documentId = $item->getSettings()->getDocumentId();
         $actions =  [
-            'edit' => '<a href="' . get_edit_post_link($documentId) .  '">' .
-                __('Edit', 'agb-connector') .
-                '</a>',
-
             'delete' => '<a href="' .
                 get_delete_post_link($documentId, '', true) . '">' .
                 __('Delete permanently', 'agb-connector') .
