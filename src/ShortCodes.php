@@ -50,7 +50,7 @@ class ShortCodes
     {
         return (array)apply_filters('agb_shortcodes', [
             'agb_terms' => [
-                'name' => esc_html__('Terms', 'agb-connector'),
+                'name' => esc_html__('Terms and Conditions', 'agb-connector'),
                 'setting_key' => 'agb',
             ],
             'agb_privacy' => [
