@@ -266,25 +266,6 @@ class Settings
                         <tr valign="top">
                             <th scope="row">
                                 <label for="regen">
-                                    <?php esc_html_e('Your shop URL', 'agb-connector'); ?>
-                                </label>
-                            </th>
-                            <td>
-                                <p>
-                                    <code>
-                                        <?php
-                                            //Directly use option that that WPML can't change it
-                                            $homeUrl = trailingslashit(get_option('home'));
-                                            $homeUrl = set_url_scheme($homeUrl);
-                                            echo esc_attr($homeUrl);
-                                        ?>
-                                    </code>
-                                </p>
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">
-                                <label for="regen">
                                     <?php esc_html_e('API-Token', 'agb-connector'); ?>
                                 </label>
                             </th>
@@ -313,6 +294,25 @@ class Settings
                                         'If you change the token, this must also be adjusted in the client portal.',
                                         'agb-connector'
                                     ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">
+                                <label for="regen">
+                                    <?php esc_html_e('Your shop URL', 'agb-connector'); ?>
+                                </label>
+                            </th>
+                            <td>
+                                <p>
+                                    <code>
+                                        <?php
+                                            //Directly use option that that WPML can't change it
+                                            $homeUrl = trailingslashit(get_option('home'));
+                                            $homeUrl = set_url_scheme($homeUrl);
+                                            echo esc_attr($homeUrl);
+                                        ?>
+                                    </code>
                                 </p>
                             </td>
                         </tr>
