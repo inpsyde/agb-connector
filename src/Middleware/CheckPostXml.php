@@ -11,7 +11,7 @@ use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
-use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Map\XmlMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
@@ -37,7 +37,7 @@ class CheckPostXml extends Middleware
      */
     protected $documentRepository;
     /**
-     * @var XmlBasedDocumentFactory
+     * @var XmlBasedDocumentFactoryInterface
      */
     protected $documentFactory;
     /**
@@ -49,12 +49,12 @@ class CheckPostXml extends Middleware
      * CheckPostXml constructor.
      *
      * @param DocumentRepositoryInterface $documentRepository
-     * @param XmlBasedDocumentFactory $documentFactory
+     * @param XmlBasedDocumentFactoryInterface $documentFactory
      * @param DocumentFinderInterface $documentFinder
      */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        XmlBasedDocumentFactory $documentFactory,
+        XmlBasedDocumentFactoryInterface $documentFactory,
         DocumentFinderInterface $documentFinder
     ) {
 
