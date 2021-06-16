@@ -300,6 +300,7 @@ class Plugin
             $this->documentPageFinder(),
             $this->documentRepository(),
             $this->postBasedDocumentFactory(),
+            $this->shortCodes(),
             $allocations
         );
 

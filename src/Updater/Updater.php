@@ -5,11 +5,13 @@ namespace Inpsyde\AGBConnector\Updater;
 
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentInterface;
 use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
 use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\Settings;
+use Inpsyde\AGBConnector\ShortCodes;
 use RuntimeException;
 use WP_Post;
 
@@ -32,11 +34,16 @@ class Updater implements UpdaterInterface
      * @var WpPostBasedDocumentFactoryInterface
      */
     protected $documentFactory;
+    /**
+     * @var ShortCodes
+     */
+    protected $shortCodes;
 
     public function __construct(
         DocumentFinderInterface $documentPageFinder,
         DocumentRepositoryInterface $documentRepository,
         WpPostBasedDocumentFactoryInterface $documentFactory,
+        ShortCodes $shortCodes,
         array $allocations
     ) {
 
@@ -44,6 +51,7 @@ class Updater implements UpdaterInterface
         $this->documentRepository = $documentRepository;
         $this->allocations = $allocations;
         $this->documentFactory = $documentFactory;
+        $this->shortCodes = $shortCodes;
     }
 
     /**
@@ -92,8 +100,8 @@ class Updater implements UpdaterInterface
     protected function moveOldDocumentPostToWpBlock(WP_Post $post): void
     {
         $document = $this->documentFactory->createDocument($post);
-        $savedDocumentId = $this->documentRepository->saveDocument($document);
-        $post->post_content = $this->getBlockCodeForDocumentId($savedDocumentId);
+        $this->documentRepository->saveDocument($document);
+        $post->post_content = $this->getDocumentCodeForDisplayingPage($document, $post);
         $displayingPageUpdateResult = wp_update_post($post, true);
 
         if (is_wp_error($displayingPageUpdateResult)) {
@@ -137,5 +145,52 @@ class Updater implements UpdaterInterface
         }
 
         error_log($message);
+    }
+
+    /**
+     * Get shortcode or wp_block code to display document on the page.
+     *
+     * @param DocumentInterface $document
+     * @param WP_Post $post
+     *
+     * @return string
+     */
+    protected function getDocumentCodeForDisplayingPage(
+        DocumentInterface $document,
+        WP_Post $post
+    ): string {
+
+        if ($this->isGutenbergEnabledForPost($post)) {
+            return $this->getBlockCodeForDocumentId($document->getSettings()->getDocumentId());
+        }
+
+        return $this->getDocumentShortcode($document);
+    }
+
+    /**
+     * Check if Gutenberg editor will be used for post.
+     *
+     * @param WP_Post $post
+     *
+     * @return bool
+     */
+    protected function isGutenbergEnabledForPost(WP_Post $post): bool
+    {
+        $editorReplacedForPost = apply_filters('replace_editor', false, $post);
+        $editorCanBeUsedForPost = use_block_editor_for_post($post);
+
+        return !$editorReplacedForPost && $editorCanBeUsedForPost;
+    }
+
+    /**
+     * Return shortcode for given document.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return string
+     */
+    protected function getDocumentShortcode(DocumentInterface $document): string
+    {
+        return $this->shortCodes->generateShortcodeForDocument($document);
     }
 }
