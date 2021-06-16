@@ -75,7 +75,7 @@ class CheckPostXml extends Middleware
         $document = $this->documentRepository->getDocumentById($savedDocumentId);
         $targetUrl = $this->getPageDocumentIsDisplayedOn($savedDocumentId);
 
-        if ('impressum' !== $document->getType() && $document->getSettings()->getSavePdf()) {
+        if ($document && 'impressum' !== $document->getType() && $document->getSettings()->getSavePdf()) {
             $this->checkPdfFilename($xml);
             $this->pushPdfFile($xml, $document);
         }
