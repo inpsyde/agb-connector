@@ -100,7 +100,8 @@ class Updater implements UpdaterInterface
     protected function moveOldDocumentPostToWpBlock(WP_Post $post): void
     {
         $document = $this->documentFactory->createDocument($post);
-        $this->documentRepository->saveDocument($document);
+        $savedDocumentId = $this->documentRepository->saveDocument($document);
+        $document->getSettings()->setDocumentId($savedDocumentId);
         $post->post_content = $this->getDocumentCodeForDisplayingPage($document, $post);
         $displayingPageUpdateResult = wp_update_post($post, true);
 
