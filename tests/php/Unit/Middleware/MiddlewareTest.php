@@ -38,7 +38,7 @@ class MiddlewareTest extends TestCase
             $xml = simplexml_load_string($xml);
         }
 
-        $middleware = new CheckConfiguration($userAuthToken, $allocations);
+        $middleware = new CheckConfiguration($userAuthToken);
         try {
             $middleware->process($xml);
         }
