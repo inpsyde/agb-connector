@@ -11,6 +11,7 @@ use Inpsyde\AGBConnector\Document\Map\WpPostMetaFields;
 use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
 use Inpsyde\AGBConnector\Settings\DocumentsTable;
 use InvalidArgumentException;
+use WP_Query;
 
 /**
  * Class Settings
@@ -84,6 +85,7 @@ class Settings
     {
         add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleAjaxRequest']);
         add_action('before_delete_post', [$this, 'filterRedirectAfterDocumentDeleted']);
+        add_action('pre_get_posts', [$this, 'filterOutDocumentPostsFromReusableBlockList']);
     }
 
     /**
@@ -384,5 +386,34 @@ class Settings
         add_filter('wp_redirect', function () {
             return menu_page_url($this->menuPageSlug, false);
         });
+    }
+
+    /**
+     * Exclude blocks representing documents from the reusable blocks list on the edit page.
+     *
+     * @param WP_Query $query
+     */
+    public function filterOutDocumentPostsFromReusableBlockList(WP_Query $query): void
+    {
+        if (! function_exists('get_current_screen')) {
+            return;
+        }
+
+        $screen = get_current_screen();
+
+        if (! $screen || $screen->id !== 'edit-wp_block') {
+            return;
+        }
+
+        $newMetaQuery = [
+            'key' => WpPostMetaFields::WP_POST_DOCUMENT_TYPE,
+            'compare' => 'NOT EXISTS',
+        ];
+
+        $metaQuery = (array) $query->get('meta_query', []);
+
+        array_push($metaQuery, $newMetaQuery);
+
+        $query->set('meta_query', $metaQuery);
     }
 }
