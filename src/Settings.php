@@ -48,6 +48,11 @@ class Settings
      */
     private $message = '';
 
+    /**
+     * Message to be displayed if migration failed.
+     *
+     * @var string
+     */
     protected $migrationFailedMessage = '';
 
     /**
@@ -363,6 +368,11 @@ class Settings
         $this->repository->saveDocument($document);
     }
 
+    /**
+     * Filter redirect url after document deletion.
+     *
+     * @param int $postId Deleted document id
+     */
     public function filterRedirectAfterDocumentDeleted($postId): void
     {
         $isDocument = get_post_meta($postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
