@@ -1,6 +1,6 @@
 <?php
 
-namespace Inpsyde\AGBConnectorTests\Unit\API;
+namespace Inpsyde\AGBConnectorTests\Unit\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Middleware\CheckConfiguration;

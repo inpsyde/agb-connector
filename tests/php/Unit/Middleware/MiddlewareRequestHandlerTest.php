@@ -1,6 +1,6 @@
 <?php
 
-namespace Inpsyde\AGBConnectorTests\Unit\API;
+namespace Inpsyde\AGBConnectorTests\Unit\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
