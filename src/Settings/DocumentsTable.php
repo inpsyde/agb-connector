@@ -56,8 +56,7 @@ class DocumentsTable extends WP_List_Table
             'cb' => '<input type="checkbox" />',
             'agb-column-title' => __('Title', 'agb-connector'),
             'agb-column-type' => __('Type', 'agb-connector'),
-            'agb-column-country' => __('Country', 'agb-connector'),
-            'agb-column-language' => __('Language', 'agb-connector'),
+            'agb-column-country-language' => __('Country/Language', 'agb-connector'),
             'agb-column-page' => __('Displayed at', 'agb-connector'),
             'agb-column-hide_title' => __('Hide page title', 'agb-connector'),
             'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
@@ -100,12 +99,16 @@ class DocumentsTable extends WP_List_Table
                 return $item->getTitle();
             case 'agb-column-type':
                 return $this->shortCodes->getDocumentTypeNameByType($item->getType());
-            case 'agb-column-country':
-                return $item->getCountry();
-            case 'agb-column-language':
-                return $item->getLanguage();
+            case 'agb-column-country-language':
+                return sprintf(
+                    '%1$s/%2$s',
+                    strtoupper($item->getCountry()),
+                    strtolower($item->getLanguage())
+                );
             case 'agb-column-page':
-                $postIds = $this->documentFinder->findPagesDisplayingDocument($item->getSettings()->getDocumentId());
+                $postIds = $this->documentFinder->findPagesDisplayingDocument(
+                    $item->getSettings()->getDocumentId()
+                );
                 $posts = array_map('get_post', $postIds);
                 return $this->buildPagesList($posts);
             case 'agb-column-store_pdf':
