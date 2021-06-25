@@ -61,7 +61,7 @@ class DocumentsTable extends WP_List_Table
             'agb-column-hide_title' => __('Hide page title', 'agb-connector'),
             'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
             'agb-column-attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
-            'agb-column-shortcode' => __('Shortcode', 'agb-connector'),
+            'agb-column-placement-code' => __('Placement code', 'agb-connector'),
         ];
 
         if (! $this->wcActive()) {
@@ -126,8 +126,12 @@ class DocumentsTable extends WP_List_Table
                     'hide_title',
                     $item->getSettings()->getHideTitle()
                 );
-            case 'agb-column-shortcode':
-                return '<code>' . $this->shortCodes->generateShortcodeForDocument($item) . '</code>';
+            case 'agb-column-placement-code':
+                return '<p><code>' . esc_html($this->shortCodes->generateShortcodeForDocument($item)) .
+                    '</code></p>' .
+                    '<p><code>' . esc_html($this->shortCodes->generateBlockCodeForDocumentId(
+                        $item->getSettings()->getDocumentId()
+                    )) . '</code></p>';
             default:
                 return '';
         }

@@ -116,21 +116,6 @@ class Updater implements UpdaterInterface
     }
 
     /**
-     * Return code for document block to be saved in the displaying page content.
-     *
-     * @param int $documentId
-     *
-     * @return string
-     */
-    protected function getBlockCodeForDocumentId(int $documentId): string
-    {
-        return sprintf(
-            '<!-- wp:block {"ref":%1$d} /-->',
-            $documentId
-        );
-    }
-
-    /**
      * Add message to the log.
      *
      * @param string $message
@@ -162,7 +147,7 @@ class Updater implements UpdaterInterface
     ): string {
 
         if ($this->isGutenbergEnabledForPost($post)) {
-            return $this->getBlockCodeForDocumentId($document->getSettings()->getDocumentId());
+            return $this->shortCodes->generateBlockCodeForDocumentId($document->getSettings()->getDocumentId());
         }
 
         return $this->getDocumentShortcode($document);

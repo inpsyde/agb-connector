@@ -110,6 +110,23 @@ class ShortCodes
     }
 
     /**
+     * Return code for document block.
+     *
+     * This can be used in post content to make WordPress display document as reusable block.
+     *
+     * @param int $documentId
+     *
+     * @return string
+     */
+    public function generateBlockCodeForDocumentId(int $documentId): string
+    {
+        return sprintf(
+            '<!-- wp:block {"ref":%1$d} /-->',
+            $documentId
+        );
+    }
+
+    /**
      * Return shortcode tag for given document type.
      *
      * @param string $documentType
