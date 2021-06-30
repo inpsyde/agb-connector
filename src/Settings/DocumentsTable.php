@@ -139,7 +139,7 @@ class DocumentsTable extends WP_List_Table
             case 'agb-column-placement-code':
                 return '<p><code>' . esc_html($this->shortCodes->generateShortcodeForDocument($item)) .
                     '</code></p>' .
-                    '<p style="width: 60%; text-align: center">' . esc_html__('or', 'agb-connector') . '</p>' .
+                    '<p class="agb-block-or-shortcode">' . esc_html__('or', 'agb-connector') . '</p>' .
                     '<p><code>' . esc_html($this->shortCodes->generateBlockCodeForDocumentId(
                         $item->getSettings()->getDocumentId()
                     )) . '</code></p>';
