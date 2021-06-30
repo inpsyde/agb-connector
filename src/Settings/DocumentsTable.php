@@ -162,7 +162,7 @@ class DocumentsTable extends WP_List_Table
             return sprintf(
                 '<p><a href="%1$s" target="_blank">%2$s</a></p>',
                 get_permalink($post),
-                wp_kses_post($post->post_title)
+                wp_kses_post($post->post_title) ?: esc_html__('(no title)', 'agb_connector')
             );
         }, $posts));
     }
