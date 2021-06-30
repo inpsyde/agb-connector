@@ -58,6 +58,10 @@
     -webkit-animation: spin 1s ease-in-out infinite;
 }
 
+th .comment-grey-bubble.no-content:before {
+    left: auto;
+}
+
 @keyframes spin {
     to { -webkit-transform: rotate(360deg); }
 }

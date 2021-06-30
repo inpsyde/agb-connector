@@ -61,7 +61,17 @@ class DocumentsTable extends WP_List_Table
             'agb-column-hide_title' => __('Hide page title', 'agb-connector'),
             'agb-column-store_pdf' => __('Store PDF File', 'agb-connector'),
             'agb-column-attach_pdf_to_wc' => __('Attach PDF to WC emails', 'agb-connector'),
-            'agb-column-placement-code' => __('Placement code', 'agb-connector'),
+            'agb-column-placement-code' => sprintf(
+                '%2$s
+                <span class="vers comment-grey-bubble no-content" title="%1$s">
+                    <span class="screen-reader-text">%1$s</span>
+                    </span>',
+                esc_html__(
+                    'Copy and paste shortcode or block code to the page to display document.',
+                    'agb-connector'
+                ),
+                esc_html__('Placement code', 'agb-connector')
+            ),
         ];
 
         if (! $this->wcActive()) {
@@ -244,7 +254,7 @@ class DocumentsTable extends WP_List_Table
                         <input type="checkbox" name="%1$s" class="agb-document-settings" %2$s %3$s>
                     </div>
                     <div class="agbc-loading"></div>
-                    <div class="agbc-loaded"><img src="%4$s"></div>',
+                    <div class="agbc-loaded"><img src="%4$s" alt="comment icon"></div>',
             esc_attr($name),
             checked(true, $checked, false),
             disabled(true, $disabled, false),
