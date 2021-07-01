@@ -50,10 +50,11 @@ class PostSavingListener
             return;
         }
 
-        $documentIdsFromShortcodes = $this->findDocumentsIdsUsedInShortcodes($post->post_content);
-        $documentIdsFromBlocks = $this->findDocumentsIdsUsedInBlocks($post);
+        $documentIdsFromShortcodes = $this->findDocumentsIdsUsedInShortcodes($post->post_content);$documentIdsFromBlocks = $this->findDocumentsIdsUsedInPostBlocks($post);
 
-        $postDisplaysAgbDocument = array_unique(array_merge($documentIdsFromShortcodes, $documentIdsFromBlocks));
+        $postDisplaysAgbDocument = array_unique(
+            array_merge($documentIdsFromShortcodes, $documentIdsFromBlocks)
+        );
         $this->updateAgbMetaField($postId, $postDisplaysAgbDocument);
     }
 
@@ -94,27 +95,57 @@ class PostSavingListener
      *
      * @param WP_Post $post
      *
-     * @return array
+     * @return int[]
      */
-    protected function findDocumentsIdsUsedInBlocks(WP_Post $post): array
+    protected function findDocumentsIdsUsedInPostBlocks(WP_Post $post): array
     {
         $blocks = parse_blocks($post->post_content);
 
-        $foundDocumentIds = [];
+        $refIds = $this->getRefsIdsFromBlocks($blocks);
 
-        foreach ($blocks as $block) {
-            if ($block['blockName'] === 'core/block') {
-                $refId = (int) $block['attrs']['ref'] ?? 0;
+        $refIds = array_unique($refIds);
 
-                if ($this->checkIfPostIsDocument($refId)) {
-                    $foundDocumentIds[] = $refId;
-                }
-            }
-        }
-
-        return $foundDocumentIds;
+        return array_filter($refIds, [$this, 'checkIfPostIsDocument']);
     }
 
+    /**
+     * @param array $blocks
+     *
+     * @return int[]
+     */
+    protected function getRefsIdsFromBlocks(array $blocks): array
+    {
+        $refIds = [];
+
+        foreach ($blocks as $block) {
+            $refIds = array_merge($refIds, $this->getRefsFromSingleBlock($block));
+        }
+
+        return $refIds;
+    }
+
+    /**
+     * @param array $block
+     *
+     * @return int[]
+     */
+    protected function getRefsFromSingleBlock(array $block): array
+    {
+        $refIds[] = intval($block['attrs']['ref'] ?? 0);
+
+        if ($block['innerBlocks']) {
+            $refsFromInternalBlocks = $this->getRefsIdsFromBlocks($block['innerBlocks']);
+            $refIds = array_merge($refIds, $refsFromInternalBlocks);
+        }
+
+        return $refIds;
+    }
+
+    /**
+     * @param int $postId
+     *
+     * @return bool
+     */
     protected function checkIfPostIsDocument(int $postId): bool
     {
         return metadata_exists('post', $postId, WpPostMetaFields::WP_POST_DOCUMENT_TYPE);
