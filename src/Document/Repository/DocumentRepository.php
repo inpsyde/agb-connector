@@ -146,17 +146,18 @@ class DocumentRepository implements DocumentRepositoryInterface
     {
         $documentSettings = $document->getSettings();
 
-        $documentPostId = $documentSettings->getDocumentId() ?: $this->getDocumentPostIdByTypeCountryAndLanguage(
-            $document->getType(),
-            $document->getCountry(),
-            $document->getLanguage()
-        );
+        $documentPostId = $documentSettings->getDocumentId() ?:
+            $this->getDocumentPostIdByTypeCountryAndLanguage(
+                $document->getType(),
+                $document->getCountry(),
+                $document->getLanguage()
+            );
 
         $args = [
             'ID' => $documentPostId,
             'post_type' => 'wp_block',
             'post_content' => $document->getContent(),
-            'post_title' => $document->getTitle(),
+            'post_title' =>$this->sanitizeDocumentTitle($document->getTitle()),
             'post_status' => 'publish',
             'meta_input' => [
                 WpPostMetaFields::WP_POST_DOCUMENT_TYPE => $document->getType(),
@@ -198,5 +199,21 @@ class DocumentRepository implements DocumentRepositoryInterface
             }
         }
         return $documentId;
+    }
+
+    /**
+     * Sanitize document title, strip everything except for letters,
+     * numbers and a most used punctuation sign.
+     *
+     * @param string $titleToSanitize
+     *
+     * @return string
+     */
+    protected function sanitizeDocumentTitle(string $titleToSanitize): string
+    {
+        $title = wp_strip_all_tags($titleToSanitize);
+        //Strip ampersand because WP fails to render blocks with ampersands in titles.
+        //see https://inpsyde.atlassian.net/browse/ITR-128
+        return str_replace('&amp;', '', $title);
     }
 }
