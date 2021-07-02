@@ -1,4 +1,6 @@
-<?php # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector;
 
@@ -12,9 +14,9 @@ class XmlApiSupportedService
      *
      * @return array
      */
-    public function supportedLanguages()
+    public function supportedLanguages(): array
     {
-        return [
+        return (array) apply_filters('agbc_supported_languages', [
             'de' => __('German', 'agb-connector'),
             'fr' => __('French', 'agb-connector'),
             'en' => __('English', 'agb-connector'),
@@ -27,7 +29,7 @@ class XmlApiSupportedService
             'cs' => __('Czech', 'agb-connector'),
             'sl' => __('Slovenian', 'agb-connector'),
             'pt' => __('Portuguese', 'agb-connector'),
-        ];
+        ]);
     }
 
     /**
@@ -35,9 +37,9 @@ class XmlApiSupportedService
      *
      * @return array
      */
-    public function supportedCountries()
+    public function supportedCountries(): array
     {
-        return [
+        return (array) apply_filters('agbc_supported_countries', [
             'DE' => __('Germany', 'agb-connector'),
             'AT' => __('Austria', 'agb-connector'),
             'CH' => __('Switzerland', 'agb-connector'),
@@ -58,20 +60,20 @@ class XmlApiSupportedService
             'SI' => __('Slovenia', 'agb-connector'),
             'AU' => __('Australia', 'agb-connector'),
             'PT' => __('Portugal', 'agb-connector'),
-        ];
+        ]);
     }
 
     /**
      * Get supported text types
      * @return array
      */
-    public function supportedTextTypes()
+    public function supportedTextTypes(): array
     {
-        return [
+        return (array) apply_filters('agbc_supported_text_types', [
             'agb' => __('Terms and Conditions', 'agb-connector'),
             'datenschutz' => __('Privacy', 'agb-connector'),
             'widerruf' => __('Revocation', 'agb-connector'),
             'impressum' => __('Imprint', 'agb-connector'),
-        ];
+        ]);
     }
 }

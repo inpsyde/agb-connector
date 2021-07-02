@@ -1,8 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
 use SimpleXMLElement;
@@ -38,21 +42,44 @@ class MiddlewareRequestHandler
      * @var array
      */
     protected $supportedTextTypes;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
+    /**
+     * @var XmlBasedDocumentFactoryInterface
+     */
+    protected $documentFactory;
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentFinder;
 
     /**
      * MiddlewareRequestHandler constructor.
      *
      * @param $userAuthToken
-     * @param $allocations
      * @param XmlApiSupportedService $apiSupportedService
+     * @param DocumentRepositoryInterface $documentRepository
+     * @param XmlBasedDocumentFactoryInterface $documentFactory
+     * @param DocumentFinderInterface $documentFinder
      */
-    public function __construct($userAuthToken, $allocations, $apiSupportedService)
-    {
+    public function __construct(
+        $userAuthToken,
+        XmlApiSupportedService $apiSupportedService,
+        DocumentRepositoryInterface $documentRepository,
+        XmlBasedDocumentFactoryInterface $documentFactory,
+        DocumentFinderInterface $documentFinder
+    ) {
+
         $this->userAuthToken = $userAuthToken;
-        $this->allocations = $allocations;
         $this->supportedCountries = $apiSupportedService->supportedCountries();
         $this->supportedLanguages = $apiSupportedService->supportedLanguages();
         $this->supportedTextTypes = $apiSupportedService->supportedTextTypes();
+        $this->documentRepository = $documentRepository;
+        $this->documentFactory = $documentFactory;
+        $this->documentFinder = $documentFinder;
+
         $this->middleware = $this->checkErrorMiddlewareRoute();
     }
 
@@ -70,12 +97,14 @@ class MiddlewareRequestHandler
             ->linkWith(new CheckTitleXml())
             ->linkWith(new CheckTextXml())
             ->linkWith(new CheckHtmlXml())
-            ->linkWith(new CheckPdfUrlXml())
-            ->linkWith(new CheckPdfFilenameXml())
             ->linkWith(new CheckLanguageXml($this->supportedLanguages))
             ->linkWith(new CheckActionXml())
-            ->linkWith(new CheckConfiguration($this->userAuthToken, $this->allocations))
-            ->linkWith(new CheckPostXml($this->allocations));
+            ->linkWith(new CheckConfiguration($this->userAuthToken))
+            ->linkWith(new CheckPostXml(
+                $this->documentRepository,
+                $this->documentFactory,
+                $this->documentFinder
+            ));
         return $middleware;
     }
 
@@ -145,7 +174,7 @@ class MiddlewareRequestHandler
 
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><response></response>');
         $xml->addChild('status', 'error');
-        $xml->addChild('error', $exception->getCode());
+        $xml->addChild('error', (string) $exception->getCode());
         $messageChild = $xml->addChild('error_message');
         $node = dom_import_simplexml($messageChild);
         $no = $node->ownerDocument;

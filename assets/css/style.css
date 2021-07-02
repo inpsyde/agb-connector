@@ -38,3 +38,38 @@
     white-space: nowrap;
 	padding: 10px;
 }
+
+#agb-column-country, #agb-column-language, #agb-column-hide_title, #agb-column-type, #agb-column-store_pdf {
+    width: 8%;
+}
+
+.agbc-loading, .agbc-loaded {
+    display: none;
+    float: left;
+    width: 15px;
+    height: 15px;
+}
+
+.agbc-loading {
+    border: 1px solid rgba(255,255,255, 1);
+    border-radius: 50%;
+    border-top-color: #d5d6d6;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+th .comment-grey-bubble.no-content:before {
+    left: auto;
+}
+
+td .agb-block-or-shortcode {
+    width: 60%;
+    text-align: center;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}

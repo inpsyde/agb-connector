@@ -2,13 +2,9 @@ const gulp = require('gulp')
 const gulpPhpUnit = require('gulp-phpunit')
 const gulpPhpcs = require('gulp-phpcs')
 const pump = require('pump')
-const uglify = require('gulp-uglify')
-const rename = require('gulp-rename')
 const usage = require('gulp-help-doc')
-const csso = require('gulp-csso')
 const { exec } = require('child_process')
 const gulpZip = require('gulp-zip')
-const concat = require('gulp-concat')
 const minimist = require('minimist')
 const semver = require('semver')
 const gulpDel = require('del')
@@ -44,7 +40,7 @@ async function validatePackageVersion (done)
   await 1
 
   if (!'packageVersion' in options || '' === options.packageVersion) {
-    done()
+      throw new Error('No package version provided');
   }
 
   if (semver.valid(options.packageVersion) === null) {
@@ -154,7 +150,6 @@ async function cleanupDist ()
     [
       `${PACKAGE_PATH}/composer.json`,
       `${PACKAGE_PATH}/composer.lock`,
-      `${PACKAGE_PATH}/vendor`,
     ],
   )
 }

@@ -24,8 +24,6 @@ class Install
             return;
         }
 
-        add_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
-
         self::convertOldAgbConnectorPluginOptions();
         self::update100To200();
     }

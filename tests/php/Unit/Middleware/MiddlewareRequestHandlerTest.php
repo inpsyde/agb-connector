@@ -1,14 +1,20 @@
 <?php
 
-namespace Inpsyde\AGBConnectorTests\Unit\API;
+namespace Inpsyde\AGBConnectorTests\Unit\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
 use Inpsyde\AGBConnector\CustomExceptions\NotSimpleXmlInstanceException;
+use Inpsyde\AGBConnector\Document\DocumentInterface;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\DocumentSettingsInterface;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Plugin;
 use Inpsyde\AGBConnector\XmlApi;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 use Inpsyde\AGBConnector\XmlApiSupportedService;
 use Inpsyde\AGBConnectorTests\TestCase;
+use function Brain\Monkey\Functions\when;
 
 
 class MiddlewareRequestHandlerTest extends TestCase
@@ -21,13 +27,29 @@ class MiddlewareRequestHandlerTest extends TestCase
      */
     protected $apiSupportedService;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->allocations = ['agb' => 'agb'];
         $this->userAuthToken = '1234567890abcdefghijklmnopqrstuv';
 
+        when('__')
+            ->returnArg();
 
-        $this->handler = new MiddlewareRequestHandler($this->userAuthToken, $this->allocations, new XmlApiSupportedService());
+        when('apply_filters')
+            ->returnArg(2);
+
+        $apiSupportedService = new XmlApiSupportedService();
+        $documentRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $xmlBasedDocumentFactory = $this->createMock(XmlBasedDocumentFactoryInterface::class);
+        $documentFinder = $this->createMock(DocumentFinderInterface::class);
+
+        $this->handler = new MiddlewareRequestHandler(
+            $this->userAuthToken,
+            $apiSupportedService,
+            $documentRepository,
+            $xmlBasedDocumentFactory,
+            $documentFinder
+        );
         parent::setUp();
     }
 
@@ -105,7 +127,25 @@ class MiddlewareRequestHandlerTest extends TestCase
             $xml = simplexml_load_string($xml);
         }
 
-        $result = $this->handler->handle($xml);
+        $documentSettings = $this->createMock(DocumentSettingsInterface::class);
+        $documentSettings->method('getSavePdf')
+            ->willReturn(true);
+        $document = $this->createMock(DocumentInterface::class);
+        $document->method('getSettings')
+            ->willReturn($documentSettings);
+        $documentRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $documentRepository->method('getDocumentById')
+            ->willReturn($document);
+
+        $handler = new MiddlewareRequestHandler(
+            $this->userAuthToken,
+            new XmlApiSupportedService(),
+            $documentRepository,
+            $this->createMock(XmlBasedDocumentFactoryInterface::class),
+            $this->createMock(DocumentFinderInterface::class)
+        );
+        
+        $result = $handler->handle($xml);
 
         $this->assertXmlStringEqualsXmlString($errorResponse, $result);
     }
@@ -136,6 +176,7 @@ class MiddlewareRequestHandlerTest extends TestCase
         if ($xml) {
             $xml = @simplexml_load_string($xml);
         }
+
         $errorCode = new NotSimpleXmlInstanceException("Not xml provided");
 
         $errorResponse = '<?xml version="1.0" encoding="utf-8" ?>
@@ -162,7 +203,7 @@ class MiddlewareRequestHandlerTest extends TestCase
     public function handlerDataProvider()
     {
         return [
-            [
+            'wrong api version' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>1' . XmlApi::VERSION . '</api_version>
@@ -190,7 +231,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'incorrect username and password' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -218,7 +259,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'wrong auth token' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -246,7 +287,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'text type not supported' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -274,7 +315,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'text size less then 50 characters' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -302,7 +343,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'html tag length less then 50 characters' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -330,35 +371,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
-                '<?xml version="1.0" encoding="UTF-8" ?>
-		<api>
-			<api_version>' . XmlApi::VERSION . '</api_version>
-			<api_username>' . XmlApi::USERNAME . '</api_username>
-			<api_password>' . XmlApi::PASSWORD . '</api_password>
-			<user_auth_token>1234567890abcdefghijklmnopqrstuv</user_auth_token>
-			<rechtstext_type>agb</rechtstext_type>
-			<rechtstext_title>Title</rechtstext_title>
-			<rechtstext_text>123456789012345678901234567890123456789012345678901</rechtstext_text>
-			<rechtstext_html>123456789012345678901234567890123456789012345678901</rechtstext_html>
-			<rechtstext_pdf_url></rechtstext_pdf_url>
-			<rechtstext_pdf_md5hash>' . md5_file(__DIR__ . '/../../../assets/test.pdf') . '</rechtstext_pdf_md5hash>
-			<rechtstext_language>de</rechtstext_language>
-			<rechtstext_country>DE</rechtstext_country>
-			<rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
-			<action>push</action>
-		</api>',
-                '<?xml version="1.0" encoding="utf-8" ?>
-		<response>
-			<status>error</status>
-			<error>7</error>
-			<error_message><![CDATA[Pdf url is empty]]></error_message>
-			<meta_shopversion>4.0.0</meta_shopversion>
-			<meta_modulversion>' . Plugin::VERSION . '</meta_modulversion>
-			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
-		</response>'
-            ],
-            [
+            'language is not supported' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -388,7 +401,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'action tag not push' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -418,7 +431,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'country is not supported' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -444,7 +457,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<meta_phpversion>' . PHP_VERSION . '</meta_phpversion>
 		</response>'
             ],
-            [
+            'title less than 3' => [
                 '<?xml version="1.0" encoding="UTF-8" ?>
 		<api>
 			<api_version>' . XmlApi::VERSION . '</api_version>
@@ -487,7 +500,7 @@ class MiddlewareRequestHandlerTest extends TestCase
 			<rechtstext_pdf_md5hash>' . md5_file(__DIR__ . '/../../../assets/test.pdf') . '</rechtstext_pdf_md5hash>
 			<rechtstext_pdf_filename_suggestion></rechtstext_pdf_filename_suggestion>
 			<rechtstext_pdf_filenamebase_suggestion></rechtstext_pdf_filenamebase_suggestion>
-			<rechtstext_language>zz</rechtstext_language>
+			<rechtstext_language>de</rechtstext_language>
 			<rechtstext_country>DE</rechtstext_country>
 			<rechtstext_language_iso639_2b>ger</rechtstext_language_iso639_2b>
 			<action>push</action>

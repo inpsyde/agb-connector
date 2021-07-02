@@ -1,9 +1,10 @@
 <?php
 
-namespace Inpsyde\AGBConnector;
+namespace Inpsyde\AGBConnectorTests\Unit\Middleware;
 
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
 use Inpsyde\AGBConnector\Middleware\CheckConfiguration;
+use Inpsyde\AGBConnector\XmlApi;
 use PHPUnit\Framework\TestCase;
 
 class MiddlewareTest extends TestCase
@@ -37,7 +38,7 @@ class MiddlewareTest extends TestCase
             $xml = simplexml_load_string($xml);
         }
 
-        $middleware = new CheckConfiguration($userAuthToken, $allocations);
+        $middleware = new CheckConfiguration($userAuthToken);
         try {
             $middleware->process($xml);
         }

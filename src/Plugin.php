@@ -1,7 +1,16 @@
-<?php # -*- coding: utf-8 -*-
+<?php
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Factory\WpPostBasedDocumentFactoryInterface;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
+use Inpsyde\AGBConnector\Document\View\RemoveDocumentPageTitleIfEnabled;
+use Inpsyde\AGBConnector\Settings\DocumentsTable;
+use Inpsyde\AGBConnector\Updater\Updater;
 use WC_Order;
 
 /**
@@ -15,10 +24,10 @@ class Plugin
      *
      * @var string
      */
-    const VERSION = '2.1.0';
+    const VERSION = '3.0.0';
 
     /**
-     * Option to store Text type allocation
+     * Option to store Text type allocation (used before version 3.0.0)
      * Format: [
      *      'agb' => [
      *          0 => [
@@ -40,6 +49,15 @@ class Plugin
     const OPTION_USER_AUTH_TOKEN = 'agb_connector_user_auth_token';
 
     /**
+     * Type of the Gutenberg block containing Documents.
+     */
+    const DOCUMENT_BLOCK_TYPE = 'agb-connector/agb-document';
+    /**
+     * @var string
+     */
+    protected $pluginFilePath;
+
+    /**
      * The settings object
      *
      * @var Settings
@@ -47,11 +65,40 @@ class Plugin
     private $settings;
 
     /**
+     * @var DocumentRepositoryInterface
+     */
+    private $documentRepository;
+
+    /**
      * The shortcodes object
      *
      * @var ShortCodes
      */
     private $shortCodes;
+    /**
+     * @var WpPostBasedDocumentFactory
+     */
+    private $postBasedDocumentFactory;
+
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentPageFinder;
+
+    /**
+     * @var DocumentsTable
+     */
+    protected $documentsTable;
+
+    /**
+     * Path to the main plugin file.
+     *
+     * @param string $pluginFilePath
+     */
+    public function __construct(string $pluginFilePath)
+    {
+        $this->pluginFilePath = $pluginFilePath;
+    }
 
     /**
      * Init all actions and filters
@@ -68,8 +115,18 @@ class Plugin
         add_action('init', [$shortCodes, 'setup']);
         add_action('vc_before_init', [$shortCodes, 'vcMaps']);
 
+        add_action('init', function () use ($shortCodes) {
+            (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
+        });
+
+        (new RemoveDocumentPageTitleIfEnabled($this->documentRepository()))();
+
         if (! is_admin()) {
             return;
+        }
+
+        if (! wp_doing_ajax()) {
+            add_action('admin_init', [$this, 'update']);
         }
 
         $settings = $this->settings();
@@ -91,7 +148,7 @@ class Plugin
      *
      * @return array
      */
-    public function attachPdfToEmail($attachments, $status, $order)
+    public function attachPdfToEmail($attachments, $status, $order): array
     {
         $validStatuses = [
             'customer_on_hold_order',
@@ -104,17 +161,17 @@ class Plugin
             return $attachments;
         }
 
-        $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
-        foreach ($textAllocations as $type => $allocations) {
-            foreach ($allocations as $allocation) {
-                if (empty($allocation['wcOrderEmailAttachment'])) {
-                    continue;
-                }
-                $attachmentId = XmlApi::attachmentIdByPostParent($allocation['pageId']);
-                $pdfAttachment = get_attached_file($attachmentId);
-                if ($pdfAttachment) {
-                    $attachments[] = $pdfAttachment;
-                }
+        $documentsToAttach = $this->documentRepository->getDocumentsForWcEmail();
+
+        foreach ($documentsToAttach as $document) {
+            $pdfAttachmentId = $document->getSettings()->getPdfAttachmentId();
+            if (! $pdfAttachmentId) {
+                continue;
+            }
+
+            $pdfAttachment = get_attached_file($pdfAttachmentId);
+            if ($pdfAttachment) {
+                $attachments[] = $pdfAttachment;
             }
         }
 
@@ -131,7 +188,7 @@ class Plugin
         }
 
         $requestUri = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL); //phpcs:ignore
-        if (false === strpos($requestUri, '/it-recht-kanzlei')) {
+        if (false === strpos($requestUri, 'it-recht-kanzlei')) {
             return;
         }
 
@@ -145,8 +202,7 @@ class Plugin
         $xml = wp_unslash($xml);
 
         $apiKey = get_option(self::OPTION_USER_AUTH_TOKEN, '');
-        $textAllocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
-        $api = new XmlApi($apiKey, $textAllocations);
+        $api = new XmlApi($apiKey, $this->documentRepository);
 
         nocache_headers();
         header('Content-type: application/xml; charset=utf-8', true, 200);
@@ -158,18 +214,58 @@ class Plugin
      *
      * @return Settings
      */
-    public function settings()
+    public function settings(): Settings
     {
         if (null === $this->settings) {
-            $supportedConfig = new XmlApiSupportedService();
             $this->settings = new Settings(
-                $supportedConfig->supportedCountries(),
-                $supportedConfig->supportedLanguages(),
-                $supportedConfig->supportedTextTypes()
+                $this->documentRepository(),
+                $this->documentPageFinder(),
+                $this->shortCodes()
             );
+
+            $this->settings->init();
         }
 
         return $this->settings;
+    }
+
+    /**
+     * Get document repository.
+     *
+     * @return DocumentRepositoryInterface
+     */
+    public function documentRepository(): DocumentRepositoryInterface
+    {
+        if (null === $this->documentRepository) {
+            $this->documentRepository = new DocumentRepository(
+                $this->postBasedDocumentFactory()
+            );
+        }
+
+        return $this->documentRepository;
+    }
+
+    /**
+     * Return Post-based document factory.
+     *
+     * @return WpPostBasedDocumentFactoryInterface
+     */
+    public function postBasedDocumentFactory(): WpPostBasedDocumentFactoryInterface
+    {
+        if (null === $this->postBasedDocumentFactory) {
+            $this->postBasedDocumentFactory = new WpPostBasedDocumentFactory();
+        }
+
+        return $this->postBasedDocumentFactory;
+    }
+
+    public function documentPageFinder(): DocumentFinderInterface
+    {
+        if (null === $this->documentPageFinder) {
+            $this->documentPageFinder = new DocumentPageFinder($this->shortCodes()->getShortcodeTags());
+        }
+
+        return $this->documentPageFinder;
     }
 
     /**
@@ -181,10 +277,43 @@ class Plugin
             $supportedConfig = new XmlApiSupportedService();
             $this->shortCodes = new ShortCodes(
                 $supportedConfig->supportedCountries(),
-                $supportedConfig->supportedLanguages()
+                $supportedConfig->supportedLanguages(),
+                $this->documentRepository()
             );
         }
 
         return $this->shortCodes;
+    }
+
+    /**
+     * Update DB to the latest version.
+     */
+    public function update(): void
+    {
+        $allocations = get_option(self::OPTION_TEXT_ALLOCATIONS, []);
+
+        if (! is_array($allocations)) {
+            return;
+        }
+
+        $updater = new Updater(
+            $this->documentPageFinder(),
+            $this->documentRepository(),
+            $this->postBasedDocumentFactory(),
+            $this->shortCodes(),
+            $allocations
+        );
+
+        $updater->update();
+    }
+
+    /**
+     * Return path to the main plugin file.
+     *
+     * @return string
+     */
+    public function pluginFilePath(): string
+    {
+        return $this->pluginFilePath;
     }
 }

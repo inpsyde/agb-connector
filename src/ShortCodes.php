@@ -2,6 +2,9 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentInterface;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepository;
+
 /**
  * Class ShortCodes
  */
@@ -16,6 +19,10 @@ class ShortCodes
      */
     protected $supportedLanguages;
     /**
+     * @var DocumentRepository
+     */
+    protected $documentRepository;
+    /**
      * @var array
      */
     private $registeredShortCodes = [];
@@ -25,13 +32,15 @@ class ShortCodes
      *
      * @param array $supportedCountries
      * @param array $supportedLanguages
+     * @param DocumentRepository $documentRepository
      */
-    public function __construct(array $supportedCountries, array $supportedLanguages)
+    public function __construct(array $supportedCountries, array $supportedLanguages, DocumentRepository $documentRepository)
     {
         $this->supportedCountries = $supportedCountries;
         $this->supportedLanguages = $supportedLanguages;
+        $this->documentRepository = $documentRepository;
     }
-    
+
     /**
      * settings for All AGB shortcodes.
      *
@@ -41,46 +50,109 @@ class ShortCodes
     {
         return (array)apply_filters('agb_shortcodes', [
             'agb_terms' => [
-                'name' => esc_html__('AGB Terms', 'agb-connector'),
+                'name' => esc_html__('Terms and Conditions', 'agb-connector'),
                 'setting_key' => 'agb',
             ],
             'agb_privacy' => [
-                'name' => esc_html__('AGB Privacy', 'agb-connector'),
+                'name' => esc_html__('Privacy', 'agb-connector'),
                 'setting_key' => 'datenschutz',
             ],
             'agb_revocation' => [
-                'name' => esc_html__('AGB Revocation', 'agb-connector'),
+                'name' => esc_html__('Revocation', 'agb-connector'),
                 'setting_key' => 'widerruf',
             ],
             'agb_imprint' => [
-                'name' => esc_html__('AGB Imprint', 'agb-connector'),
+                'name' => esc_html__('Imprint', 'agb-connector'),
                 'setting_key' => 'impressum',
             ],
         ]);
     }
 
     /**
-     * Helper function to cleanup and do_shortcode on content.
+     * Return list of shortcodes registered by plugin
      *
-     * @see do_shortcode()
+     * @return string[]
+     */
+    public function getShortcodeTags(): array
+    {
+        return array_keys($this->settings());
+    }
+
+    /**
+     * Get document type by plugin shortcode.
      *
-     * @param $content
+     * @param string $shortcode
+     *
+     * @return string Document type or empty string on error.
+     */
+    public function getDocumentTypeByShortcodeTag(string $shortcode): string
+    {
+        $shortcodeSettings = $this->settings();
+
+        return isset($shortcodeSettings[$shortcode]) ? $shortcodeSettings[$shortcode]['setting_key'] : '';
+    }
+
+    /**
+     * Generate a shortcode for the document.
+     *
+     * @param DocumentInterface $document
      *
      * @return string
      */
-    public function callbackContent($content)
+    public function generateShortcodeForDocument(DocumentInterface $document): string
     {
-        $array = [
-            '<p>[' => '[',
-            ']</p>' => ']',
-            '<br /></p>' => '</p>',
-            ']<br />' => ']',
-        ];
+        return sprintf(
+            '[%1$s country="%2$s" language="%3$s"]',
+            $this->getShortcodeTagByDocumentType($document->getType()),
+            $document->getCountry(),
+            $document->getLanguage()
+        );
+    }
 
-        $content = shortcode_unautop(balanceTags(trim($content), true));
-        $content = strtr($content, $array);
+    /**
+     * Return code for document block.
+     *
+     * This can be used in post content to make WordPress display document as reusable block.
+     *
+     * @param int $documentId
+     *
+     * @return string
+     */
+    public function generateBlockCodeForDocumentId(int $documentId): string
+    {
+        return sprintf(
+            '<!-- wp:block {"ref":%1$d} /-->',
+            $documentId
+        );
+    }
 
-        return do_shortcode($content);
+    /**
+     * Return shortcode tag for given document type.
+     *
+     * @param string $documentType
+     *
+     * @return string
+     */
+    public function getShortcodeTagByDocumentType(string $documentType): string
+    {
+        foreach ($this->settings() as $shortcodeTag => $shortcodeConfig) {
+            if ($documentType === $shortcodeConfig['setting_key']) {
+                return $shortcodeTag;
+            }
+        }
+
+        return '';
+    }
+
+    public function getDocumentTypeNameByType(string $documentType): string
+    {
+        foreach ($this->settings() as $shortcodeConfig) {
+            if ($documentType === $shortcodeConfig['setting_key']) {
+                return $shortcodeConfig['name'];
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -109,6 +181,10 @@ class ShortCodes
      */
     public function vcMaps()
     {
+        if (! function_exists('vc_map')) {
+            return;
+        }
+
         $locale = get_bloginfo('language');
         list($language, $country) = explode('-', $locale, 2);
 
@@ -220,31 +296,22 @@ class ShortCodes
             $attr->language = $language;
         }
 
-        $textAllocations = get_option(Plugin::OPTION_TEXT_ALLOCATIONS, []);
-        $foundAllocation = [];
-        if (isset($textAllocations[$setting['setting_key']])) {
-            foreach ($textAllocations[$setting['setting_key']] as $allocation) {
-                if (strtoupper($attr->country) === $allocation['country'] &&
-                    strtolower($attr->language) === $allocation['language']
-                ) {
-                    $foundAllocation = $allocation;
-                    break;
-                }
-            }
-        }
+        $documentType = $setting['setting_key'] ?? '';
 
-        if (! $foundAllocation) {
+        $documentId = $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+            $documentType,
+            $attr->country,
+            $attr->language
+        );
+
+        $document = $this->documentRepository->getDocumentById($documentId);
+
+        if (! $document) {
             /* translators: %s is the AGB shortcode name. */
             return sprintf(esc_html__('No valid page found for %s.', 'agb-connector'), $setting['name']);
         }
 
-        // Get the Page Content.
-        $pageObject = get_post($foundAllocation['pageId']);
-        $pageContent = '';
-
-        if (! is_wp_error($pageObject)) {
-            $pageContent = $this->callbackContent($pageObject->post_content);
-        }
+        $pageContent = $document->getContent();
 
         if (!$pageContent) {
             /* translators: %s is the AGB shortcode name. */

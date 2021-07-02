@@ -1,19 +1,22 @@
 <?php
+declare(strict_types=1);
 
 namespace Inpsyde\AGBConnector\Middleware;
 
-use Inpsyde\AGBConnector\CustomExceptions\CountryException;
 use Inpsyde\AGBConnector\CustomExceptions\GeneralException;
-use Inpsyde\AGBConnector\CustomExceptions\LanguageException;
+use Inpsyde\AGBConnector\CustomExceptions\PdfFilenameException;
 use Inpsyde\AGBConnector\CustomExceptions\PdfMD5Exception;
 use Inpsyde\AGBConnector\CustomExceptions\PdfUrlException;
-use Inpsyde\AGBConnector\CustomExceptions\PostPageException;
 use Inpsyde\AGBConnector\CustomExceptions\WPFilesystemException;
 use Inpsyde\AGBConnector\CustomExceptions\XmlApiException;
+use Inpsyde\AGBConnector\Document\DocumentInterface;
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentFinderInterface;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactoryInterface;
+use Inpsyde\AGBConnector\Document\Map\XmlMetaFields;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use SimpleXMLElement;
 use UnexpectedValueException;
 use WP_Filesystem_Base;
-use WP_Post;
 
 /**
  * Class CheckPostXml
@@ -29,15 +32,35 @@ class CheckPostXml extends Middleware
      * @var array $textAllocations
      */
     protected $textAllocations;
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $documentRepository;
+    /**
+     * @var XmlBasedDocumentFactoryInterface
+     */
+    protected $documentFactory;
+    /**
+     * @var DocumentFinderInterface
+     */
+    protected $documentFinder;
 
     /**
      * CheckPostXml constructor.
      *
-     * @param $textAllocations
+     * @param DocumentRepositoryInterface $documentRepository
+     * @param XmlBasedDocumentFactoryInterface $documentFactory
+     * @param DocumentFinderInterface $documentFinder
      */
-    public function __construct($textAllocations)
-    {
-        $this->textAllocations = $textAllocations;
+    public function __construct(
+        DocumentRepositoryInterface $documentRepository,
+        XmlBasedDocumentFactoryInterface $documentFactory,
+        DocumentFinderInterface $documentFinder
+    ) {
+
+        $this->documentRepository = $documentRepository;
+        $this->documentFactory = $documentFactory;
+        $this->documentFinder = $documentFinder;
     }
 
     /**
@@ -48,39 +71,77 @@ class CheckPostXml extends Middleware
      */
     public function process($xml)
     {
-        $foundAllocation = $this->processAllocation($xml);
-        $post = $this->processPost($xml, $foundAllocation);
-        $this->pushPdfFile($xml);
-        $this->processSavePost($post);
-        $targetUrl = $this->processPermalink($post);
+        $savedDocumentId = $this->saveDocument($xml);
+        $document = $this->documentRepository->getDocumentById($savedDocumentId);
+        $targetUrl = $this->getPageDocumentIsDisplayedOn($savedDocumentId);
+
+        if ($document && 'impressum' !== $document->getType() && $document->getSettings()->getSavePdf()) {
+            $this->checkPdfFilename($xml);
+            $this->pushPdfFile($xml, $document);
+        }
 
         return parent::process($targetUrl);
     }
+
     /**
-     * Find the Allocation for that XML request
+     * Handle saving of the incoming document.
      *
      * @param SimpleXMLElement $xml
      *
-     * @return array
+     * @return int
+     * @throws XmlApiException
+     * @throws GeneralException
      */
-    protected function findAllocation(SimpleXMLElement $xml)
+    protected function saveDocument(SimpleXMLElement $xml): int
     {
-        $foundAllocation = [];
-
-        if (! isset($this->textAllocations[(string)$xml->rechtstext_type])) {
-            return $foundAllocation;
+        $newDocument = $this->documentFactory->createDocument($xml);
+        $existingDocument = $this->getExistingDocument($xml);
+        if ($existingDocument !== null) {
+            $this->copySettingsFromExistingDocumentToNew($newDocument, $existingDocument);
         }
+        return $this->documentRepository->saveDocument($newDocument);
+    }
 
-        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-            if ((string)$xml->rechtstext_country === $allocation['country'] &&
-                (string)$xml->rechtstext_language === $allocation['language']
-            ) {
-                $foundAllocation = $allocation;
-                break;
-            }
+    /**
+     * Find and return document if it exists already.
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return DocumentInterface|null
+     */
+    protected function getExistingDocument(SimpleXMLElement $xml): ?DocumentInterface
+    {
+        $documentId = $this->documentRepository->getDocumentPostIdByTypeCountryAndLanguage(
+            (string) $xml->{XmlMetaFields::XML_FIELD_TYPE},
+            (string) $xml->{XmlMetaFields::XML_FIELD_COUNTRY},
+            (string) $xml->{XmlMetaFields::XML_FIELD_LANGUAGE}
+        );
+
+        return $this->documentRepository->getDocumentById($documentId);
+    }
+
+    protected function checkPdfFilename(SimpleXMLElement $xml): void
+    {
+        if ($xml->rechtstext_pdf_filename_suggestion === null) {
+            throw new PdfFilenameException(
+                "No pdf filename provided"
+            );
         }
-
-        return $foundAllocation;
+        if ((string)$xml->rechtstext_pdf_filename_suggestion === '') {
+            throw new PdfFilenameException(
+                "The pdf filename is empty"
+            );
+        }
+        if ($xml->rechtstext_pdf_filenamebase_suggestion === null) {
+            throw new PdfFilenameException(
+                "No pdf base filename provided"
+            );
+        }
+        if ((string)$xml->rechtstext_pdf_filenamebase_suggestion === '') {
+            throw new PdfFilenameException(
+                "The pdf base filename is empty"
+            );
+        }
     }
 
     /**
@@ -94,30 +155,17 @@ class CheckPostXml extends Middleware
      * @throws XmlApiException
      *
      */
-    protected function pushPdfFile(SimpleXMLElement $xml)
+    protected function pushPdfFile(SimpleXMLElement $xml, DocumentInterface $document): int
     {
-        if ('impressum' === (string)$xml->rechtstext_type) {
-            return 0;
-        }
-        $foundAllocation = $this->findAllocation($xml);
-        if (!$foundAllocation) {
-            throw new LanguageException(
-                'The allocation was not found'
-            );
-        }
-
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-
         $uploads = wp_upload_dir();
 
         $file = trailingslashit($uploads['basedir']) .
             trim((string)$xml->rechtstext_pdf_filename_suggestion);
 
         $pdf = $this->receiveFileContent((string)$xml->rechtstext_pdf_url);
+
         if (!$pdf) {
-            throw new PdfUrlException(
-                'Pdf not found'
-            );
+            return 0;
         }
         if (strpos($pdf, '%PDF') !== 0) {
             throw new PdfUrlException(
@@ -134,15 +182,21 @@ class CheckPostXml extends Middleware
                 'The pdf hash does not match'
             );
         }
-        if ($foundAllocation['savePdfFile'] === '1') {
-            $result = $this->writeContentToFile($file, $pdf);
-            if (!$result) {
-                throw new PdfUrlException(
-                    'WriteContentToFile failed. Result not found'
-                );
-            }
+
+        $result = $this->writeContentToFile($file, $pdf);
+
+        if (!$result) {
+            throw new PdfUrlException(
+                'WriteContentToFile failed. Result not found'
+            );
         }
-        $attachmentId = self::attachmentIdByPostParent($foundAllocation['pageId']);
+
+        if (! function_exists('wp_generate_attachment_metadata')) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+        }
+
+        $documentId = $document->getSettings()->getDocumentId();
+        $attachmentId = self::attachmentIdByPostParent($documentId);
         if ($attachmentId && get_attached_file($attachmentId)) {
             update_attached_file($attachmentId, $file);
             wp_generate_attachment_metadata($attachmentId, $file);
@@ -155,7 +209,7 @@ class CheckPostXml extends Middleware
 
         $args = [
             'post_mime_type' => 'application/pdf',
-            'post_parent' => (int)$foundAllocation['pageId'],
+            'post_parent' => $documentId,
             'post_type' => 'attachment',
             'file' => $file,
             'post_title' => $title,
@@ -175,23 +229,7 @@ class CheckPostXml extends Middleware
 
         return 0;
     }
-    /**
-     * Save post and pdf after checks
-     *
-     * @param WP_Post $post The post object.
-     *
-     * @return bool
-     */
-    protected function savePost(WP_Post $post)
-    {
-        remove_filter('content_save_pre', 'wp_filter_post_kses');
 
-        $postId = wp_update_post($post);
-
-        add_filter('content_save_pre', 'wp_filter_post_kses');
-
-        return !is_wp_error($postId);
-    }
     /**
      * Download a file and return its content.
      *
@@ -257,15 +295,15 @@ class CheckPostXml extends Middleware
         $ftpCredentials = get_option('ftp_credentials');
         if (is_array($ftpCredentials)) {
             $args = [
-                self::FTPHOSTNAME => self::findKeyOrDefault($ftpCredentials, self::FTPHOSTNAME, ''),
-                self::FTPUSERNAME => self::findKeyOrDefault($ftpCredentials, self::FTPUSERNAME, ''),
-                self::FTPPASSWORD => self::findKeyOrDefault($ftpCredentials, self::FTPPASSWORD, ''),
+                self::FTPHOSTNAME => $ftpCredentials[self::FTPHOSTNAME] ?? '',
+                self::FTPUSERNAME => $ftpCredentials[self::FTPUSERNAME] ?? '',
+                self::FTPPASSWORD => $ftpCredentials[self::FTPPASSWORD] ?? '',
             ];
         }
 
-        $initilized = WP_Filesystem($args);
+        $initialized = WP_Filesystem($args);
 
-        if (!$initilized || !$wp_filesystem instanceof WP_Filesystem_Base) {
+        if (!$initialized || !$wp_filesystem instanceof WP_Filesystem_Base) {
             throw new UnexpectedValueException('Wp_FileSystem cannot be initialized');
         }
 
@@ -276,109 +314,59 @@ class CheckPostXml extends Middleware
             );
         }
 
-        if (!$wp_filesystem instanceof WP_Filesystem_Base) {
-            return false;
-        }
-
         return $wp_filesystem->put_contents($file, $content);
     }
 
-    protected static function findKeyOrDefault(array $haystack, $key, $default)
+    /**
+     * @param int The id of the saving document.
+     *
+     * @return string
+     */
+    protected function getPageDocumentIsDisplayedOn(int $savedDocumentId): string
     {
-        return isset($haystack[$key]) ? $haystack[$key] : $default;
+        $pagesDisplayingDocumentIds = $this->documentFinder->findPagesDisplayingDocument($savedDocumentId);
+
+        if (! $pagesDisplayingDocumentIds) {
+            return '';
+        }
+
+        $targetUrl = get_permalink(reset($pagesDisplayingDocumentIds));
+
+        return is_string($targetUrl) ? $targetUrl : '';
     }
 
     /**
+     * Copy settings from the existing document to the new one.
      *
-     * @param $xml
-     *
-     * @return array
-     * @throws CountryException
-     * @throws LanguageException
+     * @param DocumentInterface $newDocument
+     * @param DocumentInterface $existingDocument
      */
-    protected function processAllocation($xml)
-    {
-        $foundAllocation = $this->findAllocation($xml);
-        if (!$foundAllocation) {
-            $this->processCountry($xml);
-            throw new LanguageException(
-                'Allocation not found'
-            );
-        }
-        return $foundAllocation;
-    }
+    protected function copySettingsFromExistingDocumentToNew(
+        DocumentInterface $newDocument,
+        DocumentInterface $existingDocument
+    ): void {
 
-    /**
-     * @param       $xml
-     * @param array $foundAllocation
-     *
-     * @return array|WP_Post|null
-     * @throws PostPageException
-     */
-    protected function processPost($xml, array $foundAllocation)
-    {
-        $post = get_post($foundAllocation['pageId']);
-        if (!$post instanceof WP_Post) {
-            throw new PostPageException(
-                'No post page provided'
-            );
-        }
-        if ('trash' === $post->post_status) {
-            throw new PostPageException(
-                'The post status seems to be trash'
-            );
-        }
-        $post->post_title = trim($xml->rechtstext_title);
-        $post->post_content = trim($xml->rechtstext_html);
-        return $post;
-    }
+        $newDocumentSettings = $newDocument->getSettings();
+        $existingDocumentSettings = $existingDocument->getSettings();
 
-    /**
-     * @param $post
-     *
-     * @throws GeneralException
-     */
-    protected function processSavePost($post)
-    {
-        if (!$this->savePost($post)) {
-            throw new GeneralException(
-                'Failed to save the post'
-            );
-        }
-    }
+        $newDocumentSettings->setPdfAttachmentId(
+            $existingDocumentSettings->getPdfAttachmentId()
+        );
 
-    /**
-     * @param $post
-     *
-     * @return false|string
-     */
-    protected function processPermalink($post)
-    {
-        $targetUrl = '';
-        if ('publish' === $post->post_status) {
-            $targetUrl = get_permalink($post);
-        }
-        return $targetUrl;
-    }
+        $newDocumentSettings->setDocumentId(
+            $existingDocumentSettings->getDocumentId()
+        );
 
-    /**
-     * @param $xml
-     *
-     * @throws CountryException
-     */
-    protected function processCountry($xml)
-    {
-        $foundCountry = false;
-        foreach ($this->textAllocations[(string)$xml->rechtstext_type] as $allocation) {
-            if ((string)$xml->rechtstext_country === $allocation['country']) {
-                $foundCountry = true;
-                break;
-            }
-        }
-        if (!$foundCountry) {
-            throw new CountryException(
-                "Country {$xml->rechtstext_country} not found"
-            );
-        }
+        $newDocumentSettings->setAttachToWcEmail(
+            $existingDocumentSettings->getAttachToWcEmail()
+        );
+
+        $newDocumentSettings->setSavePdf(
+            $existingDocumentSettings->getSavePdf()
+        );
+
+        $newDocumentSettings->setHideTitle(
+            $existingDocumentSettings->getHideTitle()
+        );
     }
 }

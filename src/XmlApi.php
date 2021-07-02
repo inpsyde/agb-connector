@@ -2,6 +2,9 @@
 
 namespace Inpsyde\AGBConnector;
 
+use Inpsyde\AGBConnector\Document\DocumentPageFinder\DocumentPageFinder;
+use Inpsyde\AGBConnector\Document\Factory\XmlBasedDocumentFactory;
+use Inpsyde\AGBConnector\Document\Repository\DocumentRepositoryInterface;
 use Inpsyde\AGBConnector\Middleware\MiddlewareRequestHandler;
 
 /**
@@ -37,27 +40,20 @@ class XmlApi
      * @var string
      */
     protected $userAuthToken;
-
     /**
-     * Text allocations
-     *
-     * @var array
+     * @var DocumentRepositoryInterface
      */
-    protected $textAllocations;
-    const FTPHOSTNAME = 'hostname';
-    const FTPUSERNAME = 'username';
-    const FTPPASSWORD = 'password';
+    protected $documentRepository;
 
     /**
      * Define some values.
      *
      * @param string $userAuthToken User Auth Token.
-     * @param array $textAllocations allocations for Texts.
      */
-    public function __construct($userAuthToken, array $textAllocations = null)
+    public function __construct($userAuthToken, DocumentRepositoryInterface $documentRepository)
     {
         $this->userAuthToken = $userAuthToken;
-        $this->textAllocations = $textAllocations;
+        $this->documentRepository = $documentRepository;
     }
 
     /**
@@ -80,10 +76,14 @@ class XmlApi
         }
         libxml_use_internal_errors($xmlErrorState);
 
+        $plugin = agb_connector();
+
         $handler = new MiddlewareRequestHandler(
             $this->userAuthToken,
-            $this->textAllocations,
-            new XmlApiSupportedService()
+            new XmlApiSupportedService(),
+            $this->documentRepository,
+            new XmlBasedDocumentFactory(),
+            new DocumentPageFinder($plugin->shortCodes()->getShortcodeTags())
         );
 
         return $handler->handle($xml);
