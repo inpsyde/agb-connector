@@ -117,6 +117,7 @@ class Plugin
 
         add_action('init', function () use ($shortCodes) {
             (new PostSavingListener($this->documentRepository(), $shortCodes))->init();
+            (new PostDeleteListener())->init();
         });
 
         (new RemoveDocumentPageTitleIfEnabled($this->documentRepository()))();
