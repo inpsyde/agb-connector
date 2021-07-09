@@ -1,0 +1,59 @@
+name: Deployment
+
+on:
+  push:
+    branches: [ deployment-action ]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+      
+    - uses: actions/setup-node@v1.1.0
+      with:
+        version: 12.x
+
+    - name: Install dependencies
+      run: |
+        composer install --prefer-dist --no-progress --no-suggest
+        npm install
+
+    - name: Create package
+      run: gulp dist --compressedName agb-connector
+    
+    #- name: Add SSH key
+    #  uses: webfactory/ssh-agent@v0.2.0
+    #  with:
+    #    ssh-private-key: ${{secrets.DEPLOY_KEY}}
+
+    #- name: Install SSH key
+    #  uses: shimataro/ssh-key-action@v2
+    #  with:
+    #    key: ${{secrets.DEPLOY_KEY}}
+    #    name: id_agbconnector
+        #known_hosts: ${{secrets.KNOWN_HOSTS}}
+
+    -   name: Setup SSH Keys and known_hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{secrets.DEPLOY_KEY}}"
+
+    - name: Copy package to remote server
+      run: scp agb-connector.zip ${{secrets.DESTINATION}}
+
+    #- name: rsync over ssh
+    #  run: rsync ./foo/ user@remote:bar/
+      
+    #- name: Extract package
+    #- name: rsync    
+            
